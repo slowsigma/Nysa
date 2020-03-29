@@ -11,7 +11,7 @@ namespace Nysa.Logics
 
         private Func<T> Value { get; }
         private Pending(Func<T> value) { this.Value = value; }
-        public override Suspect<T> Run()
+        public Suspect<T> Run()
         {
             try { return this.Value().Confirmed(); }
             catch (Exception except) { return except.Failed<T>(); }

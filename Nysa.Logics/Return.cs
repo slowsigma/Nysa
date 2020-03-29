@@ -28,6 +28,23 @@ namespace Nysa.Logics
             where T : struct
             => noneIfNull && value == null ? Option<T>.None
                : value.Value.Some();
+
+        public static Suspect<T> Confirmed<T>(this T @this)
+            => new Confirmed<T>(@this);
+
+        public static Suspect<T> ConfirmedIf<T>(this T @this, Func<T, Boolean> isValid, String errorMessage)
+            => isValid(@this) ? @this.Confirmed()
+               : (Failed<T>)(new Exception(errorMessage));
+
+        public static Suspect<T> Failed<T>(this Exception @this)
+            => new Failed<T>(@this);
+
+        public static Try<T> Pending<T>(this Func<T> @this)
+            => (Pending<T>)@this;
+
+        public static Try<T> Resolved<T>(this Suspect<T> @this)
+            => (Resolved<T>)@this;
+
     }
 
 }
