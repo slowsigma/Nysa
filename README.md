@@ -15,3 +15,7 @@ For these elevated types, Nysa.Logics defines functions (using extension methods
 * Match - `Func<E<T>, Func<T, R>, Func<R>, R>`
 * Apply - `Func<E<Func<T, R>>, E<T>, Func<E<R>>>`
 * Apply - `Func<E<Func<T1, T2, TR>>, E<T1>, E<Func<T2, TR>>>`
+
+## Nysa.Data.SqlClient
+This is a C# class library to make getting data from SQL Server more functional.
+
