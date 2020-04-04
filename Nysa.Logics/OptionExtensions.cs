@@ -45,6 +45,23 @@ namespace Nysa.Logics
             =>   @this is Some<T> some ? whenSome(some.Value)
                : @this is None<T> none ? whenNone()
                :                         throw new ArgumentException(MatchUsageErrorString, nameof(@this));
+
+        public static Option<T> FirstOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean> predicate)
+        {
+            foreach (var item in @this)
+                if (predicate(item))
+                    return item.Some();
+
+            return Option<T>.None;
+        }
+
+        public static Unit Send<T>(this Option<T> @this, Action<T> action)
+        {
+            if (@this is Some<T> some)
+                action(some.Value);
+
+            return Unit.Value;
+        }
     }
 
 }

@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nysa.Scheduling", "Nysa.Scheduling.csproj", "{99375CA8-449D-491A-874C-BC7295E86A09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nysa.Logics", "..\Nysa.Logics\Nysa.Logics.csproj", "{37803167-0B1E-428F-A52A-50B6AED466B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nysa.Scheduling.RuleVisualizer", "..\Nysa.Scheduling.RuleVisualizer\Nysa.Scheduling.RuleVisualizer.csproj", "{3C222D59-05FF-4EA0-917B-32A6C1A8BC92}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nysa.Scheduling.Testing", "..\Nysa.Scheduling.Testing\Nysa.Scheduling.Testing.csproj", "{A4775213-C18D-4E68-8E22-B70C04530D34}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99375CA8-449D-491A-874C-BC7295E86A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99375CA8-449D-491A-874C-BC7295E86A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99375CA8-449D-491A-874C-BC7295E86A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99375CA8-449D-491A-874C-BC7295E86A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37803167-0B1E-428F-A52A-50B6AED466B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37803167-0B1E-428F-A52A-50B6AED466B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37803167-0B1E-428F-A52A-50B6AED466B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37803167-0B1E-428F-A52A-50B6AED466B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C222D59-05FF-4EA0-917B-32A6C1A8BC92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C222D59-05FF-4EA0-917B-32A6C1A8BC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C222D59-05FF-4EA0-917B-32A6C1A8BC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C222D59-05FF-4EA0-917B-32A6C1A8BC92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4775213-C18D-4E68-8E22-B70C04530D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4775213-C18D-4E68-8E22-B70C04530D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4775213-C18D-4E68-8E22-B70C04530D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4775213-C18D-4E68-8E22-B70C04530D34}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA675509-DA69-43DF-B9C9-6E3A70CC6731}
+	EndGlobalSection
+EndGlobal

@@ -38,6 +38,9 @@ namespace Nysa.Logics
                : @this is Resolved<Func<T, R>> rfd && given is Resolved<T> rgd ? rfd.Value.Apply(rgd.Value).Resolved()
                :                                                                 throw new ArgumentException(ApplyUsageErrorString);
 
+        public static Try<Func<T2, TR>> Apply<T1, T2, TR>(this Try<Func<T1, T2, TR>> @this, Try<T1> given)
+            => Apply(@this.Map(Functional.Curry), given);
+
         public static R Match<T, R>(this Try<T> @this, Func<T, R> whenConfirmed, R whenFailed)
             =>   @this is Pending<T>  pending  ? pending.Run().Match(pc => whenConfirmed(pc), pe => whenFailed)
                : @this is Resolved<T> resolved ? resolved.Value.Match(rc => whenConfirmed(rc), re => whenFailed)
