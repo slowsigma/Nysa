@@ -5,10 +5,10 @@ namespace Nysa.Logics
 
     public static class Functional
     {
-        public static R Map<T, R>(this T @this, Func<T, R> transform)
+        public static R Make<T, R>(this T @this, Func<T, R> transform)
             => transform(@this);
 
-        public static Func<R> Map<T, R>(this Func<T> @this, Func<T, R> transform)
+        public static Func<R> Make<T, R>(this Func<T> @this, Func<T, R> transform)
             => () => transform(@this());
 
         public static Func<R> Apply<T, R>(this Func<T, R> @this, T given)

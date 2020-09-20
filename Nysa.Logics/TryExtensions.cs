@@ -9,13 +9,9 @@ namespace Nysa.Logics
     {
         private static readonly String UsageErrorTemplate = "{0} does not accept types other than Pending<T> and Resolved<T>.";
         private static readonly String MapUsageErrorString = String.Format(UsageErrorTemplate, nameof(Map));
-        //private static readonly String MapAsyncUsageErrorString = String.Format(UsageErrorTemplate, nameof(MapAsync));
         private static readonly String BindUsageErrorString = String.Format(UsageErrorTemplate, nameof(Bind));
-        //private static readonly String BindAsyncUsageErrorString = String.Format(UsageErrorTemplate, nameof(BindAsync));
         private static readonly String ApplyUsageErrorString = String.Format(UsageErrorTemplate, nameof(Apply));
-        //private static readonly String ApplyAsyncUsageErrorString = String.Format(UsageErrorTemplate, nameof(ApplyAsync));
         private static readonly String MatchUsageErrorString = String.Format(UsageErrorTemplate, nameof(Match));
-        //private static readonly String MatchAsyncUsageErrorString = String.Format(UsageErrorTemplate, nameof(MatchAsync));
 
         public static Try<R> Map<T, R>(this Try<T> @this, Func<T, R> transform)
             =>   @this is Pending<T>  pending  ? pending.Run().Match(pc => transform(pc).Confirmed().Resolved(),

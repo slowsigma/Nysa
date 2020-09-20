@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nysa.Parse", "Nysa.Parse.csproj", "{A8916771-672F-4127-AC05-834D716C401A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nysa.Logics", "..\Nysa.Logics\Nysa.Logics.csproj", "{6A37CAA9-084E-4EA2-A44B-F10AF0D100B3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8916771-672F-4127-AC05-834D716C401A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8916771-672F-4127-AC05-834D716C401A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8916771-672F-4127-AC05-834D716C401A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8916771-672F-4127-AC05-834D716C401A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A37CAA9-084E-4EA2-A44B-F10AF0D100B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A37CAA9-084E-4EA2-A44B-F10AF0D100B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A37CAA9-084E-4EA2-A44B-F10AF0D100B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A37CAA9-084E-4EA2-A44B-F10AF0D100B3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B1DD60A-1DF9-467A-B286-E686A8F9176C}
+	EndGlobalSection
+EndGlobal

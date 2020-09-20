@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Notes>
+  <Note xml:space="preserve">
+    <![CDATA[
+    ------------------------ IMPORTANT ------------------------
+    In previous versions of this kind of parser, I've been doing
+    lexing as a separate pre-parsing step.  This simplified the
+    parsing slightly but led to the consequence that a single
+    string token value cannot belong to more than one category.
+    
+    This means that if a grammar wanted to have a specific word
+    belong to multiple categories, it would have to pull the
+    word out as a reserved word and then make a syntax rule
+    that includes both the category and the reserved word:
+    
+    <SomePhrase> := "The" "carpenter" "is" "named" {Name} "."
+    
+    In this situation the {Name} category cannot include
+    "carpenter" when using a separate lexing engine. To
+    handle this situation, the grammar would need to be
+    restructured as follows:
+    
+    <SomePrase> ::= "The "carpenter" "is" "named" <Name> "."
+    <Name> ::= {GeneralNames} | "carpenter"
+    
+    ]]>
+  </Note>
+  
+  
+  
+</Notes>

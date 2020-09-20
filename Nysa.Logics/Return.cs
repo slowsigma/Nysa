@@ -7,6 +7,12 @@ namespace Nysa.Logics
 
     public static class Return
     {
+        public static T After<T>(Action action, Func<T> function)
+        {
+            action();
+            return function();
+        }
+
         public static Lazy<T> Lazy<T>(this Func<T> @this, Boolean isThreadSafe = false)
             => new Lazy<T>(@this, isThreadSafe);
 
@@ -45,6 +51,10 @@ namespace Nysa.Logics
         public static Try<T> Resolved<T>(this Suspect<T> @this)
             => (Resolved<T>)@this;
 
+        public static IEnumerable<T> Enumerable<T>(this T @this)
+        {
+            yield return @this;
+        }
     }
 
 }

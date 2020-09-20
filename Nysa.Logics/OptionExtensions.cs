@@ -12,10 +12,11 @@ namespace Nysa.Logics
         private static readonly String BindUsageErrorString  = String.Format(UsageErrorTemplate, nameof(Bind));
         private static readonly String ApplyUsageErrorString = String.Format(UsageErrorTemplate, nameof(Apply));
         private static readonly String MatchUsageErrorString = String.Format(UsageErrorTemplate, nameof(Match));
+        private static readonly String OrUsageErrorString = String.Format(UsageErrorTemplate, nameof(Or));
 
         public static Option<U> Map<T, U>(this Option<T> @this, Func<T, U> transform)
             =>   @this is Some<T> some ? transform(some.Value).Some()
-               : @this is None<T> none ? Option<U>.None
+               : @this is None<T>      ? Option<U>.None
                :                         throw new ArgumentException(MapUsageErrorString, nameof(@this));
 
         public static Option<Func<T2, TR>> Map<T1, T2, TR>(this Option<T1> @this, Func<T1, T2, TR> transform)
@@ -33,18 +34,38 @@ namespace Nysa.Logics
 
         public static Option<U> Bind<T, U>(this Option<T> @this, Func<T, Option<U>> transform)
             =>   @this is Some<T> some ? transform(some.Value)
-               : @this is None<T> none ? Option<U>.None
+               : @this is None<T>      ? Option<U>.None
                :                         throw new ArgumentException(BindUsageErrorString, nameof(@this));
 
         public static R Match<T, R>(this Option<T> @this, Func<T, R> whenSome, R whenNone)
             =>   @this is Some<T> some ? whenSome(some.Value)
-               : @this is None<T> none ? whenNone
+               : @this is None<T>      ? whenNone
                :                         throw new ArgumentException(MatchUsageErrorString, nameof(@this));
 
         public static R Match<T, R>(this Option<T> @this, Func<T, R> whenSome, Func<R> whenNone)
             =>   @this is Some<T> some ? whenSome(some.Value)
-               : @this is None<T> none ? whenNone()
+               : @this is None<T>      ? whenNone()
                :                         throw new ArgumentException(MatchUsageErrorString, nameof(@this));
+
+        public static T Or<T>(this Option<T> @this, T whenNone)
+            =>   @this is Some<T> some ? some.Value
+               : @this is None<T>      ? whenNone
+               :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
+
+        public static T Or<T>(this Option<T> @this, Func<T> whenNone)
+            =>   @this is Some<T> some ? some.Value
+               : @this is None<T>      ? whenNone()
+               :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
+
+        public static Option<T> Or<T>(this Option<T> @this, Option<T> whenNone)
+            =>   @this is Some<T> some ? @this
+               : @this is None<T>      ? whenNone
+               :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
+
+        public static Option<T> Or<T>(this Option<T> @this, Func<Option<T>> whenNone)
+            =>   @this is Some<T> some ? @this
+               : @this is None<T>      ? whenNone()
+               :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
 
         public static Option<T> FirstOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean> predicate)
         {
