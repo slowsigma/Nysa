@@ -7,7 +7,7 @@ using Nysa.Logics;
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Node : IEquatable<Node>
+    public class Node : IEquatable<Node>
     {
         public Identifier                   Id      { get; private set; }
         public String                       Symbol  => this._Symbol.Value;

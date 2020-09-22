@@ -9,7 +9,7 @@ namespace Nysa.Text.Parsing
     internal class BuildDown
     {
         public Option<BuildDown> Previous { get; private set; }
-        public ChartEntry      Current  { get; private set; }
+        public ChartEntry        Current  { get; private set; }
 
         private BuildDown(Option<BuildDown> previous, ChartEntry current)
         {

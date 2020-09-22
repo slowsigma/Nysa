@@ -11,14 +11,45 @@ using Nysa.Text.Lexing;
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Node
+    internal static class Build
     {
+        private static BuildAcross StartWithNode(this ChartEntry entry, ChartPosition nextPosition, BuildAcross member)
+            => new BuildAcross(entry,
+                               nextPosition,
+                               Option<BuildAcross>.None,
+                               (a, g) => a.Previous.Match(p => p.GetMembers(g).Concat(((NodeOrToken)member.AsNode(g)).Enumerable()),
+                                                          () => ((NodeOrToken)member.AsNode(g)).Enumerable()));
 
-        private static Option<BuildAcross> Build(Chart chart, Token[] input, ChartEntry initialEntry, ChartPosition initialPosition)
+        private static BuildAcross StartWithEmpty(this ChartEntry entry, ChartPosition nextPosition)
+            => new BuildAcross(entry, nextPosition, Option<BuildAcross>.None, (a, g) => new NodeOrToken[] { });
+
+        private static BuildAcross StartWithToken(this ChartEntry entry, ChartPosition nextPosition, Token token)
+            => new BuildAcross(entry,
+                               nextPosition,
+                               Option<BuildAcross>.None,
+                               (a, g)=> a.Previous.Match(p => p.GetMembers(g).Concat(((NodeOrToken)token).Enumerable()),
+                                                         () => ((NodeOrToken)token).Enumerable()));
+
+        private static BuildAcross NextAcrossNode(this BuildAcross @this, ChartPosition nextPosition, BuildAcross member)
+            => new BuildAcross(@this.Entry,
+                               nextPosition,
+                               @this.Some(),
+                               (a, g) => a.Previous.Match(p => p.GetMembers(g).Concat(((NodeOrToken)member.AsNode(g)).Enumerable()),
+                                                          () => ((NodeOrToken)member.AsNode(g)).Enumerable()));
+
+        private static BuildAcross NextAcrossToken(this BuildAcross @this, ChartPosition nextPosition, Token token)
+            => new BuildAcross(@this.Entry,
+                               nextPosition,
+                               @this.Some(),
+                               (a, g) => a.Previous.Match(p => p.GetMembers(g).Concat(((NodeOrToken)token).Enumerable()),
+                                                          () => ((NodeOrToken)token).Enumerable()));
+
+
+        private static Option<BuildAcross> Stitch(Chart chart, Token[] input, ChartEntry initialEntry, ChartPosition initialPosition)
         {
             var stack  = new Stack<BuildCall>();
             var across = new BuildAcrossCall(BuildStates.ACROSS_CALL, BuildStates.FINAL, initialEntry, initialPosition, 0, initialEntry.Number);
-            var down   = (DownCall)null;
+            var down   = (BuildDownCall)null;
             var build  = (BuildCall)across;
 
             var downCache = new Dictionary<BuildDownKey, Option<BuildAcross>>();
@@ -40,11 +71,11 @@ namespace Nysa.Text.Parsing
                 var checkPosition = chart[checkAcross.Position.Index + checkFind.Number];
 
                 return chart.Grammar.IsTerminal(checkSymbolId)
-                        ? input[checkPosition.Index].Id == checkSymbolId
-                        : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
+                       ? input[checkPosition.Index].Id == checkSymbolId
+                       : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
             }
 
-            Boolean isValidDown(DownCall checkDown, ChartEntry checkFind)
+            Boolean isValidDown(BuildDownCall checkDown, ChartEntry checkFind)
             {
                 if (checkDown.SearchId     != checkFind.Rule.Id ||
                     checkDown.Entry.Number <  checkFind.Number  ||
@@ -77,7 +108,7 @@ namespace Nysa.Text.Parsing
             {
                 stack.Push(build);
 
-                down  = new DownCall(BuildStates.DOWN_CALL, @return, callEntry, callPosition, above);
+                down  = new BuildDownCall(BuildStates.DOWN_CALL, @return, callEntry, callPosition, above);
                 build = down;
             }
 
@@ -92,7 +123,7 @@ namespace Nysa.Text.Parsing
                     if (build is BuildAcrossCall)
                         across = build as BuildAcrossCall;
                     else
-                        down = build as DownCall;
+                        down = build as BuildDownCall;
 
                     build.Result = prior.Result;
                     build.SetCallState(prior.ReturnState);
@@ -110,7 +141,7 @@ namespace Nysa.Text.Parsing
                 if (across.Entry.Rule.IsEmpty)
                 {
                     across.Result = across.Entry.Number == 0
-                                    ? BuildAcross.StartWithEmpty(across.Entry, across.Position).Some()
+                                    ? across.Entry.StartWithEmpty(across.Position).Some()
                                     : Option<BuildAcross>.None;
                     CallReturn();
                 }
@@ -131,7 +162,7 @@ namespace Nysa.Text.Parsing
                         if (token.Id == id)
                         {
                             var previous = across.Previous.Match(p => p.NextAcrossToken(nextPosition, token),
-                                                                 () => BuildAcross.StartWithToken(across.Entry, nextPosition, token));
+                                                                 () => across.Entry.StartWithToken(nextPosition, token));
 
                             CallAcross(BuildStates.RETURN, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - 1, previous);
                         }
@@ -192,7 +223,7 @@ namespace Nysa.Text.Parsing
                 {
                     var nextPosition = some.Value.NextPosition;
                     var previous = across.Previous.Match(p => p.NextAcrossNode(nextPosition, some.Value),
-                                                         () => BuildAcross.StartWithNode(across.Entry, nextPosition, some.Value));
+                                                         () => across.Entry.StartWithNode(nextPosition, some.Value));
 
                     CallAcross(BuildStates.ACROSS_MATCH_ACROSS_CHECK, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - across.Match.Number, previous);
                 }
@@ -215,7 +246,7 @@ namespace Nysa.Text.Parsing
                 if (down.Entry.Rule.IsEmpty)
                 {
                     down.Result = down.Entry.Number == 0
-                                  ? BuildAcross.StartWithEmpty(down.Entry, down.Position).Some()
+                                  ? down.Entry.StartWithEmpty(down.Position).Some()
                                   : Option<BuildAcross>.None;
                     CallReturn();
                 }
@@ -230,7 +261,7 @@ namespace Nysa.Text.Parsing
 
                         if (token.Id == id)
                         {
-                            CallAcross(BuildStates.RETURN, down.Entry, nextPosition, 1, down.Entry.Number - 1, BuildAcross.StartWithToken(down.Entry, nextPosition, token));
+                            CallAcross(BuildStates.RETURN, down.Entry, nextPosition, 1, down.Entry.Number - 1, down.Entry.StartWithToken(nextPosition, token));
                         }
                         else
                         {
@@ -250,7 +281,7 @@ namespace Nysa.Text.Parsing
 
             stateLogic[BuildStates.DOWN_MATCH] = () =>
             {
-                down.MatchIndex = down.MatchIndex + 1; // Note: MatchIndex is initialized to -1
+                down.MatchIndex = down.MatchIndex + 1; // Note: MatchIndex is always initialized to -1
 
                 if (down.MatchIndex < down.Position.Count)
                 {
@@ -260,7 +291,7 @@ namespace Nysa.Text.Parsing
                     {
                         down.Match = find;
 
-                        CallDown(BuildStates.DOWN_MATCH_DOWN_CHECK, find, down.Position, down.Above.Or((BuildDown)null)); // last arg was relying on implicit null of version of Option<T>.Value (down.Above.Value)
+                        CallDown(BuildStates.DOWN_MATCH_DOWN_CHECK, find, down.Position, down.Above.Or((BuildDown)null));
                     }
                 }
                 else
@@ -276,7 +307,7 @@ namespace Nysa.Text.Parsing
                 {
                     var nextPosition = some.Value.NextPosition;
 
-                    CallAcross(BuildStates.DOWN_MATCH_ACROSS_CHECK, down.Entry, nextPosition, 1, down.Entry.Number - down.Match.Number, BuildAcross.StartWithNode(down.Entry, nextPosition, some.Value));
+                    CallAcross(BuildStates.DOWN_MATCH_ACROSS_CHECK, down.Entry, nextPosition, 1, down.Entry.Number - down.Match.Number, down.Entry.StartWithNode(nextPosition, some.Value));
                 }
                 else
                 {
@@ -304,13 +335,13 @@ namespace Nysa.Text.Parsing
 
             return across.Result;
         }
-        
 
-        public static Option<Node> Create(Chart chart, Token[] input)
+
+        public static Option<Node> Tree(this Chart chart, Token[] input)
         {
-            var id = chart.Grammar.StartId;
-            var symbol = chart.Grammar.StartSymbol;
-            var result = Option<Node>.None;
+            var id      = chart.Grammar.StartId;
+            var symbol  = chart.Grammar.StartSymbol;
+            var result  = Option<Node>.None;
 
             if (chart.Length > 0)
             {
@@ -319,7 +350,7 @@ namespace Nysa.Text.Parsing
                     if (entry.Rule.IsEmpty && entry.Number == 0)
                         continue;
 
-                    var check = Build(chart, input, entry, chart[0]);
+                    var check = Stitch(chart, input, entry, chart[0]);
 
                     if (check is Some<BuildAcross> some)
                         return some.Value.AsNode(chart.Grammar).Some();
@@ -331,7 +362,7 @@ namespace Nysa.Text.Parsing
 
             return result;
         }
-
+        
     }
-
+    
 }

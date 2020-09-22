@@ -5,11 +5,11 @@ using Nysa.Logics;
 namespace Nysa.Text.Parsing
 {
 
-    internal sealed class DownCall : BuildCall
+    internal sealed class BuildDownCall : BuildCall
     {
         public Option<BuildDown> Above { get; set; }
 
-        public DownCall(BuildStates call, BuildStates @return, ChartEntry entry, ChartPosition position, BuildDown above = null)
+        public BuildDownCall(BuildStates call, BuildStates @return, ChartEntry entry, ChartPosition position, BuildDown above = null)
             : base(call, @return, entry, position)
         {
             this.Above = above != null

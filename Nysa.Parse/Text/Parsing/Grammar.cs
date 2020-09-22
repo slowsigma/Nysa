@@ -125,7 +125,7 @@ namespace Nysa.Text.Parsing
 
                 if (final[0].Any(entry => entry.Rule.Symbol(this).DataEquals(this.StartSymbol)))
                 {
-                    var ast = Node.Create(final, tokens);
+                    var ast = final.Tree(tokens);
 
                     if (ast is Some<Node> some)
                         return new ParseTree(this.Collapsed(some.Value), final);
