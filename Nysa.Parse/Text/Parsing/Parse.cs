@@ -24,7 +24,7 @@ namespace Nysa.Text.Parsing
             {
                 for (Int32 e = 0; e < chart[p].Count; e++)
                 {
-                    var entry = chart[p][e];
+                    var entry    = chart[p][e];
                     var symbolId = entry.NextRuleId;
 
                     if (symbolId.IsNone) // test for completion

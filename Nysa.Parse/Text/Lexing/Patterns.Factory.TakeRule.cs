@@ -17,10 +17,7 @@ namespace Nysa.Text.Lexing
             {
                 public String Value { get; private set; }
 
-                internal TakeRule(String value)
-                {
-                    this.Value = value;
-                }
+                internal TakeRule(String value) => this.Value = value;
             }
 
         }

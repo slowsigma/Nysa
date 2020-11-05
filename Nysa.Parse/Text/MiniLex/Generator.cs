@@ -19,7 +19,7 @@ namespace Lexington
         //
         // Types of functions that comprise a full lexical analyzer:
         //   1. Top level - Repeat and yield tokens
-        //      - Uses a array of functions indexed by the first character
+        //      - Uses an array of functions indexed by the first character
         //        acceptable to the respective function.
         //              
         //  

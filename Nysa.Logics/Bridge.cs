@@ -30,6 +30,10 @@ namespace Nysa.Logics
 
         public static Int32 HashAll<T>(this IEnumerable<T> items)
             => items.Aggregate(17, (s, i) => (s * 31) + i.GetHashCode()); // The Albahari method.
+
+        public static Func<T, T, Int32> ToFunction<T>(this IComparer<T> @this)
+            where T : IComparable<T>
+            => (a, b) => @this.Compare(a, b);
     }
 
 }
