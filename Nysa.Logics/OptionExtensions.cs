@@ -67,8 +67,10 @@ namespace Nysa.Logics
                : @this is None<T>      ? whenNone()
                :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
 
-        public static Option<T> FirstOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean> predicate)
+        public static Option<T> FirstOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean> predicate = null)
         {
+            predicate = predicate ?? (t => true);
+
             foreach (var item in @this)
                 if (predicate(item))
                     return item.Some();
@@ -76,13 +78,6 @@ namespace Nysa.Logics
             return Option<T>.None;
         }
 
-        public static Unit Send<T>(this Option<T> @this, Action<T> action)
-        {
-            if (@this is Some<T> some)
-                action(some.Value);
-
-            return Unit.Value;
-        }
     }
 
 }
