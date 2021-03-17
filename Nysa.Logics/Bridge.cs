@@ -34,6 +34,10 @@ namespace Nysa.Logics
         public static Func<T, T, Int32> ToFunction<T>(this IComparer<T> @this)
             where T : IComparable<T>
             => (a, b) => @this.Compare(a, b);
+
+        public static Boolean OrdinalEquals(this String @this, String other, Boolean ignoreCase = true)
+            => String.Equals(@this, other, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
     }
 
 }
