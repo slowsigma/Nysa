@@ -55,6 +55,14 @@ namespace Nysa.Logics
         {
             yield return @this;
         }
+
+        public static IEnumerable<T> Some<T>(params Option<T>[] options)
+        {
+            foreach (var option in options)
+                if (option is Some<T> some)
+                    yield return some.Value;
+        }
+
     }
 
 }
