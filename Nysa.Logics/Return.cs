@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Nysa.Logics
 {
@@ -15,9 +16,6 @@ namespace Nysa.Logics
 
         public static Lazy<T> Lazy<T>(this Func<T> @this, Boolean isThreadSafe = false)
             => new Lazy<T>(@this, isThreadSafe);
-
-        public static Pending<T> Try<T>(this Func<T> @this)
-            => (Pending<T>)@this;
 
         public static Option<T> Some<T>(this T value)
             => new Some<T>(value);
@@ -45,11 +43,14 @@ namespace Nysa.Logics
         public static Suspect<T> Failed<T>(this Exception @this)
             => new Failed<T>(@this);
 
-        public static Try<T> Pending<T>(this Func<T> @this)
-            => (Pending<T>)@this;
+        public static Try<T> Try<T>(this Func<T> @this)
+            => (Try<T>)@this;
 
-        public static Try<T> Resolved<T>(this Suspect<T> @this)
-            => (Resolved<T>)@this;
+        public static Try<Unit> Try(this Action @this)
+            => (Try<Unit>)(() => { @this(); return Unit.Value; });
+
+        public static TryAsync<T> TryAsync<T>(this Func<Task<T>> @this)
+            => (TryAsync<T>)@this;
 
         public static IEnumerable<T> Enumerable<T>(this T @this)
         {

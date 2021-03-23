@@ -55,6 +55,16 @@ namespace Nysa.Logics
         public static Suspect<Func<T2, TR>> Apply<T1, T2, TR>(this Suspect<Func<T1, T2, TR>> @this, Suspect<T1> given)
             => Apply(@this.Map(Functional.Curry), given);
 
+        public static R Match<T, R>(this Suspect<T> @this, Func<T, R> whenConfirmed, R whenFailed)
+            =>   (@this is Confirmed<T> confirmed) ? whenConfirmed(confirmed.Value)
+               : (@this is Failed<T> failed)       ? whenFailed
+               :                                     throw new Exception(MatchUsageErrorString);
+
+        public static R Match<T, R>(this Suspect<T> @this, Func<T, R> whenConfirmed, Func<R> whenFailed)
+            =>   (@this is Confirmed<T> confirmed) ? whenConfirmed(confirmed.Value)
+               : (@this is Failed<T> failed)       ? whenFailed()
+               :                                     throw new Exception(MatchUsageErrorString);
+
         public static R Match<T, R>(this Suspect<T> @this, Func<T, R> whenConfirmed, Func<Exception, R> whenFailed)
             =>   (@this is Confirmed<T> confirmed) ? whenConfirmed(confirmed.Value)
                : (@this is Failed<T> failed)       ? whenFailed(failed.Value)
