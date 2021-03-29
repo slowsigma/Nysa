@@ -5,6 +5,6 @@ using System.Text;
 namespace Nysa.Text.Parsing.Definition
 {
 
-    public delegate 
+    //public delegate 
 
 }
