@@ -53,6 +53,19 @@ namespace Nysa.Logics
             }
         }
 
+        public static IEnumerable<T> Affected<T>(this IEnumerable<T> @this, Action<T, Int32> update)
+        {
+            var i = 0;
+            foreach (var value in @this)
+            {
+                update(value, i);
+
+                yield return value;
+
+                i++;
+            }
+        }
+
         /// <summary>
         /// Takes a value of some type and calls an update action
         /// with that value. The update action may affect the
@@ -75,6 +88,19 @@ namespace Nysa.Logics
             foreach (var value in @this)
             {
                 update(value);
+            }
+
+            return Unit.Value;
+        }
+
+        public static Unit Affect<T>(this IEnumerable<T> @this, Action<T, Int32> update)
+        {
+            var i = 0;
+            foreach (var value in @this)
+            {
+                update(value, i);
+
+                i++;
             }
 
             return Unit.Value;
