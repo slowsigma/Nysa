@@ -20,18 +20,42 @@ namespace Nysa.Logics
         public static Option<T> Some<T>(this T value)
             => new Some<T>(value);
 
+#if NET
+#nullable enable
+
+        /// <summary>
+        /// Given a possible null value of some type, this function returns
+        /// the None subtype of Option if the value is null or if the
+        /// supplied isNone function returns true for the value. Otherwise,
+        /// this function returns the Some subtype of Option with the
+        /// supplied value.
+        /// </summary>
+        public static Option<T> NoneIf<T>(this T? value, Func<T, Boolean> isNone)
+            =>   value == null ? Option<T>.None
+               : isNone(value) ? Option<T>.None
+               :                 value.Some();
+
+#else
+
+        /// <summary>
+        /// Given a value of some type, this function returns the
+        /// None subtype of Option if the supplied isNone function
+        /// returns true for the value. Otherwise, this function
+        /// returns the Some subtype of Option with the supplied
+        /// value.
+        /// </summary>
         public static Option<T> NoneIf<T>(this T value, Func<T, Boolean> isNone)
             => isNone(value) ? Option<T>.None : value.Some();
+#endif
 
         public static Option<T> AsOption<T>(this T value, Boolean noneIfNull = true)
             where T : class
             => noneIfNull && value == null ? Option<T>.None
                : value.Some();
 
-        public static Option<T> AsOption<T>(this Nullable<T> value, Boolean noneIfNull = true)
+        public static Option<T> AsOption<T>(this Nullable<T> value)
             where T : struct
-            => noneIfNull && value == null ? Option<T>.None
-               : value.Value.Some();
+            => value == null ? Option<T>.None : value.Value.Some();
 
         public static Suspect<T> Confirmed<T>(this T @this)
             => new Confirmed<T>(@this);
