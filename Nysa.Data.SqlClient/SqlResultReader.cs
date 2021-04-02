@@ -37,7 +37,7 @@ namespace Nysa.Data
         }
 
         private SqlDataReader? _RowReader;
-        public SqlDataReader? Row => this._RowReader;
+        public SqlDataReader Row => this._RowReader!;
 
         public void Dispose()
         {

@@ -16,7 +16,7 @@ namespace Nysa.Data.SqlClient
         public static Get<Int64?>           Int64           = new Get<Int64?>           ((r, i) => r.IsDBNull(i) ? (Int64?)null          : r.GetInt64(i));
         public static Get<Int32?>           Int32           = new Get<Int32?>           ((r, i) => r.IsDBNull(i) ? (Int32?)null          : r.GetInt32(i));
         public static Get<Int16?>           Int16           = new Get<Int16?>           ((r, i) => r.IsDBNull(i) ? (Int16?)null          : r.GetInt16(i));
-        public static Get<String>           String          = new Get<String>           ((r, i) => r.GetString(i));
+        public static Get<String?>          String          = new Get<String?>          ((r, i) => r.GetString(i));
         public static Get<TimeSpan?>        TimeSpan        = new Get<TimeSpan?>        ((r, i) => r.IsDBNull(i) ? (TimeSpan?)null       : r.GetTimeSpan(i));
         public static Get<Guid?>            Guid            = new Get<Guid?>            ((r, i) => r.IsDBNull(i) ? (Guid?)null           : r.GetGuid(i));
         public static Get<Double?>          Double          = new Get<Double?>          ((r, i) => r.IsDBNull(i) ? (Double?)null         : r.GetDouble(i));
