@@ -12,6 +12,9 @@ namespace Nysa.Text
 
     public static class TextExtensions
     {
+        public static String? NullIfEmpty(this String value)
+            => String.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
         public static Boolean DataEquals(this String value, String other)
             => value == null ? (other == null) : value.Equals(other, StringComparison.OrdinalIgnoreCase);
         public static Boolean DataStartsWith(this String value, String starting)
@@ -22,7 +25,8 @@ namespace Nysa.Text
             => value == null ? -1 : value.IndexOf(find, startIndex, StringComparison.OrdinalIgnoreCase);
 
 
-        private delegate Boolean TryParse<T>(String value, out T result);
+        private delegate Boolean TryParse<T>(String value, out T? result);
+        //private delegate Boolean TryParse<T>(String value, out T? result) where T : class?;
 
         private static T? ParseValue<T>(this String value, TryParse<T> parse)
             where T : struct
@@ -32,12 +36,12 @@ namespace Nysa.Text
             return (parse(value, out result) ? result : (T?)null);
         }
 
-        private static T ParseObject<T>(this String value, TryParse<T> parse)
+        private static T? ParseObject<T>(this String value, TryParse<T> parse)
             where T : class
         {
-            T result;
+            T? result;
 
-            return (parse(value, out result) ? result : (T)null);
+            return (parse(value, out result) ? result : null);
         }
 
         // parsing from string
@@ -57,7 +61,7 @@ namespace Nysa.Text
         public static Double? ParseDouble(this String value) => value.ParseValue<Double>(Double.TryParse);
         public static Byte? ParseByte(this String value) => value.ParseValue<Byte>(Byte.TryParse);
 
-        public static Version ParseVersion(this String value) => value.ParseObject<Version>(Version.TryParse);
+        public static Version? ParseVersion(this String value) => value.ParseObject<Version>(Version.TryParse);
 
         public static Boolean? ParseBoolean(this String value)
         {
@@ -94,10 +98,10 @@ namespace Nysa.Text
         private static Suspect<Option<T>> ToObject<T>(this String value, TryParse<T> parse)
             where T : class
         {
-            T result;
+            T? result;
 
             return   String.IsNullOrWhiteSpace(value) ? Option<T>.None.Confirmed()
-                   : parse(value, out result)         ? result.Some().Confirmed()
+                   : parse(value, out result)         ? result != null ? result.Some<T>().Confirmed() : Option<T>.None.Confirmed()
                    :                                    (new InvalidDataException()).Failed<Option<T>>();
         }
 
@@ -115,10 +119,9 @@ namespace Nysa.Text
 
         public static Suspect<Option<Version>> ToVersion(this String value) => value.ToObject<Version>(Version.TryParse);
 
-
         public static Suspect<Boolean?> ToBoolean(this String value)
         {
-            if (String.IsNullOrWhiteSpace(value)) return (Suspect<Boolean?>)null;
+            if (String.IsNullOrWhiteSpace(value)) return ((Boolean?)null).Confirmed();
 
             // NOTE: Intentionally changed the order of this from ParseBoolean
             //       assuming true and false are more often used than a 0 or 1.
@@ -179,7 +182,7 @@ namespace Nysa.Text
                                h => h.Builder.ToString().Substring(0, h.Builder.Length - 2));
 
 
-        public static String TruncateTo(this String value, Int32 maxLength)
+        public static String? TruncateTo(this String? value, Int32 maxLength)
             => (value != null && value.Length > maxLength)
                ? value.Substring(0, maxLength)
                : value;

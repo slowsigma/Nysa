@@ -13,7 +13,7 @@ namespace Nysa.Data.SqlClient
         private static void Process<T>(this T value, Action<T> action) => action(value);
 
 
-        public static Func<SqlResultReader, T?> ReadValue<T>(this Func<SqlDataReader, T?> transform)
+        public static Func<SqlResultReader, T?> ReadValue<T>(this Func<SqlDataReader?, T?> transform)
             where T : struct
             => rr =>
             {
@@ -23,7 +23,7 @@ namespace Nysa.Data.SqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T?> ReadRecord<T>(this Func<SqlDataReader, T> transform)
+        public static Func<SqlResultReader, T?> ReadRecord<T>(this Func<SqlDataReader?, T> transform)
             where T : struct
             => rr =>
             {
@@ -33,8 +33,8 @@ namespace Nysa.Data.SqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T> ReadObject<T>(this Func<SqlDataReader, T> transform)
-            where T : class
+        public static Func<SqlResultReader, T?> ReadObject<T>(this Func<SqlDataReader?, T> transform)
+            where T : class?
             => rr =>
             {
                 if (rr.ReadResult() && rr.ReadRow())
@@ -43,7 +43,7 @@ namespace Nysa.Data.SqlClient
                 return null;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadValues<T>(this Func<SqlDataReader, T?> transform)
+        public static Func<SqlResultReader, List<T>> ReadValues<T>(this Func<SqlDataReader?, T?> transform)
             where T : struct
             => rr =>
             {
@@ -58,7 +58,7 @@ namespace Nysa.Data.SqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadRecords<T>(this Func<SqlDataReader, T> transform)
+        public static Func<SqlResultReader, List<T>> ReadRecords<T>(this Func<SqlDataReader?, T> transform)
             where T : struct
             => rr =>
             {
@@ -73,7 +73,7 @@ namespace Nysa.Data.SqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadObjects<T>(this Func<SqlDataReader, T> transform)
+        public static Func<SqlResultReader, List<T>> ReadObjects<T>(this Func<SqlDataReader?, T> transform)
             where T : class
             => rr =>
             {

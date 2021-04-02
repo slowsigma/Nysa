@@ -13,7 +13,7 @@ namespace Nysa.Data
         {
             this.ResultIndex    = -1;
             this.RowIndex       = -1;
-            this.RowReader      = sqlDataReader;
+            this._RowReader     = sqlDataReader;
         }
 
         public Boolean ReadResult()
@@ -27,25 +27,25 @@ namespace Nysa.Data
             {
                 this.ResultIndex++;
                 this.RowIndex = -1;
-                return this.RowReader.NextResult();
+                return this._RowReader != null && this._RowReader.NextResult();
             }
         }
 
         public Boolean ReadRow()
         {
-            return this.RowReader.Read();
+            return this._RowReader != null && this._RowReader.Read();
         }
 
-        private SqlDataReader RowReader;
-        public SqlDataReader Row => this.RowReader;
+        private SqlDataReader? _RowReader;
+        public SqlDataReader? Row => this._RowReader;
 
         public void Dispose()
         {
-            if (this.RowReader != null && !this.RowReader.IsClosed)
+            if (this._RowReader != null && !this._RowReader.IsClosed)
             {
-                this.RowReader.Close();
-                ((IDisposable)this.RowReader).Dispose();
-                this.RowReader = null;
+                this._RowReader.Close();
+                ((IDisposable)this._RowReader).Dispose();
+                this._RowReader = null;
             }
         }
     }
