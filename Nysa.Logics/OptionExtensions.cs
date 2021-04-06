@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Nysa.Logics
 {
@@ -16,6 +17,11 @@ namespace Nysa.Logics
 
         public static Option<U> Map<T, U>(this Option<T> @this, Func<T, U> transform)
             =>   @this is Some<T> some ? transform(some.Value).Some()
+               : @this is None<T>      ? Option<U>.None
+               :                         throw new ArgumentException(MapUsageErrorString, nameof(@this));
+
+        public static async Task<Option<U>> MapAsync<T, U>(this Option<T> @this, Func<T, Task<U>> transformAsync)
+            =>   @this is Some<T> some ? (await transformAsync(some.Value)).Some()
                : @this is None<T>      ? Option<U>.None
                :                         throw new ArgumentException(MapUsageErrorString, nameof(@this));
 
