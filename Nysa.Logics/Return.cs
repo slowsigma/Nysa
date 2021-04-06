@@ -76,9 +76,12 @@ namespace Nysa.Logics
         public static TryAsync<T> TryAsync<T>(this Func<Task<T>> @this)
             => (TryAsync<T>)@this;
 
-        public static IEnumerable<T> Enumerable<T>(this T @this)
+        public static IEnumerable<T> Enumerable<T>(this T @this, params T[] more)
         {
             yield return @this;
+
+            foreach (var item in more)
+                yield return item;
         }
 
         public static IEnumerable<T> Some<T>(params Option<T>[] options)
