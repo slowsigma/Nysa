@@ -24,6 +24,11 @@ namespace Nysa.IO
         private Int32           _Completion; // -1 when the search part has no match to an alternate,
                                              // points to a selected alternate when searh is empty or matches the start of an alternate
 
+        private String ConfirmedPath()
+            => this._Search == 0
+               ? String.Empty
+               : String.Concat(String.Join(SepString, this._Parts.Take(this._Search)), SepChar);
+
         /// <summary>
         /// Represents the current confirmed path without the unconfirmed search portion. This path is never elided.
         /// </summary>
@@ -50,87 +55,65 @@ namespace Nysa.IO
 
         public event EventHandler? CurrentChanged;
 
-        public DirectoryCursor(String path = "")
-        {
-            // initialize
-            this._Parts         = new List<String>(String.Empty.Enumerable());
-            this._Search        = 0;
-            this._Alternates    = DriveInfo.GetDrives()
-                                           .Select(v => v.Name.EndsWith(SepString) ? v.Name.Substring(0, v.Name.Length - 1) : v.Name)
-                                           .ToList();
-            this._Completion    = this._Alternates.Count > 0 ? 0 : -1;
-
-            this.SetFullPath(path);
-        }
-
-        private void SetCompletion()
-        {
-            this._Completion = this.AlternateStartingWith(this._Parts[this._Search]).Or(-1); // will be zero if search part is an empty string
-            this.EnsureSearchCasing();
-        }
-
-        private void SetFullPath(String fullPath)
-        {
-            var parts   = fullPath.Split(SepSplit, StringSplitOptions.None); // get path parts
-            var current = 0;                                                // start at beginning
-            var hit     = this.AlternateMatching(parts[current]);           // get possible hit @ current
-
-            while (hit is Some<Int32> found)                                // while we keep getting a hit
-            {
-                this.TakeAlternate(found.Value);                            // accept the hit
-
-                current++;                                                  // move to next part
-                if (current >= parts.Length)                                // unless there are no more
-                    break;
-
-                hit = this.AlternateMatching(parts[current]);               // update the current hit
-            }
-
-            if (current < parts.Length)                                     // if we bailed due to non-hit
-                this._Parts[this._Search] = parts[current];                 // then current is really the search
-
-            // this.CurrentElided will need to change to a transformation on this._Parts
-
-            this.SetCompletion();                                           // update completion index and search casing
-        }
-
         private void EnsureSearchCasing()
         {
             if (this._Completion >= 0 && this._Parts[this._Search].Length > 0)
                 this._Parts[this._Search] = this._Alternates[this._Completion].Substring(0, this._Parts[this._Search].Length);
         }
 
+        private void SetCompletion()
+        {
+            this._Completion = this._Alternates
+                                   .Select((a, i) => a.DataStartsWith(this._Parts[this._Search]) ? i : -1)
+                                   .FirstOrNone(i => i >= 0)
+                                   .Or(-1); // will be zero if search part is an empty string
+            this.EnsureSearchCasing();
+        }
+
         private Option<Int32> AlternateMatching(String folder)
             => this._Alternates.Select((a, i) => a.DataEquals(folder) ? i : -1).FirstOrNone(i => i >= 0);
-
-        private Option<Int32> AlternateStartingWith(String folder)
-            => this._Alternates.Select((a, i) => a.DataStartsWith(folder) ? i : -1).FirstOrNone(i => i >= 0);
-
-        private String ConfirmedPath()
-            => this._Search == 0
-               ? String.Empty
-               : String.Concat(String.Join(SepString, this._Parts.Take(this._Search)), SepChar);
 
         private void TakeAlternate(Int32 index) // must be passing in a valid index in this._Alternates
         {
             this._Parts[this._Search] = this._Alternates[index];
             this._Search++;
+
             if (this._Search >= this._Parts.Count)
                 this._Parts.Add(String.Empty);
             else
                 this._Parts[this._Search] = String.Empty;
 
-            this._Alternates = Directory.EnumerateDirectories(this.ConfirmedPath()).Select(f => f.Substring(f.LastIndexOf(SepChar) + 1)).ToList();
+            this._Alternates = Directory.EnumerateDirectories(this.ConfirmedPath())
+                                        .Select(f => f.Substring(f.LastIndexOf(SepChar) + 1))
+                                        .ToList();
             this._Completion = this._Alternates.Count > 0 ? 0 : -1;
 
             if (CurrentChanged != null)
                 CurrentChanged.Invoke(this, new EventArgs() { });
         }
 
-        private IEnumerable<(String Value, Int32 Index)> AlternatesFiltered()
-            => this._Alternates
-                   .Select((p, i) => (Value: p, Index: p.DataStartsWith(this._Parts[this._Search]) ? i : -1))
-                   .Where(t => t.Index >= 0);
+        private void SetFullPath(String fullPath)
+        {
+            var parts   = fullPath.Split(SepSplit, StringSplitOptions.None);    // get path parts
+            var current = 0;                                                    // start at beginning
+            var hit     = this.AlternateMatching(parts[current]);               // get possible hit @ current
+
+            while (hit is Some<Int32> found)                                    // while we keep getting a hit
+            {
+                this.TakeAlternate(found.Value);                                // accept the hit
+
+                current++;                                                      // move to next part
+                if (current >= parts.Length)                                    // unless there are no more
+                    break;
+
+                hit = this.AlternateMatching(parts[current]);                   // update the current hit
+            }
+
+            if (current < parts.Length)                                         // if we bailed due to non-hit
+                this._Parts[this._Search] = parts[current];                     // then current is really the search
+
+            this.SetCompletion();                                           // update completion index and search casing
+        }
 
         public void TakeCompletion()
         {
@@ -138,20 +121,23 @@ namespace Nysa.IO
                 this.TakeAlternate(this._Completion);
         }
 
-        public void MoveCompletion(Boolean forward)
+        public void MoveCompletion(Boolean next)
         {
             if (this._Completion >= 0)
             {
-                var move    = forward ? 1 : -1;
-                var ready   = this.AlternatesFiltered().ToArray();
+                var move    = next ? 1 : -1;
+                var ready   = this._Alternates
+                                  .Select((p, i) => (Value: p, Index: p.DataStartsWith(this._Parts[this._Search]) ? i : -1))
+                                  .Where(t => t.Index >= 0)
+                                  .ToArray();
                 var current = ready.Select((f, i) => f.Index == this._Completion ? i : -1)
                                    .FirstOrNone(v => v >= 0)
                                    .Or(0); // this should not be possible
 
                 if (ready.Length > 1)
                 {
-                    var next = (current + move).Make(n => n < 0 ? ready.Length - 1 : n % ready.Length);
-                    this._Completion = ready[next].Index;
+                    var pick = (current + move).Make(n => n < 0 ? ready.Length - 1 : n % ready.Length);
+                    this._Completion = ready[pick].Index;
                     this.EnsureSearchCasing();
                 }
             }
@@ -211,6 +197,19 @@ namespace Nysa.IO
                     this.EnsureSearchCasing();
                 }
             }
+        }
+
+        public DirectoryCursor(String path = "")
+        {
+            // initialize
+            this._Parts         = new List<String>(String.Empty.Enumerable());
+            this._Search        = 0;
+            this._Alternates    = DriveInfo.GetDrives()
+                                           .Select(v => v.Name.EndsWith(SepString) ? v.Name.Substring(0, v.Name.Length - 1) : v.Name)
+                                           .ToList();
+            this._Completion    = this._Alternates.Count > 0 ? 0 : -1;
+
+            this.SetFullPath(path);
         }
 
     }
