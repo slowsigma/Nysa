@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.IO\Nysa.IO.csproj" />
+    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <ProjectReference Include="..\Nysa.Presentation\Nysa.Presentation.csproj" />
+    <ProjectReference Include="..\Nysa.Text\Nysa.Text.csproj" />
+  </ItemGroup>
+
+</Project>
