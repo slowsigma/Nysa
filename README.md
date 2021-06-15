@@ -5,7 +5,6 @@ This repository is dedicated to general purpose functional and fluent C# librari
 This is the primary functional programming library. It contains the following elevated types:
 1. `Option<T>` for values of `T` that could be `Some<T>` or `None<T>`.
 2. `Suspect<T>` for values of `T` that could be `Confirmed<T>` or `Failed<T>`.
-3. `Try<T>` for values of `Suspect<T>` that maybe `Pending<T>` (i.e., not yet taken from it's function that may throw an exception) or `Resolved<T>`.
 
 For these elevated types, Nysa.Logics defines functions (using extension methods) in the following general catagories (given an elevated type `E<>` and the outer Func is the extension method definition):
 * Return - `Func<T, E<T>>`
