@@ -3,4 +3,8 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IsExternalInit.cs" Condition="'$(TargetFramework)' == 'net5.0'"/>
+  </ItemGroup>
 </Project>
