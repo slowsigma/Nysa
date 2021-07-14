@@ -51,8 +51,38 @@ namespace Nysa.Text.Sql
         private static readonly String _charsWordStartAll   = String.Concat(_charNumberSign, _charAtSign, _charUnderscore, _charsUppercaseAtoZ, _charsLowercaseAtoZ);
         private static readonly String _charsWordContinue   = String.Concat(_charsWordStartAll, _charsDecimalDigit);
 
-        private static readonly StateTransitions<Char, Int32> _SQLBaseTransitions;
-        private static readonly StateTransitions<Char, Int32> _SQLLineTransitions;
+        private static readonly StateTransitions<Int32, Char> _SQLBaseTransitions;
+        private static readonly StateTransitions<Int32, Char> _SQLLineTransitions;
+
+        static SqlText()
+        {
+            //    Pattern Checklist
+            //    Name                             Rule
+            //    -------------------------------  ------------------------------------------------------------------------------------
+            //    Singular-Symbol                  >>   ( "(" | ")" | "," | ":" | ";" | "=" | "~" )
+            //    Line-Comment                     >>   "--" >> {any-character}* >> ( {cr} | {lf} )
+            //    Block-Comment                    >>   "/*" >> ( {any-character} | block-comment )* >> "*/"
+            //    Identifier                       >>   "["  >> ( {any-character} | "]]" )* >> "]" >> !"]"
+            //    Word                             >>   ( "#" | "@" | "_" | [a-z] | [A-Z] ) >> ( "#" | "@" | "_" | [a-z] | [A-Z] ) [0-9] )*
+            //    Literal-String                   >>   "N"? >> "'" >> ( {any-character} | "''" )* >> "'" >> !"'"
+            //    Literal-Money                    >>   "$" >> " "* >> [0-9]* >> "."? >> [0-9]*
+            //    Literal-Binary                   >>   "0" >> [Xx] >> ( [0-9] | [a-f] | [A-F] )*
+            //    Literal-Decimal                  >>   [0-9]* >> "."? >> [0-9]*
+            //    Literal-Integer                  >>   [0-9]*
+            //    Literal-Float                    >>   [0-9]* >> "."? >> [0-9]* >> [Ee]? >> "-"? >> [0-9]*
+
+            // Notes On Base Transitions:
+            //    1. State   0 is the "white space" consuming state.
+            //    2. State   1 is the only state that immediately yields the current character and automatically returns the state back to zero.
+            //    3. State  49 is a non-consuming state used to tell the lexing logic to check the current character.
+            //                 a. For "*" the block-comment counter is incremented and the state is set to 40
+            //                 b. For "/" the block-comment counter is decremented and...
+            //                    i. if counter is zero, the lexing logic yields and the state is set to 0, or
+            //                    ii. the state is set to 40.
+            //    4. State 999 tells the lexing logic to yield without the current character, reset current state to 0, and recheck the current character.
+            //    5. The _charNull negator character is used for both a miss condition and the input termination condition.
+
+        }
 
     }
 

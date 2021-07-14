@@ -10,4 +10,8 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+  </ItemGroup>
+
 </Project>
