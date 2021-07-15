@@ -15,35 +15,25 @@ namespace Nysa.Logics
         }
 
         private StateTransitions<S, V>  _Transitions;
-        private V                       _ElseValue;
-        private S                       _State;
-        private V                       _Value;
 
-        public StateMachine(V elseValue, S initialState, V initialValue)
-            : this(new StateTransitions<S, V>(), elseValue, initialState, initialValue)
-        {
-        }
-
-        public StateMachine(StateTransitions<S, V> transitions, V elseValue, S initialState, V initialValue)
+        public StateMachine(StateTransitions<S, V> transitions, V elseValue, S initialState)
         {
             this._Transitions   = transitions;
-            this._ElseValue     = elseValue;
-            this._State         = initialState;
-            this._Value         = initialValue;
+            this.ElseValue      = elseValue;
+            this.State          = initialState;
         }
 
-        public V ElseValue => this._ElseValue;
-        public S State => this._State;
-        public V Value => this._Value;
+        public V ElseValue { get; init; }
+        public S State;
 
-        public void SetValue(V value)
+        public void Change(V value)
         {
-            if (value.Equals(this._ElseValue))
+            if (value.Equals(this.ElseValue))
                 throw new InputContainsElseValueException();
-            else if (this._Transitions.ContainsTransition(this._State, value))
-                this._State = this._Transitions.Transition(this._State, value);
-            else if (this._Transitions.ContainsTransition(this._State, this._ElseValue))
-                this._State = this._Transitions.Transition(this._State, this._ElseValue);
+            else if (this._Transitions.ContainsTransition(this.State, value))
+                this.State = this._Transitions.Transition(this.State, value);
+            else if (this._Transitions.ContainsTransition(this.State, this.ElseValue))
+                this.State = this._Transitions.Transition(this.State, this.ElseValue);
         }
     }
 
