@@ -126,7 +126,8 @@ namespace Nysa.Text.Sql
             foreach (var (lineStart, lineLength) in Lines(source))
             {
                 if (   (lineLength >= 2)
-                    && source.Substring(lineStart, 2).Equals("GO", StringComparison.OrdinalIgnoreCase)
+                    && (source[lineStart] == 'g' || source[lineStart] == 'G')
+                    && (source[lineStart + 1] == 'o' || source[lineStart + 1] == 'O')
                     && ((lineLength == 2) || Char.IsWhiteSpace(source[lineStart + 2])))
                 {
                     yield return (start, length);           // do not include the "GO" line
