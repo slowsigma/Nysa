@@ -4,21 +4,21 @@ using System.Linq;
 
 using Nysa.Logics;
 
-namespace Nysa.Text.Sql
+namespace Nysa.Text.TSql
 {
 
-    public static class SqlText
+    public static class StringExtensions
     {
         private static readonly StateTransitions<Int32, Char> _SqlTokenTransitions;
         private static readonly StateTransitions<Int32, Char> _SqlLineTransitions;
 
-        static SqlText()
+        static StringExtensions()
         {
             _SqlTokenTransitions = SqlTextTokens.Transitions();
             _SqlLineTransitions  = SqlTextLines.Transitions();
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> Tokens(String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> SqlTokens(this String source)
         {
             var previous  = SqlTextStates.WS;
             var blocks    = (Int32)0;
@@ -75,7 +75,7 @@ namespace Nysa.Text.Sql
             }
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> Lines(String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> SqlLines(this String source)
         {
             var previous  = SqlTextStates.WU;
             var blocks    = (Int32)0;
@@ -118,12 +118,12 @@ namespace Nysa.Text.Sql
             }
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> Batches(String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> SqlBatches(this String source)
         {
             var start   = (Int32)0;
             var length  = (Int32)0;
 
-            foreach (var (lineStart, lineLength) in Lines(source))
+            foreach (var (lineStart, lineLength) in source.SqlLines())
             {
                 if (   (lineLength >= 2)
                     && (source[lineStart] == 'g' || source[lineStart] == 'G')

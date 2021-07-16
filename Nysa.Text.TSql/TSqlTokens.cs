@@ -4,7 +4,7 @@ using System.Linq;
 
 using Nysa.Logics;
 
-namespace Nysa.Text.Sql
+namespace Nysa.Text.TSql
 {
 
     internal static class SqlTextTokens
