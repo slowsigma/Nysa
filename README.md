@@ -1,5 +1,8 @@
 # Nysa
-This repository is dedicated to general purpose functional and fluent C# libraries.
+This repository is dedicated to general computer sciency stuff.
+
+## Nysa.Data.SqlClient
+This is a class library to make getting data from SQL Server more functional and fluent.
 
 ## Nysa.Logics
 This is the primary functional programming library. It contains the following elevated types:
@@ -15,8 +18,8 @@ For these elevated types, Nysa.Logics defines functions (using extension methods
 * Apply - `Func<E<Func<T, R>>, E<T>, Func<E<R>>>`
 * Apply - `Func<E<Func<T1, T2, TR>>, E<T1>, E<Func<T2, TR>>>`
 
-## Nysa.Data.SqlClient
-This is a C# library to make getting data from SQL Server more functional.
-
 ## Nysa.Parse
-This is a C# library that wraps an implementation of the Earley parsing algorithm in a largely function and fluent API.
+This is a class library that wraps an implementation of the Earley parsing algorithm in a largely function and fluent API.
+
+## Nysa.Text.TSql
+This is a class library that makes handling TSql text easier.  It contains extension methods for splitting TSql text into tokens, lines, and batches.
