@@ -73,6 +73,11 @@ namespace Nysa.Logics
                : @this is None<T>      ? whenNone()
                :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
 
+        public static async Task<Option<T>> OrAsync<T>(this Option<T> @this, Func<Task<Option<T>>> whenNone)
+            =>   @this is Some<T> some ? @this
+               : @this is None<T>      ? await whenNone()
+               :                         throw new ArgumentException(OrUsageErrorString, nameof(@this));
+
         public static Option<T> FirstOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean> predicate = null)
         {
             predicate = predicate ?? (t => true);

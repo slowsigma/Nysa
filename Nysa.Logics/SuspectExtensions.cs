@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,10 +24,16 @@ namespace Nysa.Logics
                : (@this is Failed<T>    failed)    ? (Failed<R>)failed.Value
                :                                     throw new ArgumentException(MapUsageErrorString, nameof(@this));
 
+        public static Suspect<Func<B, R>> Map<A, B, R>(this Suspect<A> @this, Func<A, B, R> transform)
+            => @this.Map(transform.Curry());
+
         public static async Task<Suspect<R>> MapAsync<T, R>(this Suspect<T> @this, Func<T, Task<R>> transformAsync)
             =>   (@this is Confirmed<T> confirmed) ? (await transformAsync(confirmed.Value)).Confirmed()
                : (@this is Failed<T> failed)       ? (Failed<R>)failed.Value
                :                                     throw new ArgumentException(MapAsyncUsageErrorString, nameof(@this));
+
+        public static Suspect<Func<B, Task<R>>> Map<A, B, R>(this Suspect<A> @this, Func<A, B, Task<R>> transformAsync)
+            => @this.Map(transformAsync.Curry());
 
         public static Suspect<R> Bind<T, R>(this Suspect<T> @this, Func<T, Suspect<R>> transform)
             =>   (@this is Confirmed<T> confirmed) ? transform(confirmed.Value)
@@ -38,18 +45,21 @@ namespace Nysa.Logics
                : (@this is Failed<T> failed)       ? (Failed<R>)failed.Value
                :                                     throw new ArgumentException(BindAsyncUsageErrorString, nameof(@this));
 
+        private static IEnumerable<Exception> Flat(this Exception @this)
+            => @this is AggregateException thisAgg ? thisAgg.InnerExceptions : Return.Enumerable(@this);
+
         public static Suspect<R> Apply<T, R>(this Suspect<Func<T, R>> @this, Suspect<T> given)
             =>   @this is Confirmed<Func<T, R>> cfa && given is Confirmed<T> cga ? cfa.Value(cga.Value).Confirmed()
                : @this is Failed<Func<T, R>>    ffb && given is Confirmed<T> cgb ? ffb.Value.Failed<R>()
                : @this is Confirmed<Func<T, R>> cfc && given is Failed<T>    fgc ? fgc.Value.Failed<R>()
-               : @this is Failed<Func<T, R>>    ffd && given is Failed<T>    fgd ? (new AggregateException(ffd.Value, fgd.Value)).Failed<R>()
+               : @this is Failed<Func<T, R>>    ffd && given is Failed<T>    fgd ? (new AggregateException(ffd.Value.Flat().Concat(fgd.Value.Flat()))).Failed<R>()
                :                                                                   throw new ArgumentException(ApplyUsageErrorString);
 
         public static async Task<Suspect<R>> ApplyAsync<T, R>(this Suspect<Func<T, Task<R>>> @this, Suspect<T> given)
             =>   @this is Confirmed<Func<T, Task<R>>> cfa && given is Confirmed<T> cga ? (await cfa.Value(cga.Value)).Confirmed()
                : @this is Failed<Func<T, Task<R>>>    ffb && given is Confirmed<T> cgb ? ffb.Value.Failed<R>()
                : @this is Confirmed<Func<T, Task<R>>> cfc && given is Failed<T>    fgc ? fgc.Value.Failed<R>()
-               : @this is Failed<Func<T, Task<R>>>    ffd && given is Failed<T>    fgd ? (new AggregateException(ffd.Value, fgd.Value)).Failed<R>()
+               : @this is Failed<Func<T, Task<R>>>    ffd && given is Failed<T>    fgd ? (new AggregateException(ffd.Value.Flat().Concat(fgd.Value.Flat()))).Failed<R>()
                :                                                                   throw new ArgumentException(ApplyAsyncUsageErrorString);
 
         public static Suspect<Func<T2, TR>> Apply<T1, T2, TR>(this Suspect<Func<T1, T2, TR>> @this, Suspect<T1> given)

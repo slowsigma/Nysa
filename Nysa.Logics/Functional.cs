@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Nysa.Logics
 {
@@ -23,8 +24,14 @@ namespace Nysa.Logics
         public static Func<T1, Func<T2, TR>> Curry<T1, T2, TR>(this Func<T1, T2, TR> @this)
             => t1 => t2 => @this(t1, t2);
 
+        public static Func<T1, Func<T2, Task<TR>>> Curry<T1, T2, TR>(this Func<T1, T2, Task<TR>> @thisAsync)
+            => t1 => async t2 => await @thisAsync(t1, t2);
+
         public static Func<T1, Func<T2, Func<T3, TR>>> Curry<T1, T2, T3, TR>(this Func<T1, T2, T3, TR> @this)
             => t1 => t2 => t3 => @this(t1, t2, t3);
+
+        public static Func<T1, Func<T2, Func<T3, Task<TR>>>> Curry<T1, T2, T3, TR>(this Func<T1, T2, T3, Task<TR>> @thisAsync)
+            => t1 => t2 => async t3 => await @thisAsync(t1, t2, t3);
 
         public static Func<R> Bind<T, R>(this Func<T> @this, Func<T, Func<R>> transform)
             => () => transform(@this())();
