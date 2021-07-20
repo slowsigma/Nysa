@@ -18,6 +18,8 @@ namespace Nysa.Logics
         private static readonly String ApplyAsyncUsageErrorString   = String.Format(UsageErrorTemplate, nameof(ApplyAsync));
         private static readonly String MatchUsageErrorString        = String.Format(UsageErrorTemplate, nameof(Match));
         private static readonly String MatchAsyncUsageErrorString   = String.Format(UsageErrorTemplate, nameof(MatchAsync));
+        private static readonly String AffectUsageErrorString       = String.Format(UsageErrorTemplate, nameof(Affect));
+        private static readonly String AffectAsyncUsageErrorString  = String.Format(UsageErrorTemplate, nameof(AffectAsync));
 
         public static Suspect<R> Map<T, R>(this Suspect<T> @this, Func<T, R> transform)
             =>   (@this is Confirmed<T> confirmed) ? transform(confirmed.Value).Confirmed()
@@ -84,6 +86,29 @@ namespace Nysa.Logics
             =>   (@this is Confirmed<T> confirmed) ? await whenConfirmedAsync(confirmed.Value)
                : (@this is Failed<T> failed)       ? whenFailed(failed.Value)
                :                                     throw new Exception(MatchAsyncUsageErrorString);
+
+        public static Unit Affect<T>(this Suspect<T> @this, Action<T> whenConfirmed, Action<Exception> whenFailed)
+        {
+            if (@this is Confirmed<T> confirmed)
+                whenConfirmed(confirmed.Value);
+            else if (@this is Failed<T> failed)
+                whenFailed(failed.Value);
+            else
+                throw new Exception(AffectUsageErrorString);
+
+            return Unit.Value;
+        }
+
+        public static async Task<Unit> AffectAsync<T>(this Suspect<T> @this, Func<T, Task<Unit>> whenConfirmedAsync, Func<Exception, Task<Unit>> whenFailedAsync)
+        {
+            if (@this is Confirmed<T> confirmed)
+                return await whenConfirmedAsync(confirmed.Value);
+            else if (@this is Failed<T> failed)
+                return await whenFailedAsync(failed.Value);
+            else
+                throw new Exception(AffectAsyncUsageErrorString);
+        }
+
     }
 
 }
