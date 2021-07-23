@@ -67,6 +67,9 @@ namespace Nysa.Logics
         public static Suspect<T> Failed<T>(this Exception @this)
             => new Failed<T>(@this);
 
+        public static Suspect<T> Failed<T>(String errorMessage)
+            => (new Exception(errorMessage)).Failed<T>();
+
         public static Try<T> Try<T>(this Func<T> @this)
             => (Try<T>)@this;
 

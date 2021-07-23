@@ -8,7 +8,7 @@ namespace Nysa.Logics
 
     public static class TryExtensions
     {
-        public static Try<R> ThenTry<T, R>(this Try<T> @this, Func<T, R> transform)
+        public static Try<R> And<T, R>(this Try<T> @this, Func<T, R> transform)
             => Return.Try(() => transform(@this.Function()));
 
         public static Suspect<R> Map<T, R>(this Try<T> @this, Func<T, R> transform)

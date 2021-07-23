@@ -109,6 +109,28 @@ namespace Nysa.Logics
                 throw new Exception(AffectAsyncUsageErrorString);
         }
 
+
+/*
+        // Ideas for possible shortcuts?
+
+        private static Suspect<R> BindTry<T, R>(this Suspect<T> @this, Func<T, R> volatileTransform)
+        {
+            return @this.Bind(t =>
+            {
+                try
+                {
+                    return volatileTransform(t).Confirmed();
+                }
+                catch (Exception except)
+                {
+                    return except.Failed<R>();
+                }
+            });
+        }
+
+*/
+
+
     }
 
 }
