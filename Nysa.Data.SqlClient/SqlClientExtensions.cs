@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Threading.Tasks;
+
+using Nysa.Logics;
+using Nysa.Text.TSql;
+
+using Microsoft.Data.SqlClient;
 
 namespace Nysa.Data.SqlClient
 {
@@ -126,6 +131,58 @@ namespace Nysa.Data.SqlClient
 
                 return result;
             };
+
+        public static Func<Unit> ExecuteOn(this SqlScript @this, String connectionString)
+            => () =>
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in @this.Batches())
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+        public static Func<Task<Unit>> ExecuteOnAsync(this SqlScript @this, String connectionString)
+            => async () =>
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in @this.Batches())
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+
+                            var result = await command.ExecuteNonQueryAsync();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+
     }
 
 }

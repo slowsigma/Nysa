@@ -70,14 +70,20 @@ namespace Nysa.Logics
         public static Suspect<T> Failed<T>(String errorMessage)
             => (new Exception(errorMessage)).Failed<T>();
 
-        public static Try<T> Try<T>(this Func<T> @this)
-            => (Try<T>)@this;
+        public static Suspect<T> Try<T>(this Func<T> @this)
+        {
+            try { return @this().Confirmed(); }
+            catch (Exception except) { return except.Failed<T>(); }
+        }
 
-        public static Try<Unit> Try(this Action @this)
-            => (Try<Unit>)(() => { @this(); return Unit.Value; });
+        public static Suspect<Unit> Try(this Action @this)
+            => (new Func<Unit>(() => { @this(); return Unit.Value; })).Try();
 
-        public static TryAsync<T> TryAsync<T>(this Func<Task<T>> @this)
-            => (TryAsync<T>)@this;
+        public static async Task<Suspect<T>> TryAsync<T>(this Func<Task<T>> @this)
+        {
+            try { return (await @this()).Confirmed(); }
+            catch (Exception except) { return except.Failed<T>(); }
+        }
 
         public static IEnumerable<T> Enumerable<T>(this T @this, params T[] more)
         {

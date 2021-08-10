@@ -159,7 +159,7 @@ namespace Nysa.Text
                 return value.Some<Byte[]>();
             };
 
-            return convert.Try().Eval();
+            return convert.Try();
         }
 
 
