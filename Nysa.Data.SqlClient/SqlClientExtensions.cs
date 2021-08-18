@@ -96,15 +96,18 @@ namespace Nysa.Data.SqlClient
         public static Func<SqlResultReader, T> Then<P, N, T>(this Func<SqlResultReader, P> prior, Func<SqlResultReader, N> next, Func<P, N, T> transform)
             => rr => prior(rr).Map(p => next(rr).Map(n => transform(p, n)));
 
-        public static Func<SqlConnection, T> ForQuery<T>(this Func<SqlResultReader, T> resultTransform, String query, CommandType commandType = CommandType.Text, CommandBehavior commandBehavior = CommandBehavior.Default)
+        public static Func<SqlConnection, T> ForQuery<T>(this Func<SqlResultReader, T> resultTransform, String query, Int32? timeout = null)
             => connection =>
             {
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = query;
-                    command.CommandType = commandType;
+                    command.CommandType = CommandType.Text;
 
-                    using (var reader = new SqlResultReader(command.ExecuteReader(commandBehavior)))
+                    if (timeout != null)
+                        command.CommandTimeout = timeout.Value;
+
+                    using (var reader = new SqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
                     {
                         return resultTransform(reader);
                     }
@@ -157,7 +160,7 @@ namespace Nysa.Data.SqlClient
                 return Unit.Value;
             };
 
-        public static Func<Task<Unit>> ExecuteOnAsync(this SqlScript @this, String connectionString)
+        public static Func<Task<Unit>> ExecuteOnAsync(this SqlScript @this, String connectionString, Int32? timeout = null)
             => async () =>
             {
                 using (var connection = new SqlConnection(connectionString))
@@ -170,6 +173,9 @@ namespace Nysa.Data.SqlClient
                         {
                             command.CommandText = batch;
                             command.CommandType = CommandType.Text;
+                            
+                            if (timeout != null)
+                                command.CommandTimeout = timeout.Value;
 
                             var result = await command.ExecuteNonQueryAsync();
                         }
