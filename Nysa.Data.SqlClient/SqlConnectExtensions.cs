@@ -29,6 +29,9 @@ namespace Nysa.Data.SqlClient
             if (@this.Intent != null)
                 build.ApplicationIntent = @this.Intent.Value;
 
+            if (@this.InitialCatalog != null)
+                build.InitialCatalog = @this.InitialCatalog;
+
             return build.ToString();
         }
 
