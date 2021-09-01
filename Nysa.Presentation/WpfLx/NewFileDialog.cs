@@ -37,7 +37,7 @@ namespace Nysa.WpfLx
                 {
                     folder = folderSelect.DirectoryCursor.Current;
 
-                    result = String.IsNullOrWhiteSpace(nameBox.Text) ? Path.Combine(folder, nameBox.Text) : null;
+                    result = !String.IsNullOrWhiteSpace(nameBox.Text) ? Path.Combine(folder, nameBox.Text) : null;
 
                     okButton.IsEnabled = result != null && !File.Exists(result);
                 }
