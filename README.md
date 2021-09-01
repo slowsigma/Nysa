@@ -1,6 +1,9 @@
 # Nysa
 This repository is dedicated to general computer sciency stuff.
 
+## Nysa.Collections
+This is a class library containing: tries, disjoint sets, and heaps.
+
 ## Nysa.Data.SqlClient
 This is a class library to make getting data from SQL Server more functional and fluent.
 
@@ -21,5 +24,11 @@ For these elevated types, Nysa.Logics defines functions (using extension methods
 ## Nysa.Parse
 This is a class library that wraps an implementation of the Earley parsing algorithm in a largely function and fluent API.
 
+## Nysa.Presentation
+This is a class library supporting low-xaml WPF.
+
 ## Nysa.Text.TSql
 This is a class library that makes handling TSql text easier.  It contains extension methods for splitting TSql text into tokens, lines, and batches.
+
+## Nysa.Text
+This is a class library containing some extension methods for strings.
