@@ -28,7 +28,7 @@ namespace Nysa.WpfLx
             var okButton     = "OK".DialogButton(() => { window.Close(); }).Sized(60.0, 26.0);
             var cancelButton = "Cancel".DialogButton(() => { result = (String?)null; window.Close(); }).Sized(60.0, 26.0);
 
-            folderSelect.DirectoryCursor.CurrentChanged += (s, e) =>
+            void SelectionChanged()
             {
                 result = null;
                 okButton.IsEnabled = false;
@@ -41,7 +41,11 @@ namespace Nysa.WpfLx
 
                     okButton.IsEnabled = result != null && !File.Exists(result);
                 }
-            };
+            }
+
+            folderSelect.DirectoryCursor.CurrentChanged += (s, e) => SelectionChanged();
+
+            nameBox.TextChanged += (s, e) => SelectionChanged();
 
             window.Affect(w =>
             {
