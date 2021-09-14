@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+
+using Nysa.Logics;
+
+using Npgsql;
+
+namespace Nysa.Data.SqlClient
+{
+
+    public static class SqlClientExtensions
+    {
+        private static U Map<T, U>(this T value, Func<T, U> transform) => transform(value);
+
+        private static void Process<T>(this T value, Action<T> action) => action(value);
+
+
+        public static Func<SqlResultReader, T?> ReadValue<T>(this Func<NpgsqlDataReader, T?> transform)
+            where T : struct
+            => rr =>
+            {
+                if (rr.ReadResult() && rr.ReadRow())
+                    return transform(rr.Row);
+
+                return (T?)null;
+            };
+
+        public static Func<SqlResultReader, T?> ReadRecord<T>(this Func<NpgsqlDataReader, T> transform)
+            where T : struct
+            => rr =>
+            {
+                if (rr.ReadResult() && rr.ReadRow())
+                    return transform(rr.Row);
+
+                return (T?)null;
+            };
+
+        public static Func<SqlResultReader, T?> ReadObject<T>(this Func<NpgsqlDataReader, T> transform)
+            where T : class?
+            => rr =>
+            {
+                if (rr.ReadResult() && rr.ReadRow())
+                    return transform(rr.Row);
+
+                return null;
+            };
+
+        public static Func<SqlResultReader, List<T>> ReadValues<T>(this Func<NpgsqlDataReader, T?> transform)
+            where T : struct
+            => rr =>
+            {
+                var values = new List<T>();
+
+                if (rr.ReadResult())
+                {
+                    while (rr.ReadRow())
+                        transform(rr.Row).Process(t => { if (t.HasValue) values.Add(t.Value); });
+                }
+
+                return values;
+            };
+
+        public static Func<SqlResultReader, List<T>> ReadRecords<T>(this Func<NpgsqlDataReader, T> transform)
+            where T : struct
+            => rr =>
+            {
+                var values = new List<T>();
+
+                if (rr.ReadResult())
+                {
+                    while (rr.ReadRow())
+                        values.Add(transform(rr.Row));
+                }
+
+                return values;
+            };
+
+        public static Func<SqlResultReader, List<T>> ReadObjects<T>(this Func<NpgsqlDataReader, T> transform)
+            where T : class
+            => rr =>
+            {
+                var objects = new List<T>();
+
+                if (rr.ReadResult())
+                {
+                    while (rr.ReadRow())
+                        objects.Add(transform(rr.Row));
+                }
+
+                return objects;
+            };
+
+        public static Func<SqlResultReader, T> Then<P, N, T>(this Func<SqlResultReader, P> prior, Func<SqlResultReader, N> next, Func<P, N, T> transform)
+            => rr => prior(rr).Map(p => next(rr).Map(n => transform(p, n)));
+
+        public static Func<NpgsqlConnection, T> ForQuery<T>(this Func<SqlResultReader, T> resultTransform, String query, Int32? timeout = null)
+            => connection =>
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    command.CommandType = CommandType.Text;
+
+                    if (timeout != null)
+                        command.CommandTimeout = timeout.Value;
+
+                    using (var reader = new SqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
+                    {
+                        return resultTransform(reader);
+                    }
+                }
+            };
+
+        public static Func<NpgsqlConnection, T> Then<P, N, T>(this Func<NpgsqlConnection, P> prior, Func<NpgsqlConnection, N> next, Func<P, N, T> transform)
+            => connection => prior(connection).Map(p => next(connection).Map(n => transform(p, n)));
+
+        public static Func<T> ExecuteOn<T>(this Func<NpgsqlConnection, T> query, String connectionString)
+            => () =>
+            {
+                T result;
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    result = query(connection);
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return result;
+            };
+
+        public static Func<Unit> ExecuteOn(this IEnumerable<String> batches, String connectionString)
+            => () =>
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in batches)
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+        public static Func<Task<Unit>> ExecuteOnAsync(this IEnumerable<String> batches, String connectionString, Int32? timeout = null)
+            => async () =>
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in batches)
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+                            
+                            if (timeout != null)
+                                command.CommandTimeout = timeout.Value;
+
+                            var result = await command.ExecuteNonQueryAsync();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+    }
+
+}
