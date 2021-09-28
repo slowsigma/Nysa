@@ -1,6 +1,6 @@
 using System;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.PgSqlClient
 {
 
     public static class With

@@ -5,12 +5,12 @@ using Npgsql;
 namespace Nysa.Data
 {
 
-    public class SqlResultReader : IDisposable
+    public class PgSqlResultReader : IDisposable
     {
         public Int32 ResultIndex { get; private set; }
         public Int32 RowIndex    { get; private set; }
 
-        public SqlResultReader(NpgsqlDataReader sqlDataReader)
+        public PgSqlResultReader(NpgsqlDataReader sqlDataReader)
         {
             this.ResultIndex    = -1;
             this.RowIndex       = -1;

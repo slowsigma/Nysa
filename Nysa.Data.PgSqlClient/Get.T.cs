@@ -4,7 +4,7 @@ using System.Text;
 
 using Npgsql;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.PgSqlClient
 {
 
     public delegate T Get<T>(NpgsqlDataReader reader, Int32 index);

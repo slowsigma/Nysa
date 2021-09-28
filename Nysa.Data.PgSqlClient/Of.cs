@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.PgSqlClient
 {
 
     public static class Of

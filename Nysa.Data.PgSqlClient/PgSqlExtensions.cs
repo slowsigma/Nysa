@@ -7,17 +7,17 @@ using Nysa.Logics;
 
 using Npgsql;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.PgSqlClient
 {
 
-    public static class SqlClientExtensions
+    public static class PgSqlExtensions
     {
         private static U Map<T, U>(this T value, Func<T, U> transform) => transform(value);
 
         private static void Process<T>(this T value, Action<T> action) => action(value);
 
 
-        public static Func<SqlResultReader, T?> ReadValue<T>(this Func<NpgsqlDataReader, T?> transform)
+        public static Func<PgSqlResultReader, T?> ReadValue<T>(this Func<NpgsqlDataReader, T?> transform)
             where T : struct
             => rr =>
             {
@@ -27,7 +27,7 @@ namespace Nysa.Data.SqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T?> ReadRecord<T>(this Func<NpgsqlDataReader, T> transform)
+        public static Func<PgSqlResultReader, T?> ReadRecord<T>(this Func<NpgsqlDataReader, T> transform)
             where T : struct
             => rr =>
             {
@@ -37,7 +37,7 @@ namespace Nysa.Data.SqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T?> ReadObject<T>(this Func<NpgsqlDataReader, T> transform)
+        public static Func<PgSqlResultReader, T?> ReadObject<T>(this Func<NpgsqlDataReader, T> transform)
             where T : class?
             => rr =>
             {
@@ -47,7 +47,7 @@ namespace Nysa.Data.SqlClient
                 return null;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadValues<T>(this Func<NpgsqlDataReader, T?> transform)
+        public static Func<PgSqlResultReader, List<T>> ReadValues<T>(this Func<NpgsqlDataReader, T?> transform)
             where T : struct
             => rr =>
             {
@@ -62,7 +62,7 @@ namespace Nysa.Data.SqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadRecords<T>(this Func<NpgsqlDataReader, T> transform)
+        public static Func<PgSqlResultReader, List<T>> ReadRecords<T>(this Func<NpgsqlDataReader, T> transform)
             where T : struct
             => rr =>
             {
@@ -77,7 +77,7 @@ namespace Nysa.Data.SqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadObjects<T>(this Func<NpgsqlDataReader, T> transform)
+        public static Func<PgSqlResultReader, List<T>> ReadObjects<T>(this Func<NpgsqlDataReader, T> transform)
             where T : class
             => rr =>
             {
@@ -92,10 +92,10 @@ namespace Nysa.Data.SqlClient
                 return objects;
             };
 
-        public static Func<SqlResultReader, T> Then<P, N, T>(this Func<SqlResultReader, P> prior, Func<SqlResultReader, N> next, Func<P, N, T> transform)
+        public static Func<PgSqlResultReader, T> Then<P, N, T>(this Func<PgSqlResultReader, P> prior, Func<PgSqlResultReader, N> next, Func<P, N, T> transform)
             => rr => prior(rr).Map(p => next(rr).Map(n => transform(p, n)));
 
-        public static Func<NpgsqlConnection, T> ForQuery<T>(this Func<SqlResultReader, T> resultTransform, String query, Int32? timeout = null)
+        public static Func<NpgsqlConnection, T> ForQuery<T>(this Func<PgSqlResultReader, T> resultTransform, String query, Int32? timeout = null)
             => connection =>
             {
                 using (var command = connection.CreateCommand())
@@ -106,7 +106,7 @@ namespace Nysa.Data.SqlClient
                     if (timeout != null)
                         command.CommandTimeout = timeout.Value;
 
-                    using (var reader = new SqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
+                    using (var reader = new PgSqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
                     {
                         return resultTransform(reader);
                     }

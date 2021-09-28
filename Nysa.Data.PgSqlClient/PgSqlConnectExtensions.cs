@@ -2,13 +2,13 @@ using System;
 
 using Npgsql;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.PgSqlClient
 {
 
-    public static class SqlConnectExtensions
+    public static class PgSqlConnectExtensions
     {
 
-        public static String ConnectionString(this SqlConnect @this)
+        public static String ConnectionString(this PgSqlConnect @this)
         {
             var build = new NpgsqlConnectionStringBuilder();
             build.Host = @this.Host;

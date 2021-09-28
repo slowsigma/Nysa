@@ -7,7 +7,7 @@ using Nysa.Logics;
 namespace Nysa.Text.PgSql
 {
 
-    internal static class PgSqlTextChars
+    internal static class PgSqlChars
     {
         public static readonly Char Null              = '\u0000'; // ascii 0
         public static readonly Char Tab               = '\u0009'; // ascii 9
