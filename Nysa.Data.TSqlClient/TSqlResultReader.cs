@@ -5,12 +5,12 @@ using Microsoft.Data.SqlClient;
 namespace Nysa.Data
 {
 
-    public class SqlResultReader : IDisposable
+    public class TSqlResultReader : IDisposable
     {
         public Int32 ResultIndex { get; private set; }
         public Int32 RowIndex    { get; private set; }
 
-        public SqlResultReader(SqlDataReader sqlDataReader)
+        public TSqlResultReader(SqlDataReader sqlDataReader)
         {
             this.ResultIndex    = -1;
             this.RowIndex       = -1;

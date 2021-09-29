@@ -18,7 +18,7 @@ namespace Nysa.Data.TSqlClient
         private static void Process<T>(this T value, Action<T> action) => action(value);
 
 
-        public static Func<SqlResultReader, T?> ReadValue<T>(this Func<SqlDataReader, T?> transform)
+        public static Func<TSqlResultReader, T?> ReadValue<T>(this Func<SqlDataReader, T?> transform)
             where T : struct
             => rr =>
             {
@@ -28,7 +28,7 @@ namespace Nysa.Data.TSqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T?> ReadRecord<T>(this Func<SqlDataReader, T> transform)
+        public static Func<TSqlResultReader, T?> ReadRecord<T>(this Func<SqlDataReader, T> transform)
             where T : struct
             => rr =>
             {
@@ -38,7 +38,7 @@ namespace Nysa.Data.TSqlClient
                 return (T?)null;
             };
 
-        public static Func<SqlResultReader, T?> ReadObject<T>(this Func<SqlDataReader, T> transform)
+        public static Func<TSqlResultReader, T?> ReadObject<T>(this Func<SqlDataReader, T> transform)
             where T : class?
             => rr =>
             {
@@ -48,7 +48,7 @@ namespace Nysa.Data.TSqlClient
                 return null;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadValues<T>(this Func<SqlDataReader, T?> transform)
+        public static Func<TSqlResultReader, List<T>> ReadValues<T>(this Func<SqlDataReader, T?> transform)
             where T : struct
             => rr =>
             {
@@ -63,7 +63,7 @@ namespace Nysa.Data.TSqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadRecords<T>(this Func<SqlDataReader, T> transform)
+        public static Func<TSqlResultReader, List<T>> ReadRecords<T>(this Func<SqlDataReader, T> transform)
             where T : struct
             => rr =>
             {
@@ -78,7 +78,7 @@ namespace Nysa.Data.TSqlClient
                 return values;
             };
 
-        public static Func<SqlResultReader, List<T>> ReadObjects<T>(this Func<SqlDataReader, T> transform)
+        public static Func<TSqlResultReader, List<T>> ReadObjects<T>(this Func<SqlDataReader, T> transform)
             where T : class
             => rr =>
             {
@@ -93,10 +93,10 @@ namespace Nysa.Data.TSqlClient
                 return objects;
             };
 
-        public static Func<SqlResultReader, T> Then<P, N, T>(this Func<SqlResultReader, P> prior, Func<SqlResultReader, N> next, Func<P, N, T> transform)
+        public static Func<TSqlResultReader, T> Then<P, N, T>(this Func<TSqlResultReader, P> prior, Func<TSqlResultReader, N> next, Func<P, N, T> transform)
             => rr => prior(rr).Map(p => next(rr).Map(n => transform(p, n)));
 
-        public static Func<SqlConnection, T> ForQuery<T>(this Func<SqlResultReader, T> resultTransform, String query, Int32? timeout = null)
+        public static Func<SqlConnection, T> ForQuery<T>(this Func<TSqlResultReader, T> resultTransform, String query, Int32? timeout = null)
             => connection =>
             {
                 using (var command = connection.CreateCommand())
@@ -107,7 +107,7 @@ namespace Nysa.Data.TSqlClient
                     if (timeout != null)
                         command.CommandTimeout = timeout.Value;
 
-                    using (var reader = new SqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
+                    using (var reader = new TSqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
                     {
                         return resultTransform(reader);
                     }
