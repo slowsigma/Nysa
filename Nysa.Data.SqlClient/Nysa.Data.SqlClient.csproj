@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.46437.65" />
+    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <ProjectReference Include="..\Nysa.Text.TSql\Nysa.Text.TSql.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
-    <ProjectReference Include="..\Nysa.Text.TSql\Nysa.Text.TSql.csproj" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
