@@ -114,6 +114,26 @@ namespace Nysa.Data.TSqlClient
                 }
             };
 
+        public static Func<SqlConnection, Unit> ToExecute(this TSqlScript script, Int32? batchTimeout = null)
+            => connection =>
+            {
+                foreach (var batch in script.Batches())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = batch;
+                        command.CommandType = CommandType.Text;
+
+                        if (batchTimeout != null)
+                            command.CommandTimeout = batchTimeout.Value;
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Unit.Value;
+            };
+
         public static Func<SqlConnection, T> Then<P, N, T>(this Func<SqlConnection, P> prior, Func<SqlConnection, N> next, Func<P, N, T> transform)
             => connection => prior(connection).Map(p => next(connection).Map(n => transform(p, n)));
 
@@ -135,14 +155,14 @@ namespace Nysa.Data.TSqlClient
                 return result;
             };
 
-        public static Func<Unit> ExecuteOn(this TSqlScript @this, String connectionString, Int32? batchTimeout = null)
+        public static Func<Unit> ExecuteOn(this TSqlScript script, String connectionString, Int32? batchTimeout = null)
             => () =>
             {
                 using (var connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
 
-                    foreach (var batch in @this.Batches())
+                    foreach (var batch in script.Batches())
                     {
                         using (var command = connection.CreateCommand())
                         {
@@ -163,14 +183,14 @@ namespace Nysa.Data.TSqlClient
                 return Unit.Value;
             };
 
-        public static Func<Task<Unit>> ExecuteOnAsync(this TSqlScript @this, String connectionString, Int32? batchTimeout = null)
+        public static Func<Task<Unit>> ExecuteOnAsync(this TSqlScript script, String connectionString, Int32? batchTimeout = null)
             => async () =>
             {
                 using (var connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
 
-                    foreach (var batch in @this.Batches())
+                    foreach (var batch in script.Batches())
                     {
                         using (var command = connection.CreateCommand())
                         {

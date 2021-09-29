@@ -18,7 +18,7 @@ namespace Nysa.Text.TSql
             _SqlLineTransitions  = SqlTextLines.Transitions();
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> SqlTokens(this String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> TSqlTokens(this String source)
         {
             var previous  = SqlTextStates.WS;
             var blocks    = (Int32)0;
@@ -75,7 +75,7 @@ namespace Nysa.Text.TSql
             }
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> SqlLines(this String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> TSqlLines(this String source)
         {
             var previous  = SqlTextStates.WU;
             var blocks    = (Int32)0;
@@ -118,12 +118,12 @@ namespace Nysa.Text.TSql
             }
         }
 
-        public static IEnumerable<(Int32 Start, Int32 Length)> SqlBatches(this String source)
+        public static IEnumerable<(Int32 Start, Int32 Length)> TSqlBatches(this String source)
         {
             var start   = (Int32)0;
             var length  = (Int32)0;
 
-            foreach (var (lineStart, lineLength) in source.SqlLines())
+            foreach (var (lineStart, lineLength) in source.TSqlLines())
             {
                 if (   (lineLength >= 2)
                     && (source[lineStart] == 'g' || source[lineStart] == 'G')

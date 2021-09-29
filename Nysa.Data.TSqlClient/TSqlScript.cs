@@ -12,7 +12,7 @@ namespace Nysa.Data.TSqlClient
         public String Value { get; init; }
 
         public IEnumerable<String> Batches()
-            => this.Value.SqlBatches().Select(t => this.Value.Substring(t.Start, t.Length));
+            => this.Value.TSqlBatches().Select(t => this.Value.Substring(t.Start, t.Length));
 
         public TSqlScript(String value) { this.Value = value; }
     }

@@ -113,6 +113,26 @@ namespace Nysa.Data.PgSqlClient
                 }
             };
 
+        public static Func<NpgsqlConnection, Unit> ToExecute(this PgSqlScript script, Int32? batchTimeout = null)
+            => connection =>
+            {
+                foreach (var batch in script.Batches())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = batch;
+                        command.CommandType = CommandType.Text;
+
+                        if (batchTimeout != null)
+                            command.CommandTimeout = batchTimeout.Value;
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Unit.Value;
+            };
+
         public static Func<NpgsqlConnection, T> Then<P, N, T>(this Func<NpgsqlConnection, P> prior, Func<NpgsqlConnection, N> next, Func<P, N, T> transform)
             => connection => prior(connection).Map(p => next(connection).Map(n => transform(p, n)));
 
