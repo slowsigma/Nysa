@@ -5,10 +5,10 @@ using Microsoft.Data.SqlClient;
 namespace Nysa.Data.TSqlClient
 {
 
-    public static class SqlConnectExtensions
+    public static class TSqlConnectExtensions
     {
 
-        public static String ConnectionString(this SqlConnect @this)
+        public static String ConnectionString(this TSqlConnect @this)
         {
             var build = new SqlConnectionStringBuilder();
             build.DataSource = @this.Source;

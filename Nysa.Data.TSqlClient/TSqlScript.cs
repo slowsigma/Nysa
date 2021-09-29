@@ -1,23 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Nysa.Text.TSql;
-
-using Microsoft.Data.SqlClient;
 
 namespace Nysa.Data.TSqlClient
 {
 
-    public class SqlScript
+    public class TSqlScript
     {
         public String Value { get; init; }
 
         public IEnumerable<String> Batches()
             => this.Value.SqlBatches().Select(t => this.Value.Substring(t.Start, t.Length));
 
-        public SqlScript(String value) { this.Value = value; }
+        public TSqlScript(String value) { this.Value = value; }
     }
 
 }

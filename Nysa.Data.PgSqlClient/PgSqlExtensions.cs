@@ -159,6 +159,62 @@ namespace Nysa.Data.PgSqlClient
                 return Unit.Value;
             };
 
+        public static Func<Unit> ExecuteOn(this PgSqlScript @this, String connectionString, Int32? batchTimeout = null)
+            => () =>
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in @this.Batches())
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+
+                            if (batchTimeout != null)
+                                command.CommandTimeout = batchTimeout.Value;
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+        public static Func<Task<Unit>> ExecuteOnAsync(this PgSqlScript @this, String connectionString, Int32? batchTimeout = null)
+            => async () =>
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in @this.Batches())
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+                            
+                            if (batchTimeout != null)
+                                command.CommandTimeout = batchTimeout.Value;
+
+                            var result = await command.ExecuteNonQueryAsync();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
         public static Func<Task<Unit>> ExecuteOnAsync(this IEnumerable<String> batches, String connectionString, Int32? timeout = null)
             => async () =>
             {

@@ -16,6 +16,9 @@ namespace Nysa.Data.PgSqlClient
         public static Read<A, B, C, D, E, F, G, H, I> Row<A, B, C, D, E, F, G, H, I>(Get<A> a, Get<B> b, Get<C> c, Get<D> d, Get<E> e, Get<F> f, Get<G> g, Get<H> h, Get<I> i) => new Read<A, B, C, D, E, F, G, H, I>(a, b, c, d, e, f, g, h, i);
         public static Read<A, B, C, D, E, F, G, H, I, J> Row<A, B, C, D, E, F, G, H, I, J>(Get<A> a, Get<B> b, Get<C> c, Get<D> d, Get<E> e, Get<F> f, Get<G> g, Get<H> h, Get<I> i, Get<J> j) => new Read<A, B, C, D, E, F, G, H, I, J>(a, b, c, d, e, f, g, h, i, j);
         public static Read<A, B, C, D, E, F, G, H, I, J, K> Row<A, B, C, D, E, F, G, H, I, J, K>(Get<A> a, Get<B> b, Get<C> c, Get<D> d, Get<E> e, Get<F> f, Get<G> g, Get<H> h, Get<I> i, Get<J> j, Get<K> k) => new Read<A, B, C, D, E, F, G, H, I, J, K>(a, b, c, d, e, f, g, h, i, j, k);
+
+        public static PgSqlScript Script(String value) => new PgSqlScript(value);
+        public static PgSqlConnect Instance(String source) => new PgSqlConnect(source);
     }
 
 }

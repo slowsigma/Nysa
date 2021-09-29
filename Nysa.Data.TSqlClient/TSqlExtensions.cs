@@ -135,7 +135,7 @@ namespace Nysa.Data.TSqlClient
                 return result;
             };
 
-        public static Func<Unit> ExecuteOn(this SqlScript @this, String connectionString)
+        public static Func<Unit> ExecuteOn(this TSqlScript @this, String connectionString, Int32? batchTimeout = null)
             => () =>
             {
                 using (var connection = new SqlConnection(connectionString))
@@ -149,6 +149,9 @@ namespace Nysa.Data.TSqlClient
                             command.CommandText = batch;
                             command.CommandType = CommandType.Text;
 
+                            if (batchTimeout != null)
+                                command.CommandTimeout = batchTimeout.Value;
+
                             command.ExecuteNonQuery();
                         }
                     }
@@ -160,7 +163,7 @@ namespace Nysa.Data.TSqlClient
                 return Unit.Value;
             };
 
-        public static Func<Task<Unit>> ExecuteOnAsync(this SqlScript @this, String connectionString, Int32? timeout = null)
+        public static Func<Task<Unit>> ExecuteOnAsync(this TSqlScript @this, String connectionString, Int32? batchTimeout = null)
             => async () =>
             {
                 using (var connection = new SqlConnection(connectionString))
@@ -174,8 +177,8 @@ namespace Nysa.Data.TSqlClient
                             command.CommandText = batch;
                             command.CommandType = CommandType.Text;
                             
-                            if (timeout != null)
-                                command.CommandTimeout = timeout.Value;
+                            if (batchTimeout != null)
+                                command.CommandTimeout = batchTimeout.Value;
 
                             var result = await command.ExecuteNonQueryAsync();
                         }
@@ -188,6 +191,33 @@ namespace Nysa.Data.TSqlClient
                 return Unit.Value;
             };
 
+        public static Func<Task<Unit>> ExecuteOnAsync(this IEnumerable<String> batches, String connectionString, Int32? batchTimeout = null)
+            => async () =>
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    foreach (var batch in batches)
+                    {
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = batch;
+                            command.CommandType = CommandType.Text;
+                            
+                            if (batchTimeout != null)
+                                command.CommandTimeout = batchTimeout.Value;
+
+                            var result = await command.ExecuteNonQueryAsync();
+                        }
+                    }
+
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+
+                return Unit.Value;
+            };
 
     }
 
