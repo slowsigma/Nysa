@@ -2,7 +2,7 @@ using System;
 
 using Microsoft.Data.SqlClient;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.TSqlClient
 {
 
     public class SqlConnect

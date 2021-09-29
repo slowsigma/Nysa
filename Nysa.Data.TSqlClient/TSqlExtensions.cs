@@ -8,10 +8,10 @@ using Nysa.Text.TSql;
 
 using Microsoft.Data.SqlClient;
 
-namespace Nysa.Data.SqlClient
+namespace Nysa.Data.TSqlClient
 {
 
-    public static class SqlClientExtensions
+    public static class TSqlExtensions
     {
         private static U Map<T, U>(this T value, Func<T, U> transform) => transform(value);
 
