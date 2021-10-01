@@ -100,6 +100,42 @@ namespace Nysa.Logics
                     yield return some.Value;
         }
 
+        public static Suspect<R> Switch<T, R>(this T value, params (T ifValue, R thenValue)[] options)
+            where T : IEquatable<T>
+        {
+            foreach (var option in options)
+            {
+                if (value.Equals(option.ifValue))
+                    return option.thenValue.Confirmed();
+            }
+
+            return Return.Failed<R>(new ArgumentException("Switch value did not match any supplied options."));
+        }
+
+        public static Suspect<R> Switch<T, R>(this T value, params (T ifValue, Func<R> then)[] options)
+            where T : IEquatable<T>
+        {
+            foreach (var option in options)
+            {
+                if (value.Equals(option.ifValue))
+                    return option.then().Confirmed();
+            }
+
+            return Return.Failed<R>(new ArgumentException("Switch value did not match any supplied options."));
+        }
+
+        public static R Switch<T, R>(this T value, R defaultReturn, params (T ifValue, R thenValue)[] options)
+            where T : IEquatable<T>
+        {
+            foreach (var option in options)
+            {
+                if (value.Equals(option.ifValue))
+                    return option.thenValue;
+            }
+
+            return defaultReturn;
+        }
+
     }
 
 }
