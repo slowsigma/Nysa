@@ -11,7 +11,7 @@ namespace Nysa.Logics
 
         public T Value { get; }
         public Confirmed(T value) { this.Value = value; }
-        public override String ToString() => this.Value.ToString();
+        public override String? ToString() => this.Value?.ToString();
     }
 
 }

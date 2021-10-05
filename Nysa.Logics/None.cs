@@ -6,6 +6,7 @@ namespace Nysa.Logics
 {
 
     public sealed class None<T> : Option<T>
+        where T : notnull
     {
         [Obsolete("Return on None<T> is deprecated, please use Enumerable instead.")]
         public static IEnumerable<T> Return() { yield break; }

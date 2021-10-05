@@ -6,8 +6,8 @@ namespace Nysa.Logics
 {
 
     public class StateTransitions<S, V>
-        where S : IEquatable<S>
-        where V : IEquatable<V>
+        where S : notnull, IEquatable<S>
+        where V : notnull, IEquatable<V>
     {
         private static readonly String _TransitionExists          = @"Transition already exists for the given StateValue.";
         private static readonly String _TransitionDoesNotExists   = @"Transition does not exist for the given StateValue.";
@@ -53,7 +53,7 @@ namespace Nysa.Logics
 
         public S Transition(S state, V value)
         {
-            S nextState;
+            S? nextState;
 
             if (this._Items.TryGetValue(new StateValue<S, V>(state, value), out nextState))
                 return nextState;

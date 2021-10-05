@@ -6,6 +6,7 @@ namespace Nysa.Logics
 {
 
     public abstract class Option<T>
+        where T : notnull
     {
         public static readonly Option<T> None = new None<T>();
         public static implicit operator Option<T>(Option option) => Option<T>.None;

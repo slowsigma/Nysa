@@ -6,6 +6,7 @@
     <Version>1.0</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
