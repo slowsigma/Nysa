@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
-    <ProjectReference Include="..\Nysa.Text.TSql\Nysa.Text.TSql.csproj" />
   </ItemGroup>
 
   <ItemGroup>

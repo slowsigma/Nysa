@@ -114,6 +114,29 @@ namespace Nysa.Data.TSqlClient
                 }
             };
 
+        public static Func<SqlConnection, T> ForProcedure<T>(this Func<TSqlResultReader, T> resultTransform, TSqlProcedure procedure, Int32? timeout = null)
+            => connection =>
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = procedure.Name;
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (timeout != null)
+                        command.CommandTimeout = timeout.Value;
+
+                    foreach (var parameter in procedure.Paremeters)
+                    {
+                        command.Parameters.Add(parameter.Name, parameter.sqlType).Value = parameter.Value;
+                    }
+
+                    using (var reader = new TSqlResultReader(command.ExecuteReader(CommandBehavior.Default)))
+                    {
+                        return resultTransform(reader);
+                    }
+                }
+            };
+
         public static Func<SqlConnection, Unit> ToExecute(this TSqlScript script, Int32? batchTimeout = null)
             => connection =>
             {
@@ -129,6 +152,28 @@ namespace Nysa.Data.TSqlClient
 
                         command.ExecuteNonQuery();
                     }
+                }
+
+                return Unit.Value;
+            };
+
+        public static Func<SqlConnection, Unit> ToExecute(this TSqlProcedure procedure, Int32? timeout = null)
+            => connection =>
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = procedure.Name;
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (timeout != null)
+                        command.CommandTimeout = timeout.Value;
+
+                    foreach (var parameter in procedure.Paremeters)
+                    {
+                        command.Parameters.Add(parameter.Name, parameter.sqlType).Value = parameter.Value;
+                    }
+
+                    command.ExecuteNonQuery();
                 }
 
                 return Unit.Value;

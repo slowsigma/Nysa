@@ -19,6 +19,21 @@ namespace Nysa.Data.TSqlClient
 
         public static TSqlScript Script(String value) => new TSqlScript(value);
         public static TSqlConnect Instance(String source) => new TSqlConnect(source);
+
+        public static TSqlParameter ParameterInt(this String name, Int32? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Int);
+        public static TSqlParameter ParameterVarchar(this String name, String? value) => new TSqlParameter(name, value, System.Data.SqlDbType.VarChar);
+        public static TSqlParameter ParameterText(this String name, String? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Text);
+        public static TSqlParameter ParameterNVarchar(this String name, String? value) => new TSqlParameter(name, value, System.Data.SqlDbType.NVarChar);
+        public static TSqlParameter ParameterBit(this String name, Boolean? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Bit);
+        public static TSqlParameter ParameterDateTime(this String name, DateTime? value) => new TSqlParameter(name, value, System.Data.SqlDbType.DateTime);
+        public static TSqlParameter ParameterVarBinary(this String name, Byte[]? value) => new TSqlParameter(name, value, System.Data.SqlDbType.VarBinary);
+        public static TSqlParameter ParameterBigInt(this String name, Int64? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Int);
+        public static TSqlParameter ParameterTime(this String name, TimeSpan? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Time);
+        public static TSqlParameter ParameterReal(this String name, Single? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Real);
+        public static TSqlParameter ParameterFloat(this String name, Double? value) => new TSqlParameter(name, value, System.Data.SqlDbType.Float);
+
+        public static TSqlProcedure Procedure(this String name) => new TSqlProcedure(name);
+        public static TSqlProcedure Procedure(this String name, params TSqlParameter[] parameters) => new TSqlProcedure(name, parameters);
     }
 
 }
