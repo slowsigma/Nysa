@@ -21,6 +21,12 @@ namespace Nysa.Logics
             where T : notnull
             => new Some<T>(value);
 
+        public static Option<T> SomeIf<T>(this T? value, Func<T, Boolean> isSome)
+            where T : notnull
+            =>   value == null ? Option<T>.None
+               : isSome(value) ? value.Some()
+               :                 Option<T>.None;
+
         /// <summary>
         /// Given a possible null value of some type, this function returns
         /// the None subtype of Option if the value is null or if the
