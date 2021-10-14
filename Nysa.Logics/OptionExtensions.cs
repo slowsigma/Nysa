@@ -97,6 +97,10 @@ namespace Nysa.Logics
             where T : struct
             => @this is Some<T> some ? some.Value : (T?)null;
 
+        public static Suspect<T> OrFailed<T>(this Option<T> @this, Func<String> message)
+            where T : notnull
+            => @this is Some<T> some ? some.Value.Confirmed() : Return.Failed<T>(message());
+
         public static async Task<Option<T>> OrAsync<T>(this Option<T> @this, Func<Task<Option<T>>> whenNone)
             where T : notnull
             =>   @this is Some<T> some ? @this
