@@ -119,6 +119,22 @@ namespace Nysa.Logics
             return Option<T>.None;
         }
 
+        public static Option<T> LastOrNone<T>(this IEnumerable<T> @this, Func<T, Boolean>? predicate = null)
+            where T : notnull
+        {
+            predicate = predicate ?? (t => true);
+            
+            var last = Option<T>.None;
+
+            foreach (var item in @this)
+            {
+                if (predicate(item))
+                    last = item.Some();
+            }
+
+            return last;
+        }
+
     }
 
 }
