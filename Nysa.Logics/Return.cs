@@ -92,6 +92,22 @@ namespace Nysa.Logics
                     yield return some.Value;
         }
 
+        public static IEnumerable<T> SomeOnly<T>(this IEnumerable<Option<T>> @this)
+            where T : notnull
+        {
+            foreach (var item in @this)
+                if (item is Some<T> some)
+                    yield return some.Value;
+        }
+
+        public static IEnumerable<T> SomeOnly<T>(this IEnumerable<T?> @this)
+            where T : notnull
+        {
+            foreach (var item in @this)
+                if (item != null)
+                    yield return item;
+        }
+
         public static Suspect<R> Switch<T, R>(this T value, params (T ifValue, R thenValue)[] options)
             where T : IEquatable<T>
         {
