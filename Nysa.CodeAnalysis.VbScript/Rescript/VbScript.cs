@@ -66,7 +66,7 @@ namespace CodeAnalysis.VbScript.Rescript
                     PathIdentifier id => id.Value,
                     PathArguments args => args.ToVbScript(),
                     PathValue value => String.Concat("(", value.Expression.ToVbScript(), ")"),
-                    { } => throw new Exception(UNEXPECTED_TYPE)
+                    _ => throw new Exception(UNEXPECTED_TYPE)
                 };
 
                 builder.Append(str);
@@ -311,7 +311,7 @@ namespace CodeAnalysis.VbScript.Rescript
                 {
                     ElseIfBlock elseIf => String.Concat("ElseIf", " ", elseIf.Predicate.ToVbScript(), " ", "Then"),
                     FinalElseBlock final => "Else",
-                    { } =>  throw new Exception(UNEXPECTED_TYPE)
+                    _ =>  throw new Exception(UNEXPECTED_TYPE)
                 });
 
                 foreach (var stmt in alternative)
@@ -376,7 +376,7 @@ namespace CodeAnalysis.VbScript.Rescript
             {
                 SelectCaseWhen caseWhen => String.Concat("Case", " ", String.Join(", ", caseWhen.When.Select(e => e.ToVbScript()))),
                 SelectCaseElse caseElse => String.Concat("Case", " ", "Else"),
-                { } => throw new Exception(UNEXPECTED_TYPE)
+                _ => throw new Exception(UNEXPECTED_TYPE)
             });
 
             foreach (var stmt in @this)

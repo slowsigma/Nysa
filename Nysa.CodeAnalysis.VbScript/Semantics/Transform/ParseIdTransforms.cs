@@ -511,7 +511,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                     ParseId p when p == Id.Category.DotID => (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.ID) }, v.Remainder),
                     ParseId p when p == Id.Category.DotIDDot => (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.IDDot).WithoutEndDot(Id.Category.ID), v.Item.EndDot() }, v.Remainder),
                     ParseId p when p == Id.Symbol.CloseParenDot => (new SyntaxToken[] { v.Item.WithoutEndDot(Id.Symbol.CloseParen), v.Item.EndDot() }, v.Remainder),
-                    { } => (new SyntaxToken[] { v.Item }, v.Remainder)
+                    _ => (new SyntaxToken[] { v.Item }, v.Remainder)
                 };
             };
 
