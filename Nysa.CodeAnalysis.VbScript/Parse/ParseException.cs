@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeAnalysis.VbScript
+namespace Nysa.CodeAnalysis.VbScript
 {
 
     public class ParseException : Exception

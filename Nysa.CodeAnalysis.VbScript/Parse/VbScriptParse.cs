@@ -4,7 +4,7 @@ using Nysa.Logics;
 
 using SyntaxNode = Dorata.Text.Parsing.Node;
 
-namespace CodeAnalysis.VbScript
+namespace Nysa.CodeAnalysis.VbScript
 {
 
     public class VbScriptParse : Parse

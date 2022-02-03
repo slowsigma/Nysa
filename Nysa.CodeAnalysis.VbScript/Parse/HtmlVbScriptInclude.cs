@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CodeAnalysis.VbScript
+namespace Nysa.CodeAnalysis.VbScript
 {
 
     public class HtmlVbScriptInclude

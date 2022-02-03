@@ -2,7 +2,7 @@ using System;
 
 using Nysa.Logics;
 
-namespace CodeAnalysis.VbScript
+namespace Nysa.CodeAnalysis.VbScript
 {
 
     public class VbScriptContent : Content

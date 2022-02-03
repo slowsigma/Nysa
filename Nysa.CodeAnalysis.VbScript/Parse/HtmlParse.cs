@@ -5,7 +5,7 @@ using System.Text;
 
 using HtmlAgilityPack;
 
-namespace CodeAnalysis.VbScript
+namespace Nysa.CodeAnalysis.VbScript
 {
 
     public class HtmlParse : Parse
