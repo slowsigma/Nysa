@@ -7,7 +7,7 @@ using Nysa.Logics;
 
 using Nysa.CodeAnalysis.VbScript.Semantics;
 
-namespace CodeAnalysis.VbScript.Rescript
+namespace Nysa.CodeAnalysis.VbScript.Rescript
 {
 
     public static class VbScript
