@@ -31,6 +31,16 @@ namespace Nysa.Logics
 
             return Unit.Value;
         }
+
+        public Unit Affect(Action<T> someUpdate, Action noneUpdate)
+        {
+            if (this is Some<T> some)
+                someUpdate(some.Value);
+            else
+                noneUpdate();
+
+            return Unit.Value;
+        }
     }
 
     public class Option

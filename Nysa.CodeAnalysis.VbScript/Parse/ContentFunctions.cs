@@ -21,6 +21,9 @@ namespace Nysa.CodeAnalysis.VbScript
                : file.Extension.DataEndsWith(".vbs")  ? (new VbScriptContent(file.FullName, File.ReadAllText(file.FullName), Option.None)).Confirmed<Content>()
                :                                        (new InvalidOperationException()).Failed<Content>();
 
+        public static Suspect<Content> ToContent(this String filePath)
+            => (new FileInfo(filePath)).ToContent();
+
         public static VbScriptContent ToVbScriptContent(this String vbScript, String source)
             => new VbScriptContent(source, vbScript, Option.None);
 
