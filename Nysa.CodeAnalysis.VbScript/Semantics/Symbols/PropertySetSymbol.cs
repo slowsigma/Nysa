@@ -10,9 +10,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record PropertySetSymbol : FunctionSymbol
     {
-        public PropertySetSymbol(String name, Boolean isPublic, IEnumerable<Symbol> members)
+        public Boolean IsLet { get; private set; }
+        public PropertySetSymbol(String name, Boolean isPublic, Boolean isLet, IEnumerable<Symbol> members)
             : base(name, Option.None, isPublic, members)
         {
+            this.IsLet = isLet;
         }
     }
 

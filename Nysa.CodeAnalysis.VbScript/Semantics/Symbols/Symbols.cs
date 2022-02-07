@@ -147,7 +147,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)
             => new PropertyGetSymbol(@this, isPublic, _NoMembers);
         public static PropertySetSymbol EmptyPropertySet(this String @this, Boolean isPublic = true)
-            => new PropertySetSymbol(@this, isPublic, _NoMembers);
+            => new PropertySetSymbol(@this, isPublic, false, _NoMembers);
         public static FunctionSymbol EmptyFunction(this String @this, Boolean isPublic = true)
             => new FunctionSymbol(@this, isPublic, _NoMembers);
         public static PropertySymbol BlindProperty(this String @this, Boolean readOnly, Boolean isPublic = true)

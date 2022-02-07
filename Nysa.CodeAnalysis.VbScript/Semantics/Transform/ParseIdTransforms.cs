@@ -437,7 +437,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                         : i;
 
         private static readonly Transform SelectCaseTransform
-            = With.Optional(With.Condition((c, i) => i.Length > 2 && i[1] is TokenItem,
+            = With.Optional(With.Condition((c, i) => i.Length >= 2 && i[1] is TokenItem,
                                            With.Parts(Expect.TokenOf(Id.Symbol.Case),
                                                       Expect.TokenOf(Id.Symbol.Else),
                                                       Skip.ToZeroOrMore<Statement>())
