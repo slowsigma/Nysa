@@ -10,17 +10,17 @@ namespace Nysa.CodeAnalysis.VbScript
 
     public class HtmlParse : Parse
     {
-        public HtmlContent                          Content         { get; private set; }
-        public HtmlDocument                         HtmlDocument    { get; private set; }
-        public IReadOnlyList<HtmlVbScriptInclude>   VbIncludes      { get; private set; }
-        public IReadOnlyList<HtmlVbScriptParse>     VbParses        { get; private set; }
+        public HtmlContent                                      Content     { get; private set; }
+        public HtmlDocument                                     Document    { get; private set; }
+        public IReadOnlyList<(String Source, HtmlNode Node)>    VbsIncludes { get; private set; }
+        public IReadOnlyList<HtmlVbScriptParse>                 VbsParses   { get; private set; }
 
-        public HtmlParse(HtmlContent content, HtmlDocument htmlDocument, IEnumerable<HtmlVbScriptInclude> vbIncludes, IEnumerable<HtmlVbScriptParse> vbScriptParses)
+        public HtmlParse(HtmlContent content, HtmlDocument document, IEnumerable<(String Source, HtmlNode Node)> vbsIncludes, IEnumerable<HtmlVbScriptParse> vbsParses)
         {
             this.Content        = content;
-            this.HtmlDocument   = htmlDocument;
-            this.VbIncludes     = vbIncludes.ToArray();
-            this.VbParses       = vbScriptParses.ToArray();
+            this.Document       = document;
+            this.VbsIncludes    = vbsIncludes.ToArray();
+            this.VbsParses      = vbsParses.ToArray();
         }
     }
 

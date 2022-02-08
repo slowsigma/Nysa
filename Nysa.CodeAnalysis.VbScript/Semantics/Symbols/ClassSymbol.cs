@@ -21,7 +21,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             if (members.Any(s => s is ArgumentSymbol || s is ClassSymbol))
                 throw new ArgumentException("ClassSymbol members can only be of type: ConstantSymbol, FunctionSymbol, VariableSymbol, or PropertySymbol.");
 
-            if (@default is Some<Symbol> someDefault && !members.Any(s => s.Equals(someDefault.Value)))
+            if (@default is Some<Symbol> someDefault && !members.Any(s => s.Name.Equals(someDefault.Value.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("The default symbol must exist in the members collection.");
 
             this.Members = members.ToList();

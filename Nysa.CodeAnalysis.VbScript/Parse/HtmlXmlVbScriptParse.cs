@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 using Nysa.Logics;
 
 using SyntaxNode = Dorata.Text.Parsing.Node;
 
-using HtmlAgilityPack;
-
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class HtmlVbScriptParse : VbScriptParse
+    public class HtmlXmlVbScriptParse : VbScriptParse
     {
-        public HtmlNode Element { get; private set; }
-        public HtmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, HtmlNode element)
+        public XElement Element { get; private set; }
+        public HtmlXmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, XElement element)
             : base(content, syntaxRoot)
         {
             this.Element = element;

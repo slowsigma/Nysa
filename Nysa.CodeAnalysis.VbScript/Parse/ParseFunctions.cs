@@ -42,12 +42,53 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Parse()
                     .Make(p => new VbScriptParse(@this, p));
 
-        public static Suspect<HtmlParse> Parse(this HtmlContent htmlContent)
+        private static Suspect<HtmlXmlParse> ParseXml(this HtmlContent htmlContent)
         {
-            (HtmlDocument Document, List<HtmlVbScriptInclude> includes, List<HtmlVbScriptParse> VbParses) FromDocument(HtmlDocument document)
+            (XDocument Document, List<(String Source, XElement Element)> Includes, List<HtmlXmlVbScriptParse> VbParses) FromDocument(XDocument document)
             {
-                var includes = new Dictionary<String, HtmlVbScriptInclude>(StringComparer.OrdinalIgnoreCase);
-                var vbParses = new List<HtmlVbScriptParse>();
+                var includes = new Dictionary<String, XElement>(StringComparer.OrdinalIgnoreCase);
+                var parses   = new List<HtmlXmlVbScriptParse>();
+
+                foreach (var script in document.Descendants().Where(e => e.Name.LocalName.DataEquals("script")))
+                {
+                    var lang = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("language"));
+                    var type = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("type"));
+                    var src  = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("src"));
+
+                    if ((lang?.Value ?? String.Empty).DataEquals("vbscript") ||
+                        (type?.Value ?? String.Empty).DataEquals(@"text/vbscript"))
+                    {
+                        if (!String.IsNullOrWhiteSpace(src?.Value))
+                        {
+                            if (!includes.ContainsKey(src.Value))
+                                includes.Add(src.Value, script);
+                        }
+                        else if (!String.IsNullOrWhiteSpace(script.Value))
+                        {
+                            var vbParse = (new VbScriptContent(htmlContent.Source, script.Value, Option.None)).Parse();
+
+                            parses.Add(new HtmlXmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                        }
+                    }
+                }
+
+                return (document, includes.Select(kv => (Source: kv.Key, Element: kv.Value)).ToList(), parses);
+            }
+
+            return Return.Try(() =>
+                               {
+                                   var doc = XDocument.Parse(htmlContent.Value);
+
+                                   return FromDocument(doc).Make(t => new HtmlXmlParse(htmlContent, t.Document, t.Includes, t.VbParses));
+                               });
+        }
+
+        public static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent)
+        {
+            (HtmlDocument Document, List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
+            {
+                var includes = new Dictionary<String, HtmlNode>(StringComparer.OrdinalIgnoreCase);
+                var parses   = new List<HtmlVbScriptParse>();
 
                 foreach (var script in document.DocumentNode.Descendants("script"))
                 {
@@ -55,7 +96,6 @@ namespace Nysa.CodeAnalysis.VbScript
                     var type = script.Attributes.FirstOrDefault(a => a.Name.DataEndsWith("type"));
                     var src  = script.Attributes.FirstOrDefault(a => a.Name.DataEndsWith("src"));
                     var path = script.XPath;
-                    var elem = Return.Try(() => XElement.Parse(script.OuterHtml));
 
                     if ((lang?.Value ?? String.Empty).DataEquals("vbscript") ||
                         (type?.Value ?? String.Empty).DataEquals(@"text/vbscript"))
@@ -63,37 +103,32 @@ namespace Nysa.CodeAnalysis.VbScript
                         if (src != null && !String.IsNullOrWhiteSpace(src.Value))
                         {
                             if (!includes.ContainsKey(src.Value))
-                                includes.Add(src.Value, new HtmlVbScriptInclude(path, src.Value));
-                        }
-                        else if (elem is Confirmed<XElement> confirmed && !String.IsNullOrWhiteSpace(confirmed.Value.Value))
-                        {
-                            var vbParse = (new VbScriptContent(htmlContent.Source, confirmed.Value.Value, path.Some())).Parse();
-
-                            vbParses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot));
-                        }
-                        else if (elem is Confirmed<XElement>)
-                        {
-                            // skip, the element is commented out
+                                includes.Add(src.Value, script);
                         }
                         else if (!String.IsNullOrWhiteSpace(script.InnerText))
                         {
                             var vbParse = (new VbScriptContent(htmlContent.Source, script.InnerText, path.Some())).Parse();
 
-                            vbParses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot));
+                            parses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
                         }
                     }
                 }
 
-                return (document, includes.Values.ToList(), vbParses);
+                return (document, includes.Select(kv => (Source: kv.Key, Node: kv.Value)).ToList(), parses);
             }
 
             return Return.Try(() =>
                                {
                                    var doc = new HtmlDocument();
                                    doc.LoadHtml(htmlContent.Value);
-                                   return FromDocument(doc).Make(t => new HtmlParse(htmlContent, t.Document, t.includes, t.VbParses));
+                                   return FromDocument(doc).Make(t => new HtmlParse(htmlContent, t.Document, t.Includes, t.Parses));
                                });
         }
+
+        public static Suspect<Parse> Parse(this HtmlContent @this)
+            => @this.ParseXml()
+                    .Match(xp => xp.Confirmed<Parse>(),
+                           e => @this.ParseHtml().Bind(hp => hp.Confirmed<Parse>()));
 
         private static String Path(this XElement element)
             => element.Parent == null
