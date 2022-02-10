@@ -13,11 +13,11 @@ namespace Nysa.CodeAnalysis.VbScript
 
     public class HtmlVbScriptParse : VbScriptParse
     {
-        public HtmlNode Element { get; private set; }
-        public HtmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, HtmlNode element)
+        public HtmlNode Node { get; private set; }
+        public HtmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, HtmlNode node)
             : base(content, syntaxRoot)
         {
-            this.Element = element;
+            this.Node = node;
         }
     }
 
