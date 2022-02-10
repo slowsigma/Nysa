@@ -11,7 +11,7 @@ namespace Nysa.CodeAnalysis.VbScript
         public String ErrorRules    { get; private set; }
 
         public ParseException(String message, Int32 lineNumber, Int32 columnNumber, String errorLine, String errorRules)
-            : base(message)
+            : base($"Error: '{message}'; Line: {lineNumber}; Column: {columnNumber}")
         {
             this.LineNumber     = lineNumber;
             this.ColumnNumber   = columnNumber;
