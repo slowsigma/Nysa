@@ -1,6 +1,9 @@
 # Nysa
 This repository is dedicated to general computer sciency stuff.
 
+## Nysa.CodeAnalysis.VbScript
+This is a class library and supporting files used to create basic semantic trees for VbScript code files. This is used to convert VbScript to JavaScript.
+
 ## Nysa.Collections
 This is a class library containing: tries, disjoint sets, and heaps.
 
