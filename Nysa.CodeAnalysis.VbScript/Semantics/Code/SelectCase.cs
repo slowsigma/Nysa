@@ -16,23 +16,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *                    | 
      */
 
-    public abstract class SelectCase : CodeNode, IReadOnlyList<Statement>
+    public abstract class SelectCase : Statement
     {
-        private IReadOnlyList<Statement> _Items;
-
+        public StatementList Statements { get; private set; }
         protected SelectCase(SyntaxNode source, IEnumerable<Statement> statements)
             : base(source)
         {
-            this._Items = statements.ToArray();
+            this.Statements = new StatementList(source, statements);
         }
-
-        public Int32 Count => this._Items.Count;
-        public Statement this[Int32 index] => this._Items[index];
-        public IEnumerator<Statement> GetEnumerator()
-            => _Items.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator()
-            => this._Items.GetEnumerator();
     }
 
 }

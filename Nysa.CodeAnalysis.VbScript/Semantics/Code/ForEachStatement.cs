@@ -15,27 +15,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *               | "For" "Each" <ExtendedID> "In" <Expr> <NL> <BlockStmtList> "Next" <NL>
      */
 
-    public class ForEachStatement : Statement, IReadOnlyList<Statement>
+    public class ForEachStatement : Statement
     {
-        private IReadOnlyList<Statement> _Items;
-
         public Identifier       Variable    { get; private set; }
         public Expression       In          { get; private set; }
+        public StatementList    Statements  { get; private set; }
 
         public ForEachStatement(SyntaxNode source, Identifier variable, Expression @in, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Variable   = variable;
             this.In         = @in;
-            this._Items     = statements.ToArray();
+            this.Statements = new StatementList(source, statements);
         }
-
-        public Int32 Count => this._Items.Count;
-        public Statement this[Int32 index] => this._Items[index];
-        public IEnumerator<Statement> GetEnumerator()
-            => _Items.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator()
-            => ((IEnumerable)_Items).GetEnumerator();
     }
 
 }

@@ -23,7 +23,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class FunctionDeclaration : MethodDeclaration
     {
-        public FunctionDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, StatementList statements)
+        public FunctionDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, IEnumerable<Statement> statements)
             : base(source, visibility, isDefault, name, arguments, statements)
         {
         }

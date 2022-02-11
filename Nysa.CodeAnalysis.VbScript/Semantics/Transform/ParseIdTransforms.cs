@@ -558,7 +558,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             { Id.Rule.FieldName,         VariableTransform },
             { Id.Rule.VarName,           VariableTransform },
             { Id.Rule.ClassDecl,         With.Parts(Skip.ToExpected<Identifier>(), Skip.ToZeroOrMore<Statement>())
-                                             .Make((ns, a, b) => new ClassDeclaration(ns, a, new StatementList(ns, b))) },
+                                             .Make((ns, a, b) => new ClassDeclaration(ns, a, b)) },
             { Id.Rule.FieldDecl,         With.Parts(Expect.TokenOf(Id.Symbol.Private, Id.Symbol.Public), Skip.ToZeroOrMore<Variable>())
                                              .Make((ns, a, b) => new FieldDeclaration(ns, a.Id.ToVisibilityType(), b)) },
             { Id.Rule.ConstExprDef,      With.Either()
@@ -578,17 +578,17 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                     Skip.ToExpected<Identifier>(),
                                                     Skip.ToZeroOrMore<ArgumentDefinition>(),
                                                     Skip.ToZeroOrMore<Statement>())
-                                             .Make((ns, a, b, c, d, e, f) => new PropertyDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), c.Id.ToPropertyAccessType(), d, e, new StatementList(ns, f))) },
+                                             .Make((ns, a, b, c, d, e, f) => new PropertyDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), c.Id.ToPropertyAccessType(), d, e, f)) },
             { Id.Rule.SubDecl,           With.Parts(BuildMethodAccess(),
                                                     Skip.ToExpected<Identifier>(),
                                                     Skip.ToZeroOrMore<ArgumentDefinition>(),
                                                     Skip.ToZeroOrMore<Statement>())
-                                             .Make((ns, a, b, c, d) => new SubroutineDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), b, c, new StatementList(ns, d))) },
+                                             .Make((ns, a, b, c, d) => new SubroutineDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), b, c, d)) },
             { Id.Rule.FunctionDecl,      With.Parts(BuildMethodAccess(),
                                                     Skip.ToExpected<Identifier>(),
                                                     Skip.ToZeroOrMore<ArgumentDefinition>(),
                                                     Skip.ToZeroOrMore<Statement>())
-                                             .Make((ns, a, b, c, d) => new FunctionDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), b, c, new StatementList(ns, d))) },
+                                             .Make((ns, a, b, c, d) => new FunctionDeclaration(ns, a.Map(p => p.Visibility), a.Match(p => p.IsDefault, () => false), b, c, d)) },
             { Id.Rule.SubSafeAddExpr,    AddOpTransform },
             { Id.Rule.SubSafeAndExpr,    OperationTypes.And.SingleOpTransform() },
             { Id.Rule.SubSafeCompareExpr, CompareOpTransform },

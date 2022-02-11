@@ -174,7 +174,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("Class", " ", @this.Name.Value));
 
-            foreach (var item in @this.Members)
+            foreach (var item in @this.Statements)
             {
                 item.ToVbScript(indented);
             }
@@ -205,7 +205,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine("Do");
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine("Loop");
@@ -219,7 +219,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine("Do");
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine(String.Concat("Loop", " ", @this.Type == LoopTypes.Until ? "Until" : "While", " ", @this.Condition.ToVbScript()));
@@ -233,7 +233,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("Do", " ", @this.Type == LoopTypes.Until ? "Until" : "While", " ", @this.Condition.ToVbScript()));
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine("Loop");
@@ -272,7 +272,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("For", " ", "Each", " ", @this.Variable.Value, " ", "In", " ", @this.In.ToVbScript()));
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine("Next");
@@ -288,7 +288,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("For", " ", @this.Variable.Value, " ", "=", " ", @this.From.ToVbScript(), " ", "To", " ", @this.To.ToVbScript(), step));
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine("Next");
@@ -314,7 +314,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
                     _ =>  throw new Exception(UNEXPECTED_TYPE)
                 });
 
-                foreach (var stmt in alternative)
+                foreach (var stmt in alternative.Statements)
                     stmt.ToVbScript(indented);
             }
 
@@ -379,7 +379,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
                 _ => throw new Exception(UNEXPECTED_TYPE)
             });
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             return Unit.Value;
@@ -409,7 +409,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("While", " ", @this.Condition.ToVbScript()));
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine("WEnd");
@@ -423,7 +423,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
             appendLine(String.Concat("With", " ", @this.Expression.ToVbScript()));
 
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(indented);
 
             appendLine(String.Concat("End", " ", "With"));
@@ -460,7 +460,7 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
 
         public static Unit ToVbScript(this Nysa.CodeAnalysis.VbScript.Semantics.Program @this, Action<String> appendLine)
         {
-            foreach (var stmt in @this)
+            foreach (var stmt in @this.Statements)
                 stmt.ToVbScript(appendLine);
 
             return Unit.Value;

@@ -17,7 +17,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public PropertyAccessTypes Access { get; private set; }
 
-        public PropertyDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, PropertyAccessTypes access, Identifier name, IEnumerable<ArgumentDefinition> arguments, StatementList statements)
+        public PropertyDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, PropertyAccessTypes access, Identifier name, IEnumerable<ArgumentDefinition> arguments, IEnumerable<Statement> statements)
             : base(source, visibility, isDefault, name, arguments, statements)
         {
             this.Access = access;

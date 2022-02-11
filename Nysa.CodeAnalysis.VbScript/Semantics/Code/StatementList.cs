@@ -36,8 +36,6 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public StatementList(SyntaxNode source, IEnumerable<Statement> statements)
             : base(source)
         {
-            var x = new List<Object>();
-
             this._Statements = statements.ToArray();
         }
 

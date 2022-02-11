@@ -17,27 +17,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *                | "While" <Expr> <NL> <BlockStmtList> "WEnd" <NL>
      */
 
-    public class DoTestLoopStatement : Statement, IReadOnlyList<Statement>
+    public class DoTestLoopStatement : Statement
     {
-        private IReadOnlyList<Statement> _Items;
-
         public LoopTypes        Type        { get; private set; }
         public Expression       Condition   { get; private set; }
+        public StatementList    Statements  { get; private set; }
 
         public DoTestLoopStatement(SyntaxNode source, LoopTypes type, Expression condition, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Type       = type;
             this.Condition  = condition;
-            this._Items     = statements.ToArray();
+            this.Statements = new StatementList(source, statements);
         }
-
-        public Int32 Count => this._Items.Count;
-        public Statement this[Int32 index] => this._Items[index];
-        public IEnumerator<Statement> GetEnumerator()
-            => _Items.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator()
-            => ((IEnumerable)_Items).GetEnumerator();
     }
 
 }

@@ -25,7 +25,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this CallStatement @this)
             => Return.Enumerable<CodeNode>(@this.AccessExpression);
         public static IEnumerable<CodeNode> Members(this ClassDeclaration @this)
-            => Return.Enumerable<CodeNode>(@this.Name, @this.Members);
+            => Return.Enumerable<CodeNode>(@this.Name).Concat(@this.Statements);
         public static IEnumerable<CodeNode> Members(this Constant @this)
             => @this.Expression.Match(e => Return.Enumerable<CodeNode>(@this.Name, e),
                                       () => Return.Enumerable<CodeNode>(@this.Name));
@@ -45,15 +45,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this ConstantStatement @this)
             => @this.Constants.Select(c => (CodeNode)c);
         public static IEnumerable<CodeNode> Members(this DoLoopStatement @this)
-            => @this.Select(s => (CodeNode)s);
+            => @this.Statements.Select(s => (CodeNode)s);
         public static IEnumerable<CodeNode> Members(this DoLoopTestStatement @this)
-            => @this.Select(s => (CodeNode)s).Concat(Return.Enumerable<CodeNode>(@this.Condition));
+            => @this.Statements.Select(s => (CodeNode)s).Concat(Return.Enumerable<CodeNode>(@this.Condition));
         public static IEnumerable<CodeNode> Members(this DoTestLoopStatement @this)
-            => Return.Enumerable<CodeNode>(@this.Condition).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable<CodeNode>(@this.Condition).Concat(@this.Statements.Select(s => (CodeNode)s));
         public static IEnumerable<CodeNode> Members(this ElseBlock @this)
-            => @this.Select(s => (CodeNode)s);
+            => @this.Statements.Select(s => (CodeNode)s);
         public static IEnumerable<CodeNode> Members(this ElseIfBlock @this)
-            => Return.Enumerable<CodeNode>(@this.Predicate).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable<CodeNode>(@this.Predicate).Concat(@this.Statements.Select(s => (CodeNode)s));
         public static IEnumerable<CodeNode> Members(this EraseStatement @this)
             => Return.Enumerable<CodeNode>(@this.Name);
         public static IEnumerable<CodeNode> Members(this ExitStatement @this)
@@ -74,13 +74,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this FieldDeclaration @this)
             => @this.Fields.Select(f => (CodeNode)f);
         public static IEnumerable<CodeNode> Members(this FinalElseBlock @this)
-            => @this.Select(s => (CodeNode)s);
+            => @this.Statements.Select(s => (CodeNode)s);
         public static IEnumerable<CodeNode> Members(this ForEachStatement @this)
-            => Return.Enumerable<CodeNode>(@this.Variable, @this.In).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable<CodeNode>(@this.Variable, @this.In).Concat(@this.Statements.Select(s => (CodeNode)s));
         public static IEnumerable<CodeNode> Members(this ForStatement @this)
             => @this.Step.Match(s => Return.Enumerable<CodeNode>(@this.Variable, @this.From, @this.To, s),
                                 () => Return.Enumerable<CodeNode>(@this.Variable, @this.From, @this.To))
-                         .Concat(@this.Select(s => (CodeNode)s));
+                         .Concat(@this.Statements.Select(s => (CodeNode)s));
 
         // FunctionDeclaration is covered by MethodDeclaration
 
@@ -97,7 +97,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this MethodDeclaration @this)
             => Return.Enumerable<CodeNode>(@this.Name)
                      .Concat(@this.Arguments.Select(a => (CodeNode)a))
-                     .Concat(Return.Enumerable<CodeNode>(@this.Statements));
+                     .Concat(@this.Statements);
 
         public static IEnumerable<CodeNode> Members(this NewObjectExpression @this)
             => Return.Enumerable<CodeNode>(@this.Object);
@@ -135,7 +135,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this PrecedenceExpression @this)
             => Return.Enumerable<CodeNode>(@this.Value);
         public static IEnumerable<CodeNode> Members(this Program @this)
-            => @this.Select(s => (CodeNode)s);
+            => @this.Statements.Select(s => (CodeNode)s);
 
         // PropertyDeclaration is covered by MethodDeclaration
 
@@ -153,9 +153,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                };
 
         public static IEnumerable<CodeNode> Members(this SelectCaseElse @this)
-            => @this.Select(s => (CodeNode)s);
+            => @this.Statements.Select(s => (CodeNode)s);
         public static IEnumerable<CodeNode> Members(this SelectCaseWhen @this)
-            => Return.Enumerable<CodeNode>(@this.When).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable<CodeNode>(@this.When).Concat(@this.Statements.Select(s => (CodeNode)s));
         public static IEnumerable<CodeNode> Members(this SelectStatement @this)
             => Return.Enumerable<CodeNode>(@this.Value).Concat(@this.Cases.Select(c => (CodeNode)c));
 
@@ -200,9 +200,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static IEnumerable<CodeNode> Members(this VariableDeclaration @this)
             => @this.Variables.Select(v => (CodeNode)v);
         public static IEnumerable<CodeNode> Members(this WhileStatement @this)
-            => Return.Enumerable(@this.Condition).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable(@this.Condition).Concat(@this.Statements.Select(s => (CodeNode)s));
         public static IEnumerable<CodeNode> Members(this WithStatement @this)
-            => Return.Enumerable(@this.Expression).Concat(@this.Select(s => (CodeNode)s));
+            => Return.Enumerable(@this.Expression).Concat(@this.Statements.Select(s => (CodeNode)s));
 
     }
 

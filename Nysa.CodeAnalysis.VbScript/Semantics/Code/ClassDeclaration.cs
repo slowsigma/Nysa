@@ -24,14 +24,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class ClassDeclaration : Statement
     {
-        public Identifier       Name    { get; private set; }
-        public StatementList    Members { get; private set; }
+        public Identifier       Name        { get; private set; }
+        public StatementList    Statements  { get; private set; }
 
-        public ClassDeclaration(SyntaxNode source, Identifier name, StatementList members)
+        public ClassDeclaration(SyntaxNode source, Identifier name, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Name       = name;
-            this.Members    = members;
+            this.Statements = new StatementList(source, statements);
         }
     }
 

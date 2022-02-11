@@ -16,7 +16,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class SubroutineDeclaration : MethodDeclaration
     {
-        public SubroutineDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, StatementList statements)
+        public SubroutineDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, IEnumerable<Statement> statements)
             : base(source, visibility, isDefault, name, arguments, statements)
         {
         }

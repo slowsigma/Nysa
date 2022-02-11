@@ -19,14 +19,16 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *                      | <BlockStmt>
      */
 
-    public class Program : StatementList
+    public class Program : CodeNode
     {
-        public Boolean OptionExplicit { get; private set; }
+        public Boolean          OptionExplicit  { get; private set; }
+        public StatementList    Statements      { get; private set; }
 
         public Program(SyntaxNode source, IEnumerable<Statement> statements)
-            : base(source, statements)
+            : base(source)
         {
-            this.OptionExplicit = this.Any(n => n is OptionExplicitStatement);
+            this.Statements     = new StatementList(source, statements);
+            this.OptionExplicit = this.Statements.Any(n => n is OptionExplicitStatement);
         }
     }
 

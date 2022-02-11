@@ -13,25 +13,17 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      * <WithStmt> ::= "With" <Expr> <NL> <BlockStmtList> "End" "With" <NL>
      */
 
-    public class WithStatement : Statement, IReadOnlyList<Statement>
+    public class WithStatement : Statement
     {
-        private IReadOnlyList<Statement> _Items;
-
         public Expression       Expression { get; private set; }
+        public StatementList    Statements { get; private set; }
 
         public WithStatement(SyntaxNode source, Expression expression, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Expression = expression;
-            this._Items     = statements.ToArray();
+            this.Statements = new StatementList(source, statements);
         }
-
-        public Int32 Count => this._Items.Count;
-        public Statement this[Int32 index] => this._Items[index];
-        public IEnumerator<Statement> GetEnumerator()
-            => _Items.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator()
-            => ((IEnumerable)_Items).GetEnumerator();
     }
 
 }

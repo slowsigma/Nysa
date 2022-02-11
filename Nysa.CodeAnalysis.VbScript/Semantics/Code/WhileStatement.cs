@@ -17,25 +17,17 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *                | "While" <Expr> <NL> <BlockStmtList> "WEnd" <NL>
      */
 
-    public class WhileStatement : Statement, IReadOnlyList<Statement>
+    public class WhileStatement : Statement
     {
-        private IReadOnlyList<Statement> _Items;
-
-        public Expression       Condition   { get; private set; }
+        public Expression       Condition  { get; private set; }
+        public StatementList    Statements { get; private set; }
 
         public WhileStatement(SyntaxNode source, Expression condition, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Condition  = condition;
-            this._Items     = statements.ToArray();
+            this.Statements = new StatementList(source, statements);
         }
-
-        public Int32 Count => this._Items.Count;
-        public Statement this[Int32 index] => this._Items[index];
-        public IEnumerator<Statement> GetEnumerator()
-            => _Items.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator()
-            => ((IEnumerable)_Items).GetEnumerator();
     }
 
 }

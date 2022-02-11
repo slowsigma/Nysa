@@ -34,14 +34,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IReadOnlyList<ArgumentDefinition>    Arguments   { get; private set; }
         public StatementList                        Statements  { get; private set; }
 
-        protected MethodDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, StatementList statements)
+        protected MethodDeclaration(SyntaxNode source, Option<VisibilityTypes> visibility, Boolean isDefault, Identifier name, IEnumerable<ArgumentDefinition> arguments, IEnumerable<Statement> statements)
             : base(source)
         {
             this.Visibility = visibility;
             this.IsDefault  = isDefault;
             this.Name       = name;
             this.Arguments  = arguments.ToArray();
-            this.Statements = statements;
+            this.Statements = new StatementList(source, statements);
         }
     }
 

@@ -17,9 +17,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
      *                    | 
      */
 
-    public abstract class ElseBlock : StatementList
+    public abstract class ElseBlock : Statement
     {
-        protected ElseBlock(SyntaxNode source, IEnumerable<Statement> statements) : base(source, statements) { }
+        public StatementList Statements { get; private set; }
+
+        protected ElseBlock(SyntaxNode source, IEnumerable<Statement> statements)
+            : base(source)
+        {
+            this.Statements = new StatementList(source, statements);
+        }
     }
 
 }
