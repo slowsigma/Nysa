@@ -32,11 +32,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public StatementList                Consequent      { get; private set; }
         public IReadOnlyList<ElseBlock>     Alternatives    { get; private set; }
 
-        public IfStatement(SyntaxNode source, Expression predicate, StatementList consequent, IEnumerable<ElseIfBlock> elseIfs, Option<FinalElseBlock> @else)
+        public IfStatement(SyntaxNode source, Expression predicate, IEnumerable<Statement> consequent, IEnumerable<ElseIfBlock> elseIfs, Option<FinalElseBlock> @else)
             : base(source)
         {
             this.Predicate      = predicate;
-            this.Consequent     = consequent;
+            this.Consequent     = new StatementList(source, consequent);
             this.Alternatives   = @else.Match(e => elseIfs.Select(i => (ElseBlock)i).Concat(Return.Enumerable(e)),
                                               () => elseIfs.Select(i => (ElseBlock)i))
                                        .ToArray();

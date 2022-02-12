@@ -364,7 +364,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         private static readonly Transform ElseBlocksTransform
             = (TokenCheck:  Maybe.TokenOf(Id.Symbol.ElseIf),
-               ElseIfBuild: With.Parts(Skip.ToExpected<Expression>(), Skip.ToZeroOrMore<Statement>(), Skip.ToZeroOrMore<ElseBlock>()),
+               ElseIfBuild: With.Parts(Skip.ToExpected<Expression>(),
+                                       Skip.ToZeroOrMore<Statement>(s => !(s is ElseBlock)),
+                                       Skip.ToZeroOrMore<ElseBlock>()),
                ElseBuild:   With.Parts(Skip.ToZeroOrMore<Statement>())
               ).Make(t => new Transform((x, m) => m.Length == 0
                                                   ? m
@@ -444,7 +446,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                .Make((b, ta, tb, s) => new SelectCaseElse(b, s)),
                                            With.Parts(Expect.TokenOf(Id.Symbol.Case),
                                                       Skip.ToExpected<ExpressionList>(),
-                                                      Skip.ToZeroOrMore<Statement>(),
+                                                      Skip.ToZeroOrMore<Statement>(s => !(s is SelectCase)),
                                                       Skip.ToZeroOrMore<SelectCase>())
                                                .Make((b, t, el, s, c) => Return.Enumerable<SelectCase>(new SelectCaseWhen(b, el, s)).Concat(c))));
 
@@ -647,7 +649,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                     Maybe.Node<FinalElseBlock>())
                                              .Make((ns, a, b, c) => new IfStatement(ns, a, b, Enumerable.Empty<ElseIfBlock>(), c)) },
             { Id.Rule.IfStmt,            With.Parts(Skip.ToExpected<Expression>(),
-                                                    Skip.ToZeroOrMore<Statement>(),
+                                                    Skip.ToZeroOrMore<Statement>(s => !(s is ElseBlock)),
                                                     Skip.ToZeroOrMore<ElseIfBlock>(),
                                                     Maybe.Node<FinalElseBlock>())
                                              .Make((ns, a, b, c, d) => new IfStatement(ns, a, new StatementList(ns, b), c, d)) },

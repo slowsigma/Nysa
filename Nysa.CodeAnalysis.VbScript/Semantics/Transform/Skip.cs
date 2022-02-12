@@ -62,7 +62,28 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                     if (b[current.Value] is SemanticItem semantic && semantic.Value is T node)
                     { items.Add(node); }
                     else if (!(b[current.Value] is TokenItem))
-                    { break; }
+                    { break; } // exit, current is not token and not T
+
+                    current = current.Value + 1;
+                }
+
+                return (items, current);
+            };
+
+        // Note: Skip tokens until we find T, then skip tokens and gather T until we either run out of T or not andTrue.
+        public static Get<IEnumerable<T>> ToZeroOrMore<T>(Func<T, Boolean> andTrue)
+            where T : CodeNode
+            => (b, i) =>
+            {
+                var current = i;
+                var items = new List<T>();
+
+                while (current.Value < b.Length)
+                {
+                    if (b[current.Value] is SemanticItem semantic && semantic.Value is T node && andTrue(node))
+                    { items.Add(node); }
+                    else if (!(b[current.Value] is TokenItem))
+                    { break; } // exist, current is not token or not T or not andTrue
 
                     current = current.Value + 1;
                 }
