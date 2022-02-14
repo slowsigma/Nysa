@@ -25,7 +25,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 throw new ArgumentException("The default symbol must exist in the members collection.");
 
             this.Members = members.ToList();
-            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.LookupKey(), StringComparer.OrdinalIgnoreCase));
+            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
 
             this.Default = @default;
         }

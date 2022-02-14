@@ -17,7 +17,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         protected ScriptSymbols(IEnumerable<Symbol> members)
         {
             this.Members = members.ToList();
-            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.LookupKey(), StringComparer.OrdinalIgnoreCase));
+            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
         }
     }
 

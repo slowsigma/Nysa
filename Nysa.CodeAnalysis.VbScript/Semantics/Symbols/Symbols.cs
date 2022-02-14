@@ -128,20 +128,6 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             return hostMembers;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="this"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static String LookupKey(this Symbol @this)
-            => @this switch
-            {
-                HardSymbol hard => hard.NewName is Some<String> someNew ? someNew.Value : hard.Name,
-                PropertySymbol prop => prop.Name,
-                _ => throw new Exception("Unexpected type.")
-            };
-
         private static Symbol[] _NoMembers = new Symbol[] { };
 
         public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)

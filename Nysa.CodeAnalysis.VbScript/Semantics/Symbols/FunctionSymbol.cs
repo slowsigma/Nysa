@@ -18,7 +18,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             : base(name, newName, isPublic)
         {
             this.Members    = members.ToList();
-            this.Indexed    = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.LookupKey(), StringComparer.OrdinalIgnoreCase));
+            this.Indexed    = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
         }
 
         public FunctionSymbol(String name, Boolean isPublic, IEnumerable<Symbol> members)
