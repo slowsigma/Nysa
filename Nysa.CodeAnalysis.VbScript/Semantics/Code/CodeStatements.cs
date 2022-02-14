@@ -50,6 +50,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 OptionExplicitStatement optExpicitStmt => collect(optExpicitStmt),
                 PropertyDeclaration propDecl => collect(propDecl).Affect(u => { propDecl.Statements.GatherStatements(collect); }),
                 RedimStatement redimStmt => collect(redimStmt),
+                SelectCase selectCase => collect(selectCase).Affect(u => { selectCase.Statements.GatherStatements(collect); }),
                 SelectStatement selectStmt => collect(selectStmt).Affect(u => { selectStmt.Cases.GatherStatements(collect); }),
                 SubroutineDeclaration subDecl => collect(subDecl).Affect(u => { subDecl.Statements.GatherStatements(collect); }),
                 VariableDeclaration varDecl => collect(varDecl),
