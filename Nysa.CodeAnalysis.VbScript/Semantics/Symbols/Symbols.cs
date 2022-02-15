@@ -126,6 +126,34 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("Year".EmptyFunction());
             hostMembers.Add("Randomize".EmptyFunction());
 
+            hostMembers.Add("vbEmpty".ToConstant());
+            hostMembers.Add("vbNull".ToConstant());
+            hostMembers.Add("vbBoolean".ToConstant());
+            hostMembers.Add("vbByte".ToConstant());
+            hostMembers.Add("vbInteger".ToConstant());
+            hostMembers.Add("vbLong".ToConstant());
+            hostMembers.Add("vbSingle".ToConstant());
+            hostMembers.Add("vbDouble".ToConstant());
+            hostMembers.Add("vbDate".ToConstant());
+            hostMembers.Add("vbString".ToConstant());
+            hostMembers.Add("vbObject".ToConstant());
+            hostMembers.Add("vbArray".ToConstant());
+
+            hostMembers.Add("vbCr".ToConstant());
+            hostMembers.Add("vbCrLf".ToConstant());
+            hostMembers.Add("vbLf".ToConstant());
+            hostMembers.Add("vbNullChar".ToConstant());
+            hostMembers.Add("vbNullString".ToConstant());
+            hostMembers.Add("vbTab".ToConstant());
+
+            hostMembers.Add("vbSunday".ToConstant());
+            hostMembers.Add("vbMonday".ToConstant());
+            hostMembers.Add("vbTuesday".ToConstant());
+            hostMembers.Add("vbWednesday".ToConstant());
+            hostMembers.Add("vbThursday".ToConstant());
+            hostMembers.Add("vbFriday".ToConstant());
+            hostMembers.Add("vbSaturday".ToConstant());
+
             var domElemMembers = new List<Symbol>();
 
             domElemMembers.Add("accessKey".EmptyProperty(false));
@@ -307,6 +335,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         private static Symbol[] _NoMembers = new Symbol[] { };
 
+        public static ConstantSymbol ToConstant(this String @this, Boolean isPublic = true)
+            => new ConstantSymbol(@this, isPublic);
         public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)
             => new PropertyGetSymbol(@this, isPublic, _NoMembers);
         public static PropertySetSymbol EmptyPropertySet(this String @this, Boolean isPublic = true)

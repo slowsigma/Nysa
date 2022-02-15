@@ -59,58 +59,81 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 _ => Unit.Value
             };
 
-        public static HashSet<T> GetAll<T>(this Program @this)
+        private static Unit GatherPathExpressions(this Expression @this, Func<PathExpression, Unit> collect)
+            => @this switch
+            {
+                PathExpression pathExpr => collect(pathExpr),
+                OperateExpression opExpr => opExpr.Operands.Affect(o => { o.GatherPathExpressions(collect); }),
+                PrecedenceExpression precExpr => precExpr.Value.GatherPathExpressions(collect),
+                _ => Unit.Value
+            };
+
+        private static Unit GatherPathExpressions(this Statement @this, Func<PathExpression, Unit> collect)
+            => @this switch
+            {
+                AssignStatement assignStmt => assignStmt.Affect(u =>
+                                             {
+                                                 assignStmt.Left.GatherPathExpressions(collect);
+                                                 assignStmt.Right.GatherPathExpressions(collect);
+                                             }),
+                DoLoopTestStatement loopTestStmt => loopTestStmt.Condition.GatherPathExpressions(collect),
+                DoTestLoopStatement testLoopStmt => testLoopStmt.Condition.GatherPathExpressions(collect),
+                ElseIfBlock elseIf => elseIf.Predicate.GatherPathExpressions(collect),
+                ForEachStatement forEach => forEach.In.GatherPathExpressions(collect),
+                ForStatement forStmt => forStmt.Affect(f =>
+                                        {
+                                            f.From.GatherPathExpressions(collect);
+                                            f.To.GatherPathExpressions(collect);
+                                            if (f.Step is Some<Expression> stepExpr)
+                                                stepExpr.Value.GatherPathExpressions(collect);
+                                        }),
+                IfStatement ifStmt => ifStmt.Predicate.GatherPathExpressions(collect),
+                RedimStatement redim => redim.Variables.SelectMany(v => v.RankExpressions).Affect(e => { e.GatherPathExpressions(collect); }),
+                SelectCaseWhen caseWhen => caseWhen.When.Affect(e => { e.GatherPathExpressions(collect); }),
+                SelectStatement selectStmt => selectStmt.Value.GatherPathExpressions(collect),
+                WhileStatement whileStmt => whileStmt.Condition.GatherPathExpressions(collect),
+                WithStatement withStmt => withStmt.Expression.GatherPathExpressions(collect),
+                _ => Unit.Value
+            };
+
+        public static List<T> GetAll<T>(this Program @this, Func<T, Boolean> where)
+            where T : Statement
         {
-            var @set = new HashSet<T>();
+            var list = new List<T>();
 
-            @this.Statements.GatherStatements(s => { if (s is T asT) { @set.Add(asT); } return Unit.Value; });
+            @this.Statements.GatherStatements(s => { if (s is T asT && where(asT)) { list.Add(asT); } return Unit.Value; });
 
-            return @set;
+            return list;
         }
 
-        public static HashSet<T> GetAll<T>(this Program @this, Func<T, Boolean> where)
+        public static IReadOnlyList<Statement> GetAll(this ClassDeclaration @this, Func<Statement, Boolean> where)
         {
-            var @set = new HashSet<T>();
+            var list = new List<Statement>();
 
-            @this.Statements.GatherStatements(s => { if (s is T asT && where(asT)) { @set.Add(asT); } return Unit.Value; });
+            @this.Statements.GatherStatements(s => { if (where(s)) { list.Add(s); } return Unit.Value; });
 
-            return @set;
+            return list;
         }
 
-        public static HashSet<T> GetAll<T>(this ClassDeclaration @this)
+        public static List<T> GetAll<T>(this MethodDeclaration @this, Func<T, Boolean> where)
+            where T : Statement
         {
-            var @set = new HashSet<T>();
+            var list = new List<T>();
 
-            @this.GatherStatements(s => { if (s is T asT) { @set.Add(asT); } return Unit.Value; });
+            @this.GatherStatements(s => { if (s is T asT && where(asT)) { list.Add(asT); } return Unit.Value; });
 
-            return @set;
+            return list;
         }
 
-        public static HashSet<T> GetAll<T>(this ClassDeclaration @this, Func<T, Boolean> where)
+        public static List<PathExpression> GetPathExprs(this MethodDeclaration @this)
         {
-            var @set = new HashSet<T>();
+            var list = new List<PathExpression>();
+            var stmts = @this.GetAll<Statement>(s => true);
 
-            @this.GatherStatements(s => { if (s is T asT && where(asT)) { @set.Add(asT); } return Unit.Value; });
+            stmts.Select(s => s)
+                 .Affect(v => { v.GatherPathExpressions(p => { list.Add(p); return Unit.Value; }); });
 
-            return @set;
-        }
-
-        public static HashSet<T> GetAll<T>(this MethodDeclaration @this)
-        {
-            var @set = new HashSet<T>();
-
-            @this.GatherStatements(s => { if (s is T asT) { @set.Add(asT); } return Unit.Value; });
-
-            return @set;
-        }
-
-        public static HashSet<T> GetAll<T>(this MethodDeclaration @this, Func<T, Boolean> where)
-        {
-            var @set = new HashSet<T>();
-
-            @this.GatherStatements(s => { if (s is T asT && where(asT)) { @set.Add(asT); } return Unit.Value; });
-
-            return @set;
+            return list;
         }
 
     }
