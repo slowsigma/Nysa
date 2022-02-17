@@ -18,6 +18,15 @@ namespace Nysa.CodeAnalysis.VbScript
 
     public static class ParseFunctions
     {
+        private static readonly String _vbscript_colon = "vbscript:";
+
+        private static String Path(this XElement element)
+            => element.Parent == null
+               ? element.Name.ToString()
+               : String.Concat(element.Parent.Path(), "/", element.Name.ToString());
+        private static String Path(this XElement @this, XAttribute attribute)
+            => String.Concat(@this.Path(), "/@", attribute.Name.LocalName);
+
         private static ParseException ToParseError(this Dorata.Text.Parsing.VBScript.ParseError @this)
             => new ParseException(@this.Type == VBScript.ParseErrorTypes.InvalidSymbol ? "Invalid symbol." : "Unexpected symbol.",
                                   @this.LineNumber,
@@ -31,7 +40,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 ? g.A.Confirmed()
                                 : (Failed<ParseNode>)g.B.ToParseError());
 
-        public static Suspect<Parse> Parse(this Content content)
+        public static Suspect<Parse> Parse(this Content content, HashSet<String>? eventAttributes = null)
             =>   content is HtmlContent      html     ? html.Parse().Map(s => (Parse)s)
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
                : content is XslContent       xsl      ? xsl.Parse().Map(s => (Parse)s)
@@ -42,7 +51,7 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Parse()
                     .Make(p => new VbScriptParse(@this, p));
 
-        private static Suspect<HtmlXmlParse> ParseXml(this HtmlContent htmlContent)
+        private static Suspect<HtmlXmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
             (XDocument Document, List<(String Source, XElement Element)> Includes, List<HtmlXmlVbScriptParse> VbParses) FromDocument(XDocument document)
             {
@@ -65,9 +74,25 @@ namespace Nysa.CodeAnalysis.VbScript
                         }
                         else if (!String.IsNullOrWhiteSpace(script.Value))
                         {
-                            var vbParse = (new VbScriptContent(htmlContent.Source, script.Value, Option.None)).Parse();
+                            var vbParse = (new VbScriptContent(script.Path(), script.Value)).Parse();
 
                             parses.Add(new HtmlXmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                        }
+                    }
+                }
+
+                if (eventAttributes != null)
+                {
+                    foreach (var element in document.Descendants())
+                    {
+                        foreach (var attribute in element.Attributes().Where(a => eventAttributes.Contains(a.Name.LocalName)))
+                        {
+                            if (attribute.Value.DataStartsWith(_vbscript_colon))
+                            {
+                                var vbParse = (new VbScriptContent(element.Path(attribute), String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n"))).Parse();
+
+                                parses.Add(new HtmlXmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
+                            }
                         }
                     }
                 }
@@ -83,7 +108,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
-        public static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent)
+        public static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
             (HtmlDocument Document, List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
             {
@@ -95,7 +120,6 @@ namespace Nysa.CodeAnalysis.VbScript
                     var lang = script.Attributes.FirstOrDefault(a => a.Name.DataEndsWith("language"));
                     var type = script.Attributes.FirstOrDefault(a => a.Name.DataEndsWith("type"));
                     var src  = script.Attributes.FirstOrDefault(a => a.Name.DataEndsWith("src"));
-                    var path = script.XPath;
 
                     if ((lang?.Value ?? String.Empty).DataEquals("vbscript") ||
                         (type?.Value ?? String.Empty).DataEquals(@"text/vbscript"))
@@ -107,9 +131,25 @@ namespace Nysa.CodeAnalysis.VbScript
                         }
                         else if (!String.IsNullOrWhiteSpace(script.InnerText))
                         {
-                            var vbParse = (new VbScriptContent(htmlContent.Source, script.InnerText, path.Some())).Parse();
+                            var vbParse = (new VbScriptContent(script.XPath, script.InnerText)).Parse();
 
                             parses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                        }
+                    }
+                }
+
+                if (eventAttributes != null)
+                {
+                    foreach (var node in document.DocumentNode.Descendants())
+                    {
+                        foreach (var attribute in node.Attributes.Where(a => eventAttributes.Contains(a.Name)))
+                        {
+                            if (attribute.Value.DataStartsWith(_vbscript_colon))
+                            {
+                                var vbParse = (new VbScriptContent(attribute.XPath, String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n"))).Parse();
+
+                                parses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, node, attribute));
+                            }
                         }
                     }
                 }
@@ -125,15 +165,10 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
-        public static Suspect<Parse> Parse(this HtmlContent @this)
-            => @this.ParseXml()
+        public static Suspect<Parse> Parse(this HtmlContent @this, HashSet<String>? eventAttributes = null)
+            => @this.ParseXml(eventAttributes)
                     .Match(xp => xp.Confirmed<Parse>(),
-                           e => @this.ParseHtml().Bind(hp => hp.Confirmed<Parse>()));
-
-        private static String Path(this XElement element)
-            => element.Parent == null
-               ? element.Name.ToString()
-               : String.Concat(element.Parent.Path(), "/", element.Name.ToString());
+                           e => @this.ParseHtml(eventAttributes).Bind(hp => hp.Confirmed<Parse>()));
 
         public static Suspect<XslParse> Parse(this XslContent xslContent)
         {
@@ -144,7 +179,8 @@ namespace Nysa.CodeAnalysis.VbScript
                     var lang = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("language"));
                     var pref = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("implements-prefix")).Map(a => a.Value);
                     var path = script.Path();
-                    var cont = new VbScriptContent(xslContent.Source, script.Value, path.Some());
+
+                    var cont = new VbScriptContent(path, script.Value);
 
                     if (lang.Match(a => a.Value.DataEquals("vbscript"), false))
                         yield return new XslVbScriptParse(cont, pref, cont.Value.Parse());
