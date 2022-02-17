@@ -12,12 +12,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     public abstract class ScriptSymbols : ISymbolScope
     {
         public IReadOnlyList<Symbol>       Members { get; private set; }
-        public IDictionary<String, Symbol> Indexed { get; private set; }
+        public IDictionary<String, Symbol> Index   { get; private set; }
 
         protected ScriptSymbols(IEnumerable<Symbol> members)
         {
-            this.Members = members.ToList();
-            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
+            var parts = Symbols.Distinct(members);
+
+            this.Members    = parts.Members;
+            this.Index      = parts.Index;
         }
     }
 

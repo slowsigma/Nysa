@@ -11,9 +11,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record ClassSymbol : HardSymbol, ISymbolScope
     {
-        public IReadOnlyList<Symbol>       Members { get; private set; }
-        public IDictionary<String, Symbol> Indexed { get; private set; }
-        public Option<Symbol>              Default { get; private set; }
+        public IReadOnlyList<Symbol>       Members  { get; private set; }
+        public IDictionary<String, Symbol> Index    { get; private set; }
+        public Option<Symbol>              Default  { get; private set; }
 
         public ClassSymbol(String name, Option<String> newName, IEnumerable<Symbol> members, Option<Symbol> @default)
             : base(name, newName)
@@ -24,10 +24,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             if (@default is Some<Symbol> someDefault && !members.Any(s => s.Name.Equals(someDefault.Value.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("The default symbol must exist in the members collection.");
 
-            this.Members = members.ToList();
-            this.Indexed = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
+            var parts = Symbols.Distinct(members);
 
-            this.Default = @default;
+            this.Members = parts.Members;
+            this.Index   = parts.Index;
+
+            this.Default = @default.Map(d => this.Index[d.Name]);
         }
 
         public ClassSymbol(String name, IEnumerable<Symbol> members)

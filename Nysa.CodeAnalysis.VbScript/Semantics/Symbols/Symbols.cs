@@ -350,6 +350,28 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         public static IEnumerable<Symbol> Members(params Symbol[] members)
             => members;
+
+        internal static (List<Symbol> Members, Dictionary<String, Symbol> Index) Distinct(IEnumerable<Symbol> raw)
+        {
+            var symbols = new List<Symbol>();
+            var unique  = new Dictionary<String, Symbol>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var symbol in raw)
+            {
+                var name = symbol.Name;
+
+                if (unique.ContainsKey(name))
+                {
+                    symbols.Remove(unique[name]);
+                    unique.Remove(symbol.Name);
+                }
+
+                symbols.Add(symbol);
+                unique.Add(name, symbol);
+            }
+
+            return (symbols, unique);
+        }
     }
 
 }

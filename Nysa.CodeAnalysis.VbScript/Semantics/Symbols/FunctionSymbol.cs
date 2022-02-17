@@ -11,14 +11,16 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record FunctionSymbol : MemberSymbol, ISymbolScope
     {
-        public IReadOnlyList<Symbol>       Members { get; private set; }
-        public IDictionary<String, Symbol> Indexed { get; private set; }
+        public IReadOnlyList<Symbol>       Members  { get; private set; }
+        public IDictionary<String, Symbol> Index    { get; private set; }
 
         public FunctionSymbol(String name, Option<String> newName, Boolean isPublic, IEnumerable<Symbol> members)
             : base(name, newName, isPublic)
         {
-            this.Members    = members.ToList();
-            this.Indexed    = new ReadOnlyDictionary<String, Symbol>(members.ToDictionary(k => k.Name, StringComparer.OrdinalIgnoreCase));
+            var parts = Symbols.Distinct(members);
+
+            this.Members  = parts.Members;
+            this.Index    = parts.Index;
         }
 
         public FunctionSymbol(String name, Boolean isPublic, IEnumerable<Symbol> members)
