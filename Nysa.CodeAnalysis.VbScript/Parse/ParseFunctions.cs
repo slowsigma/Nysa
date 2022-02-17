@@ -124,7 +124,7 @@ namespace Nysa.CodeAnalysis.VbScript
                     if ((lang?.Value ?? String.Empty).DataEquals("vbscript") ||
                         (type?.Value ?? String.Empty).DataEquals(@"text/vbscript"))
                     {
-                        if (src != null && !String.IsNullOrWhiteSpace(src.Value))
+                        if (!String.IsNullOrWhiteSpace(src?.Value))
                         {
                             if (!includes.ContainsKey(src.Value))
                                 includes.Add(src.Value, script);
