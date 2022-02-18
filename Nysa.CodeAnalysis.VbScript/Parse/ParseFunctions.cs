@@ -102,7 +102,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
             return Return.Try(() =>
                                {
-                                   var doc = XDocument.Parse(htmlContent.Value);
+                                   var doc = XDocument.Parse(htmlContent.Value, LoadOptions.PreserveWhitespace);
 
                                    return FromDocument(doc).Make(t => new HtmlXmlParse(htmlContent, t.Document, t.Includes, t.VbParses));
                                });
