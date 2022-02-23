@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
+
 using Dorata.Text.Lexing;
 
 namespace Dorata.Text.Parsing
@@ -48,7 +49,7 @@ namespace Dorata.Text.Parsing
             {
                 if (checkDown.SearchId     != checkFind.Rule.Id ||
                     checkDown.Entry.Number <  checkFind.Number  ||
-                    down.Above.Value.Contains(checkFind)          )
+                    down.Above.Map(v => v.Contains(checkFind)).Or(false))
                     return false;
 
                 var checkRule = checkDown.Entry.Rule;
@@ -108,7 +109,7 @@ namespace Dorata.Text.Parsing
             {
                 if (across.Entry.Rule.IsEmpty)
                 {
-                    across.Result = across.Entry.Number == 0 ? AcrossItem.StartWithEmpty(across.Entry, across.Position) : Option<AcrossItem>.None;
+                    across.Result = across.Entry.Number == 0 ? AcrossItem.StartWithEmpty(across.Entry, across.Position).Some() : Option<AcrossItem>.None;
                     CallReturn();
                 }
                 else if (across.CurrentRule >= across.Entry.Rule.DefinitionIds.Count)
@@ -127,8 +128,8 @@ namespace Dorata.Text.Parsing
 
                         if (token.Id == id)
                         {
-                            var previous = across.Previous.Select(p => p.NextAcrossToken(nextPosition, token),
-                                                                    () => AcrossItem.StartWithToken(across.Entry, nextPosition, token));
+                            var previous = across.Previous.Match(p  => p.NextAcrossToken(nextPosition, token),
+                                                                 () => AcrossItem.StartWithToken(across.Entry, nextPosition, token));
 
                             CallAcross(BuildStates.RETURN, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - 1, previous);
                         }
@@ -185,11 +186,11 @@ namespace Dorata.Text.Parsing
                 if (!downCache.ContainsKey(downKey))
                     downCache.Add(downKey, across.Result);
 
-                if (across.Result.IsSome)
+                if (across.Result is Some<AcrossItem> someAcross)
                 {
-                    var nextPosition = across.Result.Value.NextPosition;
-                    var previous = across.Previous.Select(p => p.NextAcrossNode(nextPosition, across.Result.Value),
-                                                            () => AcrossItem.StartWithNode(across.Entry, nextPosition, across.Result.Value));
+                    var nextPosition = someAcross.Value.NextPosition;
+                    var previous = across.Previous.Match(p => p.NextAcrossNode(nextPosition, someAcross.Value),
+                                                         () => AcrossItem.StartWithNode(across.Entry, nextPosition, someAcross.Value));
 
                     CallAcross(BuildStates.ACROSS_MATCH_ACROSS_CHECK, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - across.Match.Number, previous);
                 }
@@ -201,7 +202,7 @@ namespace Dorata.Text.Parsing
 
             stateLogic[BuildStates.ACROSS_MATCH_ACROSS_CHECK] = () =>
             {
-                if (across.Result.IsSome)
+                if (across.Result is Some<AcrossItem>)
                     CallReturn();
                 else
                     across.SetCallState(BuildStates.ACROSS_MATCH);
@@ -211,7 +212,9 @@ namespace Dorata.Text.Parsing
             {
                 if (down.Entry.Rule.IsEmpty)
                 {
-                    down.Result = down.Entry.Number == 0 ? AcrossItem.StartWithEmpty(down.Entry, down.Position) : Option<AcrossItem>.None;
+                    down.Result = down.Entry.Number == 0
+                                  ? AcrossItem.StartWithEmpty(down.Entry, down.Position).Some<AcrossItem>()
+                                  : Option<AcrossItem>.None;
                     CallReturn();
                 }
                 else
@@ -236,7 +239,8 @@ namespace Dorata.Text.Parsing
                     else
                     {
                         down.SearchId = id;
-                        down.Above = down.Above.Select(p => p.WithNext(down.Entry), () => new DownItem(down.Entry));
+                        down.Above = down.Above.Match(p  => p.WithNext(down.Entry).Some(),
+                                                      () => new DownItem(down.Entry).Some());
                         down.SetCallState(BuildStates.DOWN_MATCH);
                     }
                 }
@@ -254,7 +258,7 @@ namespace Dorata.Text.Parsing
                     {
                         down.Match = find;
 
-                        CallDown(BuildStates.DOWN_MATCH_DOWN_CHECK, find, down.Position, down.Above.Value);
+                        CallDown(BuildStates.DOWN_MATCH_DOWN_CHECK, find, down.Position, down.Above.Match(v => v, () => (DownItem?)null));
                     }
                 }
                 else
@@ -266,11 +270,11 @@ namespace Dorata.Text.Parsing
 
             stateLogic[BuildStates.DOWN_MATCH_DOWN_CHECK] = () =>
             {
-                if (down.Result.IsSome)
+                if (down.Result is Some<AcrossItem> someAcross)
                 {
-                    var nextPosition = down.Result.Value.NextPosition;
+                    var nextPosition = someAcross.Value.NextPosition;
 
-                    CallAcross(BuildStates.DOWN_MATCH_ACROSS_CHECK, down.Entry, nextPosition, 1, down.Entry.Number - down.Match.Number, AcrossItem.StartWithNode(down.Entry, nextPosition, down.Result.Value));
+                    CallAcross(BuildStates.DOWN_MATCH_ACROSS_CHECK, down.Entry, nextPosition, 1, down.Entry.Number - down.Match.Number, AcrossItem.StartWithNode(down.Entry, nextPosition, someAcross.Value));
                 }
                 else
                 {
@@ -280,7 +284,7 @@ namespace Dorata.Text.Parsing
 
             stateLogic[BuildStates.DOWN_MATCH_ACROSS_CHECK] = () =>
             {
-                if (down.Result.IsSome)
+                if (down.Result is Some<AcrossItem>)
                     CallReturn();
                 else
                     down.SetCallState(BuildStates.DOWN_MATCH);
@@ -302,7 +306,7 @@ namespace Dorata.Text.Parsing
 
         public static Option<Node> Create(FinalChart chart, Token[] input)
         {
-            var id = chart.Grammar.StartId;
+            var id     = chart.Grammar.StartId;
             var symbol = chart.Grammar.StartSymbol;
             var result = Option<Node>.None;
 
@@ -315,10 +319,10 @@ namespace Dorata.Text.Parsing
 
                     var check = Build(chart, input, entry, chart[0]);
 
-                    if (check.IsSome)
-                        return check.Value.AsNode();
+                    if (check is Some<AcrossItem> someAcross)
+                        return someAcross.Value.AsNode();
 
-                    if (result.IsSome)
+                    if (result is Some<Node>)
                         break;
                 }
             }

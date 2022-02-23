@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Nysa.Logics;
+
 using Dorata.Logics;
 
 namespace Dorata.Text.Lexing
@@ -16,7 +18,7 @@ namespace Dorata.Text.Lexing
 
         private static Node[] LongestAlternates(IEnumerable<Option<Node>> alternates)
         {
-            var actuals = alternates.Where(a => a.IsSome).Select(s => s.Value);
+            var actuals = alternates.SomeOnly();
 
             return actuals.Where(a => !(a is LongestNode))
                           .Concat(actuals.Where(a => a is LongestNode).SelectMany(l => ((LongestNode)l).Alternates))
@@ -27,21 +29,21 @@ namespace Dorata.Text.Lexing
         {
             var nodes = LongestAlternates(alternatives.Concat(additional));
 
-            return (nodes.Length > 1) ? (Option<LongestNode>)new LongestNode(nodes) : Option.None;
+            return (nodes.Length > 1) ? (new LongestNode(nodes)).Some() : Option<LongestNode>.None;
         }
 
         public static Option<LongestNode> Longest(params Option<Node>[] alternatives)
         {
             var nodes = LongestAlternates(alternatives);
 
-            return (nodes.Length > 1) ? (Option<LongestNode>)new LongestNode(nodes) : Option.None;
+            return (nodes.Length > 1) ? (new LongestNode(nodes)).Some() : Option<LongestNode>.None;
         }
 
         public static Option<AnyOneNode> AnyOne(this String alternatives, Boolean? ignoreCase = null)
         {
             var nodes = alternatives.Select(c => c.One()).ToArray();
 
-            return (nodes.Length > 1) ? (Option<AnyOneNode>)new AnyOneNode(nodes, ignoreCase.GetValueOrDefault(Take.IgnoreCase)) : Option.None;
+            return (nodes.Length > 1) ? (new AnyOneNode(nodes, ignoreCase.GetValueOrDefault(Take.IgnoreCase))).Some() : Option<AnyOneNode>.None;
         }
 
         public static ThenNode Then(this Node primary, Node then) => new ThenNode(primary, then);

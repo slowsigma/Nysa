@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Nysa.Logics;
+
 using Dorata.Logics;
 
 namespace Dorata.Text.Lexing
@@ -36,27 +38,27 @@ namespace Dorata.Text.Lexing
             public static HitOrMiss NewMiss(Int32 size) => new Miss(size);
 
             public static Miss Largest(Option<Miss> first, Option<Miss> second)
-                => first.OrValue(EMTPY_MISS).Size > second.OrValue(EMTPY_MISS).Size ? first.OrValue(EMTPY_MISS) : second.OrValue(EMTPY_MISS);
+                => first.Or(EMTPY_MISS).Size > second.Or(EMTPY_MISS).Size ? first.Or(EMTPY_MISS) : second.Or(EMTPY_MISS);
             public static Miss Smallest(Option<Miss> first, Option<Miss> second)
-                => first.OrValue(EMTPY_MISS).Size < second.OrValue(EMTPY_MISS).Size ? first.OrValue(EMTPY_MISS) : second.OrValue(EMTPY_MISS);
+                => first.Or(EMTPY_MISS).Size < second.Or(EMTPY_MISS).Size ? first.Or(EMTPY_MISS) : second.Or(EMTPY_MISS);
 
             public static Option<Hit> Largest(Option<Hit> first, Option<Hit> second)
             {
-                var firstLength  = first.Select(f => f.Span.Length).OrValue(-1);
-                var secondLength = second.Select(s => s.Span.Length).OrValue(-1);
+                var firstLength  = first.Map(f => f.Span.Length).Or(-1);
+                var secondLength = second.Map(s => s.Span.Length).Or(-1);
 
-                return   firstLength  > secondLength ? first.Value
-                       : secondLength > -1           ? second.Value
+                return   firstLength  > secondLength ? first
+                       : secondLength > -1           ? second
                        :                               Option<Hit>.None;
             }
 
             public static Option<Hit> Identified(Option<Hit> first, Option<Hit> second)
             {
-                var firstId  = first.Select(f => f.Id).OrValue(Identifier.None);
-                var secondId = second.Select(s => s.Id).OrValue(Identifier.None);
+                var firstId  = first.Map(f => f.Id).Or(Identifier.None);
+                var secondId = second.Map(s => s.Id).Or(Identifier.None);
 
-                return   firstId  != Identifier.None ? first.Value
-                       : secondId != Identifier.None ? second.Value
+                return   firstId  != Identifier.None ? first
+                       : secondId != Identifier.None ? second
                        :                               Option<Hit>.None;
             }
 
@@ -70,8 +72,8 @@ namespace Dorata.Text.Lexing
             public HitOrMiss(Miss miss) { this.IsHit = false; this.Miss = miss; }
             public T Select<T>(Func<Hit, T> fA, Func<Miss, T> fB) { return this.IsHit ? fA(this.Hit) : fB(this.Miss); }
             public void Apply(Action<Hit> actHit, Action<Miss> actMiss) { if (this.IsHit) actHit(this.Hit); else actMiss(this.Miss); }
-            public Option<Hit> ToHit() { return this.IsHit ? this.Hit : Option<Hit>.None; }
-            public Option<Miss> ToMiss() { return this.IsHit ? this.Miss : Option<Miss>.None; }
+            public Option<Hit> ToHit() { return this.IsHit ? this.Hit.Some() : Option<Hit>.None; }
+            public Option<Miss> ToMiss() { return this.IsHit ? this.Miss.Some() : Option<Miss>.None; }
 
         }
 

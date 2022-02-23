@@ -1,0 +1,37 @@
+here's what we have:
+
+A whole bunch of possible notes, each one specific to an instrument.
+A whole range of modifying values like velocity, sustain, release, detune, etc.
+Probability functions.
+Ramping functions.
+Modulating functions.
+Time functions: absolute time, relative time, beat time, etc.
+-- You have all the possible function of time available for use.
+fractioning functions
+
+Example:
+We want a function that triggers a specific note every beat
+
+assuming t = { 1, 2, 3, 4, 5, 6, 7, 8, 9, ... }
+   bnum(t) = { 0, 0, 0, 1, 0, 0, 0, 2, 0, ... }  // integer division
+   beat(t) = { 0, 0, 0, 1, 0, 0, 0, 1, 0, ... }  // => t = bnum(t) == 0 ? 0 : 1
+  bnote(t) = beat(t) == 1 ? NOTE_X : NO_NOTE;
+f(t) =
+
+We want maximum flexibility. In other words, we want the ability to add new functionality
+as part of the functionality of the system itself.  This can be acheived the same way
+we did the scheduling combinator library. We need to be able to create compositions
+(functional) that can then be saved in a data representation that can be loaded later.
+There might be some way to enable background loading by having a representation of
+a link to a function in a separate file (a reference or link).
+
+Time Sources (streams?)
+seems like this needs to be completely abstract and not fixed to an actual clock
+-- this seems like the CS concept of a stream of numbers
+   like julian time, just a set of numbers increasing.
+-- at some later point this would be attached to an actual clock so that the events
+   are created or looked up and sent at a specific real-world interval
+
+We also want to be able to create a function composition that represents a specific
+pattern of notes with specific time intervals in between.  That pattern can be
+repeated, compressed, stretched, flipped, or rotated.

@@ -5,4 +5,20 @@
     <Nullable>enable</Nullable>    
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Nysa.Logics\Bridge.cs" Link="Logics\Bridge.cs" />
+    <Compile Include="..\Nysa.Logics\Confirmed.cs" Link="Logics\Confirmed.cs" />
+    <Compile Include="..\Nysa.Logics\Failed.cs" Link="Logics\Failed.cs" />
+    <Compile Include="..\Nysa.Logics\Failed.T.cs" Link="Logics\Failed.T.cs" />
+    <Compile Include="..\Nysa.Logics\Functional.cs" Link="Logics\Functional.cs" />
+    <Compile Include="..\Nysa.Logics\None.cs" Link="Logics\None.cs" />
+    <Compile Include="..\Nysa.Logics\Option.cs" Link="Logics\Option.cs" />
+    <Compile Include="..\Nysa.Logics\OptionExtensions.cs" Link="Logics\OptionExtensions.cs" />
+    <Compile Include="..\Nysa.Logics\Return.cs" Link="Logics\Return.cs" />
+    <Compile Include="..\Nysa.Logics\Some.cs" Link="Logics\Some.cs" />
+    <Compile Include="..\Nysa.Logics\Suspect.cs" Link="Logics\Suspect.cs" />
+    <Compile Include="..\Nysa.Logics\Unit.cs" Link="Logics\Unit.cs" />
+  </ItemGroup>
+
 </Project>
+

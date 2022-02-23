@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Nysa.Logics;
+
 using Dorata.Logics;
 using Dorata.Text.Lexing;
 
@@ -33,6 +35,7 @@ namespace Dorata.Text.Parsing
                 this.Entry       = entry;
                 this.Position    = position;
                 this.MatchIndex  = -1;
+                this.Result      = Option<AcrossItem>.None;
             }
 
             public void SetCallState(BuildStates newCallState) { this.CallState = newCallState; }

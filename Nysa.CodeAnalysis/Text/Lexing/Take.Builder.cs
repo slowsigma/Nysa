@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Nysa.Logics;
+
 using Dorata.Logics;
 
 namespace Dorata.Text.Lexing
@@ -52,14 +54,14 @@ namespace Dorata.Text.Lexing
                 var nexts   = this._CharacterNodes.Select(n => n.Value.ToTake()).ToArray();
                 // anyOne will be valid if more than one nexts is a Take.OneNode
 
-                var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Select(a => (Take.Node)a);
+                var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
                 // longest will be valid if we have more than one valid nexts
-                var longest = anyOne.IsSome
-                              ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Concat(this._Others).Select(n => n.ToOption()), anyOne.Value)
-                              : Take.Longest(nexts.Select(n => (Option<Take.Node>)n).Concat(this._Others.Select(o => o.ToOption())));
+                var longest = anyOne is Some<Node>
+                              ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Concat(this._Others).Select(n => n.Some()), anyOne)
+                              : Take.Longest(nexts.Select(n => n.Some()).Concat(this._Others.Select(o => o.Some())));
 
-                return longest.Select(n => (Take.Node)n)
-                              .OrOther(anyOne);
+                return longest.Map(n => (Take.Node)n)
+                              .Or(anyOne);
             }
 
         }

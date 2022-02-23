@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
 
 namespace Dorata.Text.Lexing
 {
@@ -82,7 +82,7 @@ namespace Dorata.Text.Lexing
             public Boolean  IgnoreCase  { get; private set; }
 
             public OneNode(Char value, Boolean ignoreCase)
-                : base(c => c.End.Next().Select(n => OneEquals(value, n, ignoreCase) ? HitOrMiss.NewHit(c.Appended(1)) : HitOrMiss.NewMiss(1)).OrValue(HitOrMiss.NewMiss(1)))
+                : base(c => c.End.Next().Map(n => OneEquals(value, n, ignoreCase) ? HitOrMiss.NewHit(c.Appended(1)) : HitOrMiss.NewMiss(1)).Or(HitOrMiss.NewMiss(1)))
             {
                 this.Value      = value;
                 this.IgnoreCase = ignoreCase;
@@ -139,8 +139,10 @@ namespace Dorata.Text.Lexing
             public override HitOrMiss Find(TextSpan current)
                 => current.End
                           .Next()
-                          .Select(n => this._Alternatives.Contains(this.IgnoreCase ? Char.ToUpperInvariant(n) : n) ? HitOrMiss.NewHit(current.Appended(1)) : HitOrMiss.NewMiss(1))
-                          .OrValue(HitOrMiss.NewMiss(1));
+                          .Map(n => this._Alternatives.Contains(this.IgnoreCase ? Char.ToUpperInvariant(n) : n)
+                                    ? HitOrMiss.NewHit(current.Appended(1))
+                                    : HitOrMiss.NewMiss(1))
+                          .Or(HitOrMiss.NewMiss(1));
 
             public override String ToString()
                 => $"{nameof(AnyOneNode)} {this.Alternatives}";
@@ -180,12 +182,12 @@ namespace Dorata.Text.Lexing
                     // identifiedHit is not guaranteed to have value
                     var identifiedHit = HitOrMiss.Identified(f.ToHit(), s.ToHit());
 
-                    return HitOrMiss.NewHit(largestHit.Value.Span, identifiedHit.IsSome ? identifiedHit.Value.Id : Identifier.None);
+                    return HitOrMiss.NewHit(largestHit.Value.Span, identifiedHit.Map(idHit => idHit.Id).Or(Identifier.None));
                 }
                 else if (f.IsHit)
-                    return HitOrMiss.Smallest(new Miss(f.Hit.Span.Length - current.Length), s.Miss);
+                    return HitOrMiss.Smallest((new Miss(f.Hit.Span.Length - current.Length)).Some(), s.Miss.Some());
                 else if (s.IsHit)
-                    return HitOrMiss.Smallest(f.ToMiss(), new Miss(s.Hit.Span.Length - current.Length));
+                    return HitOrMiss.Smallest(f.ToMiss(), (new Miss(s.Hit.Span.Length - current.Length)).Some());
                 else
                     return HitOrMiss.Smallest(f.ToMiss(), s.ToMiss());
             }

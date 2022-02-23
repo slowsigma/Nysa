@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
+
 using Dorata.Text.Lexing;
 
 namespace Dorata.Text.Parsing
@@ -39,7 +40,8 @@ namespace Dorata.Text.Parsing
                     => this.Member.AsNode();
 
                 protected override IEnumerable<NodeOrToken?> GetMembers()
-                    => this.Previous.Select(p => p.GetMembers().Concat(this.ToMember().Return()), () => this.ToMember().Return());
+                    => this.Previous.Match(p  => p.GetMembers().Concat(Return.Enumerable(this.ToMember())),
+                                           () => Return.Enumerable(this.ToMember()));
 
                 public override Node AsNode()
                     => new Node(this.Entry.Rule.Id, this.Entry.Rule.Symbol, this.GetMembers());
@@ -79,7 +81,8 @@ namespace Dorata.Text.Parsing
                     => this.Token;
 
                 protected override IEnumerable<NodeOrToken?> GetMembers()
-                    => this.Previous.Select(p => p.GetMembers().Concat(this.ToMember().Return()), () => this.ToMember().Return());
+                    => this.Previous.Match(p  => p.GetMembers().Concat(Return.Enumerable(this.ToMember())),
+                                           () => Return.Enumerable(this.ToMember()));
 
                 public override Node AsNode()
                     => new Node(this.Entry.Rule.Id, this.Entry.Rule.Symbol, this.GetMembers());
@@ -98,11 +101,11 @@ namespace Dorata.Text.Parsing
             }
 
             public AcrossItem NextAcrossNode(FinalChart.Position nextPosition, AcrossItem member)
-                => new NodeAcrossItem(this.Entry, nextPosition, this, member);
+                => new NodeAcrossItem(this.Entry, nextPosition, this.Some(), member);
             public AcrossItem NextAcrossEmpty(FinalChart.Entry empty)
-                => new EmptyAcrossItem(this.Entry, this.NextPosition, this);
+                => new EmptyAcrossItem(this.Entry, this.NextPosition, this.Some());
             public AcrossItem NextAcrossToken(FinalChart.Position nextPosition, Token token)
-                => new TokenAcrossItem(this.Entry, nextPosition, this, token);
+                => new TokenAcrossItem(this.Entry, nextPosition, this.Some(), token);
 
             protected abstract NodeOrToken? ToMember();
 

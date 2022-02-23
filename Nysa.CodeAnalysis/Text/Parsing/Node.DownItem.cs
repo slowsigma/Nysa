@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using  Nysa.Logics;
+
 using Dorata.Logics;
 using Dorata.Text.Lexing;
 
@@ -27,9 +29,9 @@ namespace Dorata.Text.Parsing
             }
 
             public DownItem(FinalChart.Entry current) : this(Option<DownItem>.None, current) { }
-            public DownItem WithNext(FinalChart.Entry current) => new DownItem(this, current);
+            public DownItem WithNext(FinalChart.Entry current) => new DownItem(this.Some(), current);
             public Boolean Contains(FinalChart.Entry entry) 
-                => this.Current.Equals(entry) || this.Previous.Select(p => p.Contains(entry)).OrValue(false);
+                => this.Current.Equals(entry) || this.Previous.Map(p => p.Contains(entry)).Or(false);
         }
 
     }

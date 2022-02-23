@@ -108,7 +108,7 @@ namespace Dorata.Text.Parsing
             public override Int32 GetHashCode() => this.Chart.HashWithOther(this.Index);
             public override String ToString() => this.Index.ToString();
 
-        } // struct Position
+        }
 
     }
 

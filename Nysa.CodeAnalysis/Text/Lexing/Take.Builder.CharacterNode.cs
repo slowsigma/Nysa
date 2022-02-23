@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
 
 namespace Dorata.Text.Lexing
 {
@@ -39,19 +39,19 @@ namespace Dorata.Text.Lexing
                     {
                         var nexts   = this.Nexts.Select(n => n.Value.ToTake()).ToArray();
                         // anyOne will be valid if more than one nexts is a Take.OneNode
-                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Select(a => (Take.Node)a);
+                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
                         // longest will be valid if we have more than one valid nexts
-                        var longest = anyOne.IsSome
-                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => (Option<Take.Node>)n), anyOne.Value).Select(n => (Take.Node)n)
-                                      : Take.Longest(nexts.Select(n => (Option<Take.Node>)n)).Select(n => (Take.Node)n);
+                        var longest = anyOne is Some<Node> someNode
+                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => n.Some()), someNode).Map(n => (Take.Node)n)
+                                      : Take.Longest(nexts.Select(n => n.Some())).Map(n => (Take.Node)n);
 
-                        var final   = longest.OrOther(anyOne.OrOther(nexts.Length > 0 ? nexts[0].ToOption() : Option.None));
+                        var final   = longest.Or(anyOne.Or(nexts.Length > 0 ? nexts[0].Some() : Option<Node>.None));
 
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final = final.Select(f => (Take.Node)f.Or(this.Id.Value.Id()))
-                                         .OrOther((Take.Node)this.Id.Value.Id());
+                            final = final.Map(f => (Take.Node)f.Or(this.Id.Value.Id()))
+                                         .Or(this.Id.Value.Id().Some<Node>());
                         }
 
                         return this.Value.One().Then(final.Value);
@@ -70,19 +70,19 @@ namespace Dorata.Text.Lexing
                     {
                         var nexts   = this.Nexts.Select(n => n.Value.ToTake()).ToArray();
                         // anyOne will be valid if more than one nexts is a Take.OneNode
-                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Select(a => (Take.Node)a);
+                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
                         // longest will be valid if we have more than one valid nexts
-                        var longest = anyOne.IsSome
-                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => (Option<Take.Node>)n), anyOne.Value).Select(n => (Take.Node)n)
-                                      : Take.Longest(nexts.Select(n => (Option<Take.Node>)n)).Select(n => (Take.Node)n);
+                        var longest = anyOne is Some<Node>
+                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => n.Some()), anyOne).Map(n => (Take.Node)n)
+                                      : Take.Longest(nexts.Select(n => n.Some())).Map(n => (Take.Node)n);
 
-                        var final   = longest.OrOther(anyOne.OrOther(nexts.Length > 0 ? nexts[0].ToOption() : Option.None));
+                        var final   = longest.Or(anyOne.Or(nexts.Length > 0 ? nexts[0].Some() : Option.None));
 
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final = final.Select(f => (Take.Node)f.Or(this.Id.Value.Id()))
-                                         .OrOther((Take.Node)this.Id.Value.Id());
+                            final = final.Map(f => (Take.Node)f.Or(this.Id.Value.Id()))
+                                         .Or(this.Id.Value.Id().Some<Node>());
                         }
 
                         return sequence.Sequence(this.IgnoreCase).Then(final.Value);

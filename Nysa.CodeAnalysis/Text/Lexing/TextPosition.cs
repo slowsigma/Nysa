@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
 
 namespace Dorata.Text
 {
@@ -39,7 +39,7 @@ namespace Dorata.Text
         }
 
         public Option<Char> Next()
-            => !this.IsEnd ? this.Source[this.Value].ToOption() : Option.None;
+            => !this.IsEnd ? this.Source[this.Value].Some() : Option<Char>.None;
 
         public String Next(Int32 length)
             => this.IsEnd ? String.Empty : (this.Value + length) <= this.Source.Length ? this.Source.Substring(this.Value, length) : this.Source;

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Nysa.Logics;
+
 using Dorata.Logics;
 using Dorata.Text.Lexing;
 
@@ -36,42 +38,42 @@ namespace Dorata.Text.Parsing
         public static Option<Node> FirstNode(this Node node, Func<Node, Boolean> predicate)
         {
             if (predicate(node))
-                return node;
+                return node.Some();
 
             foreach (var item in node.Members.Select(m => m.AsNode).AllNodes())
             {
                 if (predicate(item))
-                    return item;
+                    return item.Some();
 
                 var check = item.FirstNode(predicate);
 
-                if (check.IsSome)
+                if (check is Some<Node>)
                     return check;
             }
 
-            return Option.None;
+            return Option<Node>.None;
         }
 
         public static Option<NodeOrToken> First(this Node node, Func<NodeOrToken, Boolean> predicate)
         {
             if (predicate(node))
-                return (NodeOrToken)node;
+                return ((NodeOrToken)node).Some();
 
             foreach (var item in node.Members)
             {
                 if (predicate(item))
-                    return item;
+                    return item.Some();
 
                 if (item.AsNode != null)
                 {
                     var check = item.AsNode.First(predicate);
 
-                    if (check.IsSome)
+                    if (check is Some<NodeOrToken>)
                         return check;
                 }
             }
 
-            return Option.None;
+            return Option<NodeOrToken>.None;
         }
 
         public static IEnumerable<NodeOrToken> Descendents(this Node node)
