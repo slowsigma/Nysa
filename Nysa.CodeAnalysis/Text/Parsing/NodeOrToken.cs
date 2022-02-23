@@ -41,7 +41,10 @@ namespace Dorata.Text.Parsing
             => this.Select(a => false, b => b.Equals(other));
 
         public override Boolean Equals(object? obj)
-            => obj is NodeOrToken nort ? this.Equals(nort) : false;
+            =>   obj is NodeOrToken nort ? this.Equals(nort)
+               : obj is Node node ? this.Equals(node)
+               : obj is Token token ? this.Equals(token)
+               : false;
 
         public override Int32 GetHashCode()
             => this.Select(a => a.GetHashCode(), b => b.GetHashCode());
