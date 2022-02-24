@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Dorata.Logics;
-using Dorata.Text.Lexing;
+using Nysa.Text.Lexing;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public partial class Node

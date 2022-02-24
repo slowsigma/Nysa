@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-namespace Dorata.Text.Lexing
+namespace Nysa.Text.Lexing
 {
 
     public partial class Take
@@ -39,7 +39,10 @@ namespace Dorata.Text.Lexing
                     {
                         var nexts   = this.Nexts.Select(n => n.Value.ToTake()).ToArray();
                         // anyOne will be valid if more than one nexts is a Take.OneNode
-                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
+                        var anyOne  = nexts.Select(n => n as Take.OneNode)
+                                           .Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value))
+                                           .AnyOne(this.IgnoreCase)
+                                           .Map(a => (Take.Node)a);
                         // longest will be valid if we have more than one valid nexts
                         var longest = anyOne is Some<Node> someNode
                                       ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => n.Some()), someNode).Map(n => (Take.Node)n)
@@ -54,7 +57,9 @@ namespace Dorata.Text.Lexing
                                          .Or(this.Id.Value.Id().Some<Node>());
                         }
 
-                        return this.Value.One().Then(final.Value);
+                        return final is Some<Node> someFinal
+                               ? this.Value.One().Then(someFinal.Value)
+                               : this.Value.One();
                     }
                 }
 
@@ -85,7 +90,9 @@ namespace Dorata.Text.Lexing
                                          .Or(this.Id.Value.Id().Some<Node>());
                         }
 
-                        return sequence.Sequence(this.IgnoreCase).Then(final.Value);
+                        return final is Some<Node> someFinal
+                               ? sequence.Sequence(this.IgnoreCase).Then(someFinal.Value)
+                               : sequence.Sequence(this.IgnoreCase);
                     }
                 }
 

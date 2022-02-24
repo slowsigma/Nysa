@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Dorata.Logics;
-using Dorata.Text;
+using Nysa.Text;
 
-namespace Dorata.Text.Lexing
+namespace Nysa.Text.Lexing
 {
 
     public struct Token : IEquatable<Token>

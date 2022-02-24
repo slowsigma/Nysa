@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public sealed class FinalChart : Chart

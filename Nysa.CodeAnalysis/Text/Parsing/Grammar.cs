@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Text;
-using Dorata.Text.Lexing;
+using Nysa.Text;
+using Nysa.Text.Lexing;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public partial class Grammar
@@ -17,11 +17,11 @@ namespace Dorata.Text.Parsing
         private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
-            => (_RuleCheck.Find(symbol.Start()).IsMiss && _CategoryCheck.Find(symbol.Start()).IsMiss);
+            => (_RuleCheck.Find(symbol.Start()) is LexMiss && _CategoryCheck.Find(symbol.Start()) is LexMiss);
         public static Boolean IsRuleSymbol(String symbol)
-            => _RuleCheck.Find(symbol.Start()).IsHit;
+            => _RuleCheck.Find(symbol.Start()) is LexHit;
         public static Boolean IsCategorySymbol(String symbol)
-            => _CategoryCheck.Find(symbol.Start()).IsHit;
+            => _CategoryCheck.Find(symbol.Start()) is LexHit;
 
         // We use a specific empty instance a list of rules to signify terminal symbols.
         private static readonly List<Rule>  TERMINAL       = new List<Rule>();

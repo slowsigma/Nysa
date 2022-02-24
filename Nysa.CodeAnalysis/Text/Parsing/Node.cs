@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-using Dorata.Text;
+using Nysa.Text;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public partial class Node : IEquatable<Node>

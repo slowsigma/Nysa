@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-using Dorata.Logics;
-
-namespace Dorata.Text.Lexing
+namespace Nysa.Text.Lexing
 {
 
     public static partial class Take
@@ -69,20 +67,20 @@ namespace Dorata.Text.Lexing
         public static readonly AssertNode AtStart = new AssertNode(c => c.Start.IsStart);
         public static readonly AssertNode AtEnd   = new AssertNode(c => c.End.IsEnd);
 
-        public static IEnumerable<Hit> Repeat(this SeekNode seek, String source, Boolean includeSkips = false)
+        public static IEnumerable<LexHit> Repeat(this SeekNode seek, String source, Boolean includeSkips = false)
         {
             var curr = source.Start();
             var find = seek.Find(curr);
-            var diff = find.Select(h => h.Span.Position - curr.End.Value, m => 0);
+            var diff = find.Map(h => h.Span.Position - curr.End.Value, m => 0);
 
-            while (find.IsHit)
+            while (find is LexHit findHit)
             {
                 if (diff > 0 && includeSkips)
-                    yield return new Hit(new TextSpan(source, curr.End.Value, diff), Identifier.None);
+                    yield return new LexHit(new TextSpan(source, curr.End.Value, diff), Identifier.None);
 
-                yield return find.Hit;
+                yield return findHit;
 
-                curr = find.Hit.Span;
+                curr = findHit.Span;
                 find = seek.Find(curr.End);
             }
         }

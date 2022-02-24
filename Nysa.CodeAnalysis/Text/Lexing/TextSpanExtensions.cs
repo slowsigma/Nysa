@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Dorata.Logics;
 
-namespace Dorata.Text
+namespace Nysa.Text
 {
 
     /// <summary>

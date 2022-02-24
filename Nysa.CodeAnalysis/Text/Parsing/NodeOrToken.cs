@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Text.Lexing;
+using Nysa.Text.Lexing;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public struct NodeOrToken : IEquatable<NodeOrToken>, IEquatable<Node>, IEquatable<Token>

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-using Dorata.Text.Lexing;
+using Nysa.Text.Lexing;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public partial class Node
@@ -320,7 +320,7 @@ namespace Dorata.Text.Parsing
                     var check = Build(chart, input, entry, chart[0]);
 
                     if (check is Some<AcrossItem> someAcross)
-                        return someAcross.Value.AsNode();
+                        return someAcross.Value.AsNode().Some();
 
                     if (result is Some<Node>)
                         break;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dorata.Text
+namespace Nysa.Text
 {
 
     public struct Identifier : IEquatable<Identifier>, IEquatable<Int32>

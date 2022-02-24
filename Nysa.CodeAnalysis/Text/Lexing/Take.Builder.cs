@@ -9,7 +9,7 @@ using Nysa.Logics;
 
 using Dorata.Logics;
 
-namespace Dorata.Text.Lexing
+namespace Nysa.Text.Lexing
 {
 
     public static partial class Take

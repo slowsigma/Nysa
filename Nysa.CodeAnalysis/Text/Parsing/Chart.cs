@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using Dorata.Logics;
 
-namespace Dorata.Text.Parsing
+namespace Nysa.Text.Parsing
 {
 
     public partial class Chart : IEnumerable<Chart.Position>

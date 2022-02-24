@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-namespace Dorata.Text.Lexing
+namespace Nysa.Text.Lexing
 {
 
     public static partial class Take
@@ -17,15 +17,15 @@ namespace Dorata.Text.Lexing
         /// </summary>
         public abstract class Node
         {
-            public abstract HitOrMiss Find(TextSpan current);
+            public abstract LexFind Find(TextSpan current);
         }
 
         public class IdentifierNode : Node
         {
             public Identifier Id { get; private set; }
             public IdentifierNode(Identifier id) { this.Id = id; }
-            public override HitOrMiss Find(TextSpan current)
-                => new Hit(current, this.Id);
+            public override LexFind Find(TextSpan current)
+                => new LexHit(current, this.Id);
             public override string ToString()
                 => $"{nameof(IdentifierNode)} {this.Id}";
         }
@@ -35,11 +35,11 @@ namespace Dorata.Text.Lexing
             public Node Primary { get; private set; }
             public Node Then { get; private set; }
             public ThenNode(Node primary, Node then) { this.Primary = primary; this.Then = then; }
-            public override HitOrMiss Find(TextSpan current)
+            public override LexFind Find(TextSpan current)
                 => this.Primary
                        .Find(current)
-                       .Select(hp => this.Then.Find(hp.Span)
-                                              .Select(ht => ht, mt => HitOrMiss.NewMiss(mt.Size + (hp.Span.Length - current.Length))),
+                       .Map(hp => this.Then.Find(hp.Span)
+                                           .Map(ht => ht, mt => LexFind.Miss(mt.Size + (hp.Span.Length - current.Length))),
                                mp => mp);
 
             public override string ToString()
@@ -50,8 +50,8 @@ namespace Dorata.Text.Lexing
         {
             private Func<TextSpan, Boolean> _Predicate;
             public AssertNode(Func<TextSpan, Boolean> predicate) { this._Predicate = predicate; }
-            public override HitOrMiss Find(TextSpan current)
-                => this._Predicate(current) ? HitOrMiss.NewHit(current) : new Miss(0);
+            public override LexFind Find(TextSpan current)
+                => this._Predicate(current) ? LexFind.Hit(current) : new LexMiss(0);
         }
 
         public class StartNode : AssertNode
@@ -70,9 +70,9 @@ namespace Dorata.Text.Lexing
 
         public class ExpandNode : Node
         {
-            private Func<TextSpan, HitOrMiss> _Expander;
-            public ExpandNode(Func<TextSpan, HitOrMiss> expander) { this._Expander = expander; }
-            public override HitOrMiss Find(TextSpan current)
+            private Func<TextSpan, LexFind> _Expander;
+            public ExpandNode(Func<TextSpan, LexFind> expander) { this._Expander = expander; }
+            public override LexFind Find(TextSpan current)
                 => this._Expander(current);
         }
 
@@ -82,7 +82,7 @@ namespace Dorata.Text.Lexing
             public Boolean  IgnoreCase  { get; private set; }
 
             public OneNode(Char value, Boolean ignoreCase)
-                : base(c => c.End.Next().Map(n => OneEquals(value, n, ignoreCase) ? HitOrMiss.NewHit(c.Appended(1)) : HitOrMiss.NewMiss(1)).Or(HitOrMiss.NewMiss(1)))
+                : base(c => c.End.Next().Map(n => OneEquals(value, n, ignoreCase) ? LexFind.Hit(c.Appended(1)) : LexFind.Miss(1)).Or(LexFind.Miss(1)))
             {
                 this.Value      = value;
                 this.IgnoreCase = ignoreCase;
@@ -103,7 +103,7 @@ namespace Dorata.Text.Lexing
             public Boolean  IgnoreCase  { get; private set; }
 
             public SequenceNode(String value, Boolean ignoreCase)
-                : base(c => SequenceEquals(value, c.End.Next(value.Length), ignoreCase) ? HitOrMiss.NewHit(c.Appended(value.Length)) : HitOrMiss.NewMiss(value.Length))
+                : base(c => SequenceEquals(value, c.End.Next(value.Length), ignoreCase) ? LexFind.Hit(c.Appended(value.Length)) : LexFind.Miss(value.Length))
             {
                 this.Value      = value;
                 this.IgnoreCase = ignoreCase;
@@ -136,13 +136,13 @@ namespace Dorata.Text.Lexing
             {
             }
 
-            public override HitOrMiss Find(TextSpan current)
+            public override LexFind Find(TextSpan current)
                 => current.End
                           .Next()
                           .Map(n => this._Alternatives.Contains(this.IgnoreCase ? Char.ToUpperInvariant(n) : n)
-                                    ? HitOrMiss.NewHit(current.Appended(1))
-                                    : HitOrMiss.NewMiss(1))
-                          .Or(HitOrMiss.NewMiss(1));
+                                    ? LexFind.Hit(current.Appended(1))
+                                    : LexFind.Miss(1))
+                          .Or(LexFind.Miss(1));
 
             public override String ToString()
                 => $"{nameof(AnyOneNode)} {this.Alternatives}";
@@ -152,9 +152,9 @@ namespace Dorata.Text.Lexing
         {
             public Node Condition { get; private set; }
             public NotNode(Node condition) { this.Condition = condition; }
-            public override HitOrMiss Find(TextSpan current)
-             => this.Condition.Find(current).Select(h => HitOrMiss.NewMiss(h.Span.Length - current.Length),
-                                                    m => HitOrMiss.NewHit(current.Appended(m.Size), Identifier.None));
+            public override LexFind Find(TextSpan current)
+             => this.Condition.Find(current).Map(h => LexFind.Miss(h.Span.Length - current.Length),
+                                                 m => LexFind.Hit(current.Appended(m.Size), Identifier.None));
         }
 
         public class OrNode : Node
@@ -162,8 +162,8 @@ namespace Dorata.Text.Lexing
             public Node First  { get; private set; }
             public Node Second { get; private set; }
             public OrNode(Node first, Node second) { this.First = first; this.Second = second; }
-            public override HitOrMiss Find(TextSpan current)
-                => this.First.Find(current).Select(h => h, m => this.Second.Find(current));
+            public override LexFind Find(TextSpan current)
+                => this.First.Find(current).Map(h => h, m => this.Second.Find(current));
         }
 
         public class AndNode : Node
@@ -171,25 +171,33 @@ namespace Dorata.Text.Lexing
             public Node First   { get; private set; }
             public Node Second  { get; private set; }
             public AndNode(Node first, Node second) { this.First = first; this.Second = second; }
-            public override HitOrMiss Find(TextSpan current)
+            public override LexFind Find(TextSpan current)
             {
                 var f = this.First.Find(current);
                 var s = this.Second.Find(current);
 
-                if (f.IsHit && s.IsHit) //success
-                {
-                    var largestHit = HitOrMiss.Largest(f.ToHit(), s.ToHit());
-                    // identifiedHit is not guaranteed to have value
-                    var identifiedHit = HitOrMiss.Identified(f.ToHit(), s.ToHit());
+                var hitOne  = f as LexHit;
+                var hitTwo  = s as LexHit;
 
-                    return HitOrMiss.NewHit(largestHit.Value.Span, identifiedHit.Map(idHit => idHit.Id).Or(Identifier.None));
+                var missOne = f as LexMiss;
+                var missTwo = s as LexMiss;
+
+                if (hitOne != null && hitTwo != null) //success
+                {
+                    var largestHit = LexFind.Largest(hitOne, hitTwo);
+                    // identifiedHit is not guaranteed to have value
+                    var identifiedHit = LexFind.Identified(hitOne, hitTwo);
+
+                    return LexFind.Hit(largestHit.Span, identifiedHit.Id);
                 }
-                else if (f.IsHit)
-                    return HitOrMiss.Smallest((new Miss(f.Hit.Span.Length - current.Length)).Some(), s.Miss.Some());
-                else if (s.IsHit)
-                    return HitOrMiss.Smallest(f.ToMiss(), (new Miss(s.Hit.Span.Length - current.Length)).Some());
+                else if (hitOne != null && missTwo != null)
+                    return LexFind.Smallest((new LexMiss(hitOne.Span.Length - current.Length)), missTwo);
+                else if (missOne != null && hitTwo != null)
+                    return LexFind.Smallest(missOne, (new LexMiss(hitTwo.Span.Length - current.Length)));
+                else if (missOne != null && missTwo != null)
+                    return LexFind.Smallest(missOne, missTwo);
                 else
-                    return HitOrMiss.Smallest(f.ToMiss(), s.ToMiss());
+                    throw new Exception("Program error.");
             }
         }
 
@@ -197,27 +205,27 @@ namespace Dorata.Text.Lexing
         public class UntilNode : ExpandNode
         {
             public UntilNode(Node condition) : base(c => TryUntil(c, condition)) { }
-            private static HitOrMiss TryUntil(TextSpan current, Node condition)
+            private static LexFind TryUntil(TextSpan current, Node condition)
             {
                 var conditionTry = condition.Find(current);
                 var totalMiss    = 0;
 
-                while (conditionTry.IsMiss && !current.End.IsEnd)
+                while (conditionTry is LexMiss conditionMiss && !current.End.IsEnd)
                 {
-                    current   =  current.Appended(conditionTry.Miss.Size);
-                    totalMiss += conditionTry.Miss.Size;
+                    current   =  current.Appended(conditionMiss.Size);
+                    totalMiss += conditionMiss.Size;
 
                     conditionTry = condition.Find(current);
                 }
 
-                return conditionTry.Select(h => HitOrMiss.NewHit(current, Identifier.None), m => HitOrMiss.NewMiss(totalMiss + m.Size));
+                return conditionTry.Map(h => LexFind.Hit(current, Identifier.None), m => LexFind.Miss(totalMiss + m.Size));
             }
         }
 
         public class WhileNode : ExpandNode
         {
             public WhileNode(Node condition) : base(c => TryWhile(c, condition)) { }
-            private static HitOrMiss TryWhile(TextSpan current, Node condition)
+            private static LexFind TryWhile(TextSpan current, Node condition)
             {
                 Identifier id = Identifier.None;
 
@@ -225,14 +233,18 @@ namespace Dorata.Text.Lexing
                 {
                     var find = condition.Find(current);
 
-                    if (find.IsMiss)
-                        return HitOrMiss.NewHit(current, id);
-
-                    current = find.Hit.Span;
-                    id      = find.Hit.Id;
+                    if (find is LexMiss)
+                        return LexFind.Hit(current, id);
+                    else if (find is LexHit findHit)
+                    {
+                        current = findHit.Span;
+                        id      = findHit.Id;
+                    }
+                    else
+                        throw new Exception("Unexpected type.");
                 }
 
-                return HitOrMiss.NewHit(current, id);
+                return LexFind.Hit(current, id);
             }
         }
 
@@ -240,8 +252,8 @@ namespace Dorata.Text.Lexing
         {
             public Node Condition { get; private set; }
             public MaybeNode(Node condition) { this.Condition = condition; }
-            public override HitOrMiss Find(TextSpan current)
-                => this.Condition.Find(current).Select(h => h, m => HitOrMiss.NewHit(current, Identifier.None));
+            public override LexFind Find(TextSpan current)
+                => this.Condition.Find(current).Map(h => h, m => LexFind.Hit(current, Identifier.None));
         }
 
         public class LongestNode : Node
@@ -249,24 +261,24 @@ namespace Dorata.Text.Lexing
             private List<Node> _Alternates;
             public IReadOnlyList<Node> Alternates { get => this._Alternates; }
             public LongestNode(IEnumerable<Node> alternates) => this._Alternates = alternates.Where(a => a != null).ToList();
-            public override HitOrMiss Find(TextSpan current)
+            public override LexFind Find(TextSpan current)
             {
-                var miss    = new Miss(Int32.MaxValue);
-                var hit     = new Hit(current, Identifier.None);
+                var miss    = new LexMiss(Int32.MaxValue);
+                var hit     = new LexHit(current, Identifier.None);
                 var isHit   = false;
 
                 foreach (var node in this._Alternates)
                 {
                     var find = node.Find(current);
 
-                    isHit |= find.IsHit;
+                    isHit |= find is LexHit;
                     
-                    find.Apply(h => hit  = hit.Span.Value.Length < h.Span.Value.Length ? h : hit,
-                               m => miss = m.Size                < miss.Size           ? m : miss );
+                    find.Affect(h => hit  = hit.Span.Value.Length < h.Span.Value.Length ? h : hit,
+                                m => miss = m.Size                < miss.Size           ? m : miss );
                 }
 
                 return isHit ? hit
-                             : (miss.Size == Int32.MaxValue ? HitOrMiss.NewMiss(0) : miss);
+                             : (miss.Size == Int32.MaxValue ? LexFind.Miss(0) : miss);
             }
         }
 
@@ -274,23 +286,23 @@ namespace Dorata.Text.Lexing
         {
             public StackNode(Node push, Node pop) : base(c => TryExpand(c, push, pop)) { }
 
-            private static HitOrMiss SpanPush(Hit hit, Node push, Node pop)
+            private static LexFind SpanPush(LexHit hit, Node push, Node pop)
             {
                 var popTry      = pop.Find(hit.Span);  // pop gets a chance to declare a hit
                 var @continue   = !hit.Span.End.IsEnd; // even if we're at the end of the data
 
-                while (popTry.IsMiss && @continue)
+                while (popTry is LexMiss && @continue)
                 {
                     // before we expand, check to see if we need to push again
                     var pushTry = push.Find(hit.Span);
 
-                    // if get a hit on push, we start another SpanPush and if that
+                    // if we get a hit on push, we start another SpanPush and if that
                     // does not return a hit, we have a pop did not occur and we've
                     // come to the end of the data
-                    if (pushTry.IsHit)
-                        SpanPush(pushTry.Hit, push, pop).Apply(h => hit = h, m => @continue = false);
+                    if (pushTry is LexHit pushHit)
+                        SpanPush(pushHit, push, pop).Affect(h => { hit = h; }, m => { @continue = false; });
                     else // no additional push for now, just expand by one
-                        hit = new Hit(hit.Span.Appended(1), Identifier.None);
+                        hit = new LexHit(hit.Span.Appended(1), Identifier.None);
 
                     popTry      = pop.Find(hit.Span);
                     @continue   = !hit.Span.End.IsEnd;
@@ -299,13 +311,13 @@ namespace Dorata.Text.Lexing
                 return popTry;
             }
 
-            private static HitOrMiss TryExpand(TextSpan span, Node push, Node pop)
+            private static LexFind TryExpand(TextSpan span, Node push, Node pop)
             {
                 var start = push.Find(span);
 
-                return (start.IsHit) 
-                       ? SpanPush(start.Hit, push, pop)
-                       : HitOrMiss.NewMiss(1);
+                return (start is LexHit startHit) 
+                       ? SpanPush(startHit, push, pop)
+                       : LexFind.Miss(1);
             }
 
         }
@@ -314,11 +326,11 @@ namespace Dorata.Text.Lexing
         {
             public Node Subject { get; private set; }
             public SeekNode(Node subject) { this.Subject = subject; }
-            public override HitOrMiss Find(TextSpan current)
+            public override LexFind Find(TextSpan current)
             {
                 var check = this.Subject.Find(current);
 
-                while (check.IsMiss && !current.End.IsEnd)
+                while (check is LexMiss && !current.End.IsEnd)
                 {
                     current = current.End + 1;
                     check   = this.Subject.Find(current);

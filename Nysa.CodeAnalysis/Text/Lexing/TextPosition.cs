@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-namespace Dorata.Text
+namespace Nysa.Text
 {
 
     public struct TextPosition : IEquatable<TextPosition>, IComparable<TextPosition>

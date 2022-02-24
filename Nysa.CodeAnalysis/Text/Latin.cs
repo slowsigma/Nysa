@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dorata.Text
+namespace Nysa.Text
 {
 
     public static class LatinChars
@@ -240,4 +240,4 @@ namespace Dorata.Text
 
     } // class LatinChars
 
-} // namespace Dorata.Text
+} // namespace Nysa.Text
