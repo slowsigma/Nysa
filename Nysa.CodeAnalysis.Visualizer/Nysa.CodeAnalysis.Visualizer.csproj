@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <Reference Include="Dorata.Common">
+      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Dorata.VbScript">
+      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.VbScript.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.Presentation\Nysa.Presentation.csproj" />
+    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+</Project>
