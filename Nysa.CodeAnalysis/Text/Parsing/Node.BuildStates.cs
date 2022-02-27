@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
 using Nysa.Text.Lexing;
 
 namespace Nysa.Text.Parsing

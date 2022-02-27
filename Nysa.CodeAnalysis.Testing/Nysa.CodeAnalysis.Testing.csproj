@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <Reference Include="Dorata.Common.dll">
+      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Dorata.VBScript.dll">
+      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.VBScript.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

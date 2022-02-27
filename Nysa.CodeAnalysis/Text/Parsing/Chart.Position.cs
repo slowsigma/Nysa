@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dorata.Logics;
+using Nysa.Logics;
 
 namespace Nysa.Text.Parsing
 {
@@ -34,7 +34,7 @@ namespace Nysa.Text.Parsing
             public IEnumerable<Entry> Where(Func<Entry, Boolean> predicate)
                 => (this.Chart._Data[this.Index] != null)
                    ? this.Chart._Data[this.Index].Where(predicate)
-                   : Enums.None<Entry>();
+                   : None<Entry>.Enumerable();
 
             public IEnumerable<Entry> GetEntries()
             {

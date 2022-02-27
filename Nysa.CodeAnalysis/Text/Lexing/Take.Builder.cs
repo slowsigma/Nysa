@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 using Nysa.Logics;
 
-using Dorata.Logics;
-
 namespace Nysa.Text.Lexing
 {
 
@@ -49,23 +47,30 @@ namespace Nysa.Text.Lexing
                 this._Others.Add(other);
             }
 
-            public Option<Take.Node> ToTake()
+            public Take.Node ToTake()
             {
                 var nexts   = this._CharacterNodes.Select(n => n.Value.ToTake()).ToArray();
                 // anyOne will be valid if more than one nexts is a Take.OneNode
 
-                var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
+                var anyOne  = nexts.Select(n => n as Take.OneNode)
+                                   .Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value))
+                                   .Make(any => any.Length > 1 ? any.AnyOne(this.IgnoreCase) : null);
                 // longest will be valid if we have more than one valid nexts
-                var longest = anyOne is Some<Node>
-                              ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Concat(this._Others).Select(n => n.Some()), anyOne)
-                              : Take.Longest(nexts.Select(n => n.Some()).Concat(this._Others.Select(o => o.Some())));
+                var others  = nexts.Where(n => !(n is Take.OneNode)).ToList();
+                var longest = anyOne == null
+                              ? others.Count > 1 ? Take.Longest(others) : null
+                              : others.Count > 0 ? Take.Longest(others, anyOne) : null;
 
-                return longest.Map(n => (Take.Node)n)
-                              .Or(anyOne);
+//                              ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Concat(this._Others).Select(n => n.Some()), anyOne)
+//                              : Take.Longest(nexts.Select(n => n.Some()).Concat(this._Others.Select(o => o.Some())));
+
+                return   longest != null ? longest
+                       : anyOne  != null ? anyOne
+                       : throw new Exception("Take.Builder has no content to build with.");
             }
 
         }
 
-    } // class Take
+    }
 
 }

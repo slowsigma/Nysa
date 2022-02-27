@@ -14,34 +14,39 @@ namespace Nysa.Text.Lexing
         static Take() { Take.IgnoreCase = true; }
         public static Boolean IgnoreCase { get; set; }
 
-        private static Node[] LongestAlternates(IEnumerable<Option<Node>> alternates)
+        private static Node[] LongestAlternates(IEnumerable<Node> alternates)
         {
-            var actuals = alternates.SomeOnly();
-
-            return actuals.Where(a => !(a is LongestNode))
-                          .Concat(actuals.Where(a => a is LongestNode).SelectMany(l => ((LongestNode)l).Alternates))
-                          .ToArray();
+            // we pull any LongestNode objects up to this level (flatten)
+            return alternates.Where(a => !(a is LongestNode))
+                             .Concat(alternates.Where(a => a is LongestNode).SelectMany(l => ((LongestNode)l).Alternates))
+                             .ToArray();
         }
 
-        public static Option<LongestNode> Longest(IEnumerable<Option<Node>> alternatives, params Option<Node>[] additional)
+        public static LongestNode Longest(IEnumerable<Node> alternatives, params Node[] additional)
         {
             var nodes = LongestAlternates(alternatives.Concat(additional));
 
-            return (nodes.Length > 1) ? (new LongestNode(nodes)).Some() : Option<LongestNode>.None;
+            return (nodes.Length > 1)
+                   ? (new LongestNode(nodes))
+                   : throw new ArgumentException($"{nameof(LongestNode)} must have more than one alternative.", nameof(alternatives));
         }
 
-        public static Option<LongestNode> Longest(params Option<Node>[] alternatives)
+        public static LongestNode Longest(params Node[] alternatives)
         {
             var nodes = LongestAlternates(alternatives);
 
-            return (nodes.Length > 1) ? (new LongestNode(nodes)).Some() : Option<LongestNode>.None;
+            return (nodes.Length > 1)
+                   ? (new LongestNode(nodes))
+                   : throw new ArgumentException($"{nameof(LongestNode)} must have more than one alternative.", nameof(alternatives));
         }
 
-        public static Option<AnyOneNode> AnyOne(this String alternatives, Boolean? ignoreCase = null)
+        public static AnyOneNode AnyOne(this String alternatives, Boolean? ignoreCase = null)
         {
             var nodes = alternatives.Select(c => c.One()).ToArray();
 
-            return (nodes.Length > 1) ? (new AnyOneNode(nodes, ignoreCase.GetValueOrDefault(Take.IgnoreCase))).Some() : Option<AnyOneNode>.None;
+            return (nodes.Length > 1)
+                   ? (new AnyOneNode(nodes, ignoreCase.GetValueOrDefault(Take.IgnoreCase)))
+                   : throw new ArgumentException($"{nameof(AnyOne)} must have more than one alternative.", nameof(alternatives));
         }
 
         public static ThenNode Then(this Node primary, Node then) => new ThenNode(primary, then);

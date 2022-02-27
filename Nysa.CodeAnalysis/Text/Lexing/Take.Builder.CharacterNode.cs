@@ -41,24 +41,28 @@ namespace Nysa.Text.Lexing
                         // anyOne will be valid if more than one nexts is a Take.OneNode
                         var anyOne  = nexts.Select(n => n as Take.OneNode)
                                            .Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value))
-                                           .AnyOne(this.IgnoreCase)
-                                           .Map(a => (Take.Node)a);
+                                           .Make(any => any.Length > 1 ? any.AnyOne(this.IgnoreCase) : null);
                         // longest will be valid if we have more than one valid nexts
-                        var longest = anyOne is Some<Node> someNode
-                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => n.Some()), someNode).Map(n => (Take.Node)n)
-                                      : Take.Longest(nexts.Select(n => n.Some())).Map(n => (Take.Node)n);
+                        var others  = nexts.Where(n => !(n is Take.OneNode)).ToList();
+                        var longest = (anyOne == null)
+                                      ? others.Count > 1 ? Take.Longest(others) : null
+                                      : others.Count > 0 ? Take.Longest(others, anyOne) : null;
 
-                        var final   = longest.Or(anyOne.Or(nexts.Length > 0 ? nexts[0].Some() : Option<Node>.None));
+                        var final   =   longest != null    ? longest                // longest will incorporate (anyOne and nexts if valid)
+                                      : anyOne  != null    ? anyOne                 // nothing in nexts so take anyOne if valid
+                                      : (nexts.Length > 1) ? Take.Longest(nexts)    // next has a single OneNode and one of something else
+                                      : (nexts.Length > 0) ? nexts[0]               // could only be one valid next
+                                      :                      null;
 
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final = final.Map(f => (Take.Node)f.Or(this.Id.Value.Id()))
-                                         .Or(this.Id.Value.Id().Some<Node>());
+                            final =   final != null ? final.Or(this.Id.Value.Id())
+                                    :                 this.Id.Value.Id();
                         }
 
-                        return final is Some<Node> someFinal
-                               ? this.Value.One().Then(someFinal.Value)
+                        return final != null
+                               ? this.Value.One().Then(final)
                                : this.Value.One();
                     }
                 }
@@ -75,27 +79,33 @@ namespace Nysa.Text.Lexing
                     {
                         var nexts   = this.Nexts.Select(n => n.Value.ToTake()).ToArray();
                         // anyOne will be valid if more than one nexts is a Take.OneNode
-                        var anyOne  = nexts.Select(n => n as Take.OneNode).Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value)).AnyOne(this.IgnoreCase).Map(a => (Take.Node)a);
+                        var anyOne  = nexts.Select(n => n as Take.OneNode)
+                                           .Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value))
+                                           .Make(any => any.Length > 1 ? any.AnyOne(this.IgnoreCase) : null);
                         // longest will be valid if we have more than one valid nexts
-                        var longest = anyOne is Some<Node>
-                                      ? Take.Longest(nexts.Where(n => !(n is Take.OneNode)).Select(n => n.Some()), anyOne).Map(n => (Take.Node)n)
-                                      : Take.Longest(nexts.Select(n => n.Some())).Map(n => (Take.Node)n);
+                        var others  = nexts.Where(n => !(n is Take.OneNode)).ToList();
+                        var longest = (anyOne == null)
+                                      ? others.Count > 1 ? Take.Longest(others) : null
+                                      : others.Count > 0 ? Take.Longest(others, anyOne) : null;
 
-                        var final   = longest.Or(anyOne.Or(nexts.Length > 0 ? nexts[0].Some() : Option.None));
+                        var final   =   longest != null    ? longest                // longest will incorporate (anyOne and nexts if valid)
+                                      : anyOne  != null    ? anyOne                 // nothing in nexts so take anyOne if valid
+                                      : (nexts.Length > 1) ? Take.Longest(nexts)    // next has a single OneNode and one of something else
+                                      : (nexts.Length > 0) ? nexts[0]               // could only be one valid next
+                                      :                      null;
 
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final = final.Map(f => (Take.Node)f.Or(this.Id.Value.Id()))
-                                         .Or(this.Id.Value.Id().Some<Node>());
+                            final =   final != null ? final.Or(this.Id.Value.Id())
+                                    :                 this.Id.Value.Id();
                         }
 
-                        return final is Some<Node> someFinal
-                               ? sequence.Sequence(this.IgnoreCase).Then(someFinal.Value)
+                        return final != null
+                               ? sequence.Sequence(this.IgnoreCase).Then(final)
                                : sequence.Sequence(this.IgnoreCase);
                     }
                 }
-
 
                 public CharacterNode(String literal, Identifier id, Boolean ignoreCase)
                 {
@@ -129,7 +139,7 @@ namespace Nysa.Text.Lexing
                     }
                 }
 
-            } // class CharacterNode
+            }
 
         }
 

@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Nysa.Logics;
-
-using Dorata.Logics;
 using Nysa.Text.Lexing;
 
 namespace Nysa.Text.Parsing
@@ -77,22 +75,22 @@ namespace Nysa.Text.Parsing
         }
 
         public static IEnumerable<NodeOrToken> Descendents(this Node node)
-            => node.Members.SelectMany(m => m.AsNode != null ? m.Return().Concat(m.AsNode.Descendents()) : m.Return());
+            => node.Members.SelectMany(m => m.AsNode != null ? Return.Enumerable(m).Concat(m.AsNode.Descendents()) : Return.Enumerable(m));
         public static IEnumerable<NodeOrToken> DescendentsAndSelf(this Node node)
-            => ((NodeOrToken)node).Return().Concat(node.Descendents());
+            => Return.Enumerable((NodeOrToken)node).Concat(node.Descendents());
 
         public static IEnumerable<Node> Nodes(this Node node, Func<Node, Boolean> predicate)
-            => predicate(node) ? node.Return().Concat(node.Members.NodesOnly().SelectMany(n => n.Nodes(predicate)))
+            => predicate(node) ? Return.Enumerable(node).Concat(node.Members.NodesOnly().SelectMany(n => n.Nodes(predicate)))
                                : node.Members.NodesOnly().SelectMany(n => n.Nodes(predicate));
 
         public static IEnumerable<NodeOrToken> Where(this Node node, Func<NodeOrToken, Boolean> predicate)
-            => predicate(node) ? ((NodeOrToken)node).Return().Concat(node.Members.SelectMany(m => m.Where(predicate)))
+            => predicate(node) ? Return.Enumerable((NodeOrToken)node).Concat(node.Members.SelectMany(m => m.Where(predicate)))
                                : node.Members.SelectMany(m => m.Where(predicate));
 
         public static IEnumerable<NodeOrToken> Where(this NodeOrToken item, Func<NodeOrToken, Boolean> predicate)
             =>   item.AsNode != null ? item.AsNode.Where(predicate) // call Where above
-               : predicate(item)     ? item.Return()
-               :                       Enums.None<NodeOrToken>();
+               : predicate(item)     ? Return.Enumerable(item)
+               :                       None<NodeOrToken>.Enumerable();
 
         public static IEnumerable<Token> Tokens(this Node node)
         {
