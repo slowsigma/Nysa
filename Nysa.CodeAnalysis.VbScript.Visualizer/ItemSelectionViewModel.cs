@@ -11,12 +11,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 
 using Nysa.CodeAnalysis.VbScript;
+using Nysa.CodeAnalysis.VbScript.Semantics;
 using Nysa.Logics;
 using Nysa.Windows.Input;
 
-using Dorata.Text.Parsing;
-
-namespace Nysa.CodeAnalysis.Visualizer
+namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
     public class ItemSelectionViewModel : NormalWindowViewModel
@@ -87,10 +86,14 @@ namespace Nysa.CodeAnalysis.Visualizer
 
                 if (parse is Confirmed<Parse> goodParse)
                 {
-                    if (goodParse.Value is HtmlParse html)
-                        html.VbsParses.Affect(p => views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.SyntaxRoot)).View));
-                    else if (goodParse.Value is VbScriptParse vbs)
-                        views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, content.Source, content.Value, vbs.SyntaxRoot)).View);
+                    //if (goodParse.Value is HtmlParse html)
+                    //    html.VbsParses.Affect(p => views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.SyntaxRoot)).View));
+                    //else
+                    
+                    if (goodParse.Value is VbScriptParse vbs)
+                    {
+                        views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, content.Source, content.Value, vbs.ToProgram())).View);
+                    }
                 }
             }
 

@@ -10,7 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net6.0-windows/Nysa.CodeAnalysis.Visualizer.dll",
-            "args": [],
+            "args": [
+                "/path", "C:\\Git\\odyssey_2019.0\\Webs\\Common"
+            ],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false

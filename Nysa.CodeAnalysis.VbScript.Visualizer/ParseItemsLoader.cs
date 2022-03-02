@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Nysa.CodeAnalysis.VbScript;
 using Nysa.Logics;
 
-namespace Nysa.CodeAnalysis.Visualizer
+namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
     public static class ParseItemsLoader

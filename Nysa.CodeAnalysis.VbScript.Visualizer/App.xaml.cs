@@ -9,7 +9,7 @@ using System.Windows;
 using Nysa.Logics;
 using Nysa.Text;
 
-namespace Nysa.CodeAnalysis.Visualizer
+namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
     /// <summary>
     /// Interaction logic for App.xaml
