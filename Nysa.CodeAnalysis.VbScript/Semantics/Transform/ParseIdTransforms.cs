@@ -213,7 +213,6 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                          (Id.Symbol.OpenParen,
                           ToStateDo((Id.Symbol.Comma, PathTransitionActions.None.ThenState(Id.Symbol.OpenParen)),
                                     (Id.Symbol.CloseParen, PathTransitionActions.SaveArgs.ThenState(Id.Category.ID))))
-                
                         );
 
         private static readonly Dictionary<ParseId, Dictionary<ParseId, PathTransition>> ValueExprStates

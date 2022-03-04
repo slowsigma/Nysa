@@ -51,9 +51,11 @@
             <Grid.ColumnDefinitions>
                <ColumnDefinition Width="*"/>
                <ColumnDefinition Width="Auto"/>
+               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Name="_ShowParse" Grid.Column="1" Content="Show Parse" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}"/>
+            <Button Name="_Refresh" Grid.Column="1" Content="Refresh" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}"/>
+            <Button Name="_ShowParse" Grid.Column="2" Content="Show Parse" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}"/>
          </Grid>
       </Grid>
    </DockPanel>

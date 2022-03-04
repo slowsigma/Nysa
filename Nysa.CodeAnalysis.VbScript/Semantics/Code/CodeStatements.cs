@@ -136,6 +136,22 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             return list;
         }
 
+/*
+        // object - 5
+        // path   - 4
+        public static Int32 ApparentType(this Expression @this)
+            => @this switch
+            {
+                AccessExpression access => access is NewObjectExpression ? 5 : 4,
+                ConstantExpression constant = 
+            };
+
+        public static Int32 ApparentType(this ConstantExpression @this)
+            => @this switch
+            {
+                ConstantOperation op => op.Type 
+            };
+*/
     }
 
 }

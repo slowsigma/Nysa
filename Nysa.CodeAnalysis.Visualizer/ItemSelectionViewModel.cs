@@ -74,8 +74,21 @@ namespace Nysa.CodeAnalysis.Visualizer
             this._SelectedScriptItem = null;
 
             this.Window.Loaded += Window_Loaded;
+            this.Window._Refresh.Click += _Refresh_Click;
             this.Window._ShowParse.Click += _ShowParse_Click;
         }
+
+        private void _Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            this._AvailableScriptItems = new ObservableCollection<Content>();
+            this._AvailableScriptItemsView = CollectionViewSource.GetDefaultView(this._AvailableScriptItems);
+            this._AvailableScriptItemsView.Filter = this.ScriptItemFilter;
+
+            this._SelectedScriptItem = null;
+
+            this.Window_Loaded(sender, e);
+        }
+
 
         private void _ShowParse_Click(object sender, RoutedEventArgs e)
         {

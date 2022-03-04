@@ -146,7 +146,9 @@ namespace Nysa.CodeAnalysis.VbScript
                         {
                             if (attribute.Value.DataStartsWith(_vbscript_colon))
                             {
-                                var vbParse = (new VbScriptContent(attribute.XPath, String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n"))).Parse();
+                                var attrValue = HtmlEntity.DeEntitize(attribute.Value);
+                                var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                var vbParse = (new VbScriptContent(attribute.XPath, vbString)).Parse();
 
                                 parses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, node, attribute));
                             }

@@ -386,6 +386,202 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             hostMembers.Add(new ClassSymbol("HTMLTableElement", tableMembers));
 
+            var styleMembers = new List<Symbol>();
+
+            styleMembers.Add("alignContent".EmptyProperty(false));
+            styleMembers.Add("alignItems".EmptyProperty(false));
+            styleMembers.Add("alignSelf".EmptyProperty(false));
+            styleMembers.Add("animation".EmptyProperty(false));
+            styleMembers.Add("animationDelay".EmptyProperty(false));
+            styleMembers.Add("animationDirection".EmptyProperty(false));
+            styleMembers.Add("animationDuration".EmptyProperty(false));
+            styleMembers.Add("animationFillMode".EmptyProperty(false));
+            styleMembers.Add("animationIterationCount".EmptyProperty(false));
+            styleMembers.Add("animationName".EmptyProperty(false));
+            styleMembers.Add("animationTimingFunction".EmptyProperty(false));
+            styleMembers.Add("animationPlayState".EmptyProperty(false));
+            styleMembers.Add("background".EmptyProperty(false));
+            styleMembers.Add("backgroundAttachment".EmptyProperty(false));
+            styleMembers.Add("backgroundColor".EmptyProperty(false));
+            styleMembers.Add("backgroundImage".EmptyProperty(false));
+            styleMembers.Add("backgroundPosition".EmptyProperty(false));
+            styleMembers.Add("backgroundRepeat".EmptyProperty(false));
+            styleMembers.Add("backgroundClip".EmptyProperty(false));
+            styleMembers.Add("backgroundOrigin".EmptyProperty(false));
+            styleMembers.Add("backgroundSize".EmptyProperty(false));
+            styleMembers.Add("backfaceVisibility".EmptyProperty(false));
+            styleMembers.Add("border".EmptyProperty(false));
+            styleMembers.Add("borderBottom".EmptyProperty(false));
+            styleMembers.Add("borderBottomColor".EmptyProperty(false));
+            styleMembers.Add("borderBottomLeftRadius".EmptyProperty(false));
+            styleMembers.Add("borderBottomRightRadius".EmptyProperty(false));
+            styleMembers.Add("borderBottomStyle".EmptyProperty(false));
+            styleMembers.Add("borderBottomWidth".EmptyProperty(false));
+            styleMembers.Add("borderCollapse".EmptyProperty(false));
+            styleMembers.Add("borderColor".EmptyProperty(false));
+            styleMembers.Add("borderImage".EmptyProperty(false));
+            styleMembers.Add("borderImageOutset".EmptyProperty(false));
+            styleMembers.Add("borderImageRepeat".EmptyProperty(false));
+            styleMembers.Add("borderImageSlice".EmptyProperty(false));
+            styleMembers.Add("borderImageSource".EmptyProperty(false));
+            styleMembers.Add("borderImageWidth".EmptyProperty(false));
+            styleMembers.Add("borderLeft".EmptyProperty(false));
+            styleMembers.Add("borderLeftColor".EmptyProperty(false));
+            styleMembers.Add("borderLeftStyle".EmptyProperty(false));
+            styleMembers.Add("borderLeftWidth".EmptyProperty(false));
+            styleMembers.Add("borderRadius".EmptyProperty(false));
+            styleMembers.Add("borderRight".EmptyProperty(false));
+            styleMembers.Add("borderRightColor".EmptyProperty(false));
+            styleMembers.Add("borderRightStyle".EmptyProperty(false));
+            styleMembers.Add("borderRightWidth".EmptyProperty(false));
+            styleMembers.Add("borderSpacing".EmptyProperty(false));
+            styleMembers.Add("borderStyle".EmptyProperty(false));
+            styleMembers.Add("borderTop".EmptyProperty(false));
+            styleMembers.Add("borderTopColor".EmptyProperty(false));
+            styleMembers.Add("borderTopLeftRadius".EmptyProperty(false));
+            styleMembers.Add("borderTopRightRadius".EmptyProperty(false));
+            styleMembers.Add("borderTopStyle".EmptyProperty(false));
+            styleMembers.Add("borderTopWidth".EmptyProperty(false));
+            styleMembers.Add("borderWidth".EmptyProperty(false));
+            styleMembers.Add("bottom".EmptyProperty(false));
+            styleMembers.Add("boxDecorationBreak".EmptyProperty(false));
+            styleMembers.Add("boxShadow".EmptyProperty(false));
+            styleMembers.Add("boxSizing".EmptyProperty(false));
+            styleMembers.Add("captionSide".EmptyProperty(false));
+            styleMembers.Add("caretColor".EmptyProperty(false));
+            styleMembers.Add("clear".EmptyProperty(false));
+            styleMembers.Add("clip".EmptyProperty(false));
+            styleMembers.Add("color".EmptyProperty(false));
+            styleMembers.Add("columnCount".EmptyProperty(false));
+            styleMembers.Add("columnFill".EmptyProperty(false));
+            styleMembers.Add("columnGap".EmptyProperty(false));
+            styleMembers.Add("columnRule".EmptyProperty(false));
+            styleMembers.Add("columnRuleColor".EmptyProperty(false));
+            styleMembers.Add("columnRuleStyle".EmptyProperty(false));
+            styleMembers.Add("columnRuleWidth".EmptyProperty(false));
+            styleMembers.Add("columns".EmptyProperty(false));
+            styleMembers.Add("columnSpan".EmptyProperty(false));
+            styleMembers.Add("columnWidth".EmptyProperty(false));
+            styleMembers.Add("content".EmptyProperty(false));
+            styleMembers.Add("counterIncrement".EmptyProperty(false));
+            styleMembers.Add("counterReset".EmptyProperty(false));
+            styleMembers.Add("cursor".EmptyProperty(false));
+            styleMembers.Add("direction".EmptyProperty(false));
+            styleMembers.Add("display".EmptyProperty(false));
+            styleMembers.Add("emptyCells".EmptyProperty(false));
+            styleMembers.Add("filter".EmptyProperty(false));
+            styleMembers.Add("flex".EmptyProperty(false));
+            styleMembers.Add("flexBasis".EmptyProperty(false));
+            styleMembers.Add("flexDirection".EmptyProperty(false));
+            styleMembers.Add("flexFlow".EmptyProperty(false));
+            styleMembers.Add("flexGrow".EmptyProperty(false));
+            styleMembers.Add("flexShrink".EmptyProperty(false));
+            styleMembers.Add("flexWrap".EmptyProperty(false));
+            styleMembers.Add("cssFloat".EmptyProperty(false));
+            styleMembers.Add("font".EmptyProperty(false));
+            styleMembers.Add("fontFamily".EmptyProperty(false));
+            styleMembers.Add("fontSize".EmptyProperty(false));
+            styleMembers.Add("fontStyle".EmptyProperty(false));
+            styleMembers.Add("fontVariant".EmptyProperty(false));
+            styleMembers.Add("fontWeight".EmptyProperty(false));
+            styleMembers.Add("fontSizeAdjust".EmptyProperty(false));
+            styleMembers.Add("fontStretch".EmptyProperty(false));
+            styleMembers.Add("hangingPunctuation".EmptyProperty(false));
+            styleMembers.Add("height".EmptyProperty(false));
+            styleMembers.Add("hyphens".EmptyProperty(false));
+            styleMembers.Add("icon".EmptyProperty(false));
+            styleMembers.Add("imageOrientation".EmptyProperty(false));
+            styleMembers.Add("isolation".EmptyProperty(false));
+            styleMembers.Add("justifyContent".EmptyProperty(false));
+            styleMembers.Add("left".EmptyProperty(false));
+            styleMembers.Add("letterSpacing".EmptyProperty(false));
+            styleMembers.Add("lineHeight".EmptyProperty(false));
+            styleMembers.Add("listStyle".EmptyProperty(false));
+            styleMembers.Add("listStyleImage".EmptyProperty(false));
+            styleMembers.Add("listStylePosition".EmptyProperty(false));
+            styleMembers.Add("listStyleType".EmptyProperty(false));
+            styleMembers.Add("margin".EmptyProperty(false));
+            styleMembers.Add("marginBottom".EmptyProperty(false));
+            styleMembers.Add("marginLeft".EmptyProperty(false));
+            styleMembers.Add("marginRight".EmptyProperty(false));
+            styleMembers.Add("marginTop".EmptyProperty(false));
+            styleMembers.Add("maxHeight".EmptyProperty(false));
+            styleMembers.Add("maxWidth".EmptyProperty(false));
+            styleMembers.Add("minHeight".EmptyProperty(false));
+            styleMembers.Add("minWidth".EmptyProperty(false));
+            styleMembers.Add("navDown".EmptyProperty(false));
+            styleMembers.Add("navIndex".EmptyProperty(false));
+            styleMembers.Add("navLeft".EmptyProperty(false));
+            styleMembers.Add("navRight".EmptyProperty(false));
+            styleMembers.Add("navUp".EmptyProperty(false));
+            styleMembers.Add("objectFit".EmptyProperty(false));
+            styleMembers.Add("objectPosition".EmptyProperty(false));
+            styleMembers.Add("opacity".EmptyProperty(false));
+            styleMembers.Add("order".EmptyProperty(false));
+            styleMembers.Add("orphans".EmptyProperty(false));
+            styleMembers.Add("outline".EmptyProperty(false));
+            styleMembers.Add("outlineColor".EmptyProperty(false));
+            styleMembers.Add("outlineOffset".EmptyProperty(false));
+            styleMembers.Add("outlineStyle".EmptyProperty(false));
+            styleMembers.Add("outlineWidth".EmptyProperty(false));
+            styleMembers.Add("overflow".EmptyProperty(false));
+            styleMembers.Add("overflowX".EmptyProperty(false));
+            styleMembers.Add("overflowY".EmptyProperty(false));
+            styleMembers.Add("padding".EmptyProperty(false));
+            styleMembers.Add("paddingBottom".EmptyProperty(false));
+            styleMembers.Add("paddingLeft".EmptyProperty(false));
+            styleMembers.Add("paddingRight".EmptyProperty(false));
+            styleMembers.Add("paddingTop".EmptyProperty(false));
+            styleMembers.Add("pageBreakAfter".EmptyProperty(false));
+            styleMembers.Add("pageBreakBefore".EmptyProperty(false));
+            styleMembers.Add("pageBreakInside".EmptyProperty(false));
+            styleMembers.Add("perspective".EmptyProperty(false));
+            styleMembers.Add("perspectiveOrigin".EmptyProperty(false));
+            styleMembers.Add("position".EmptyProperty(false));
+            styleMembers.Add("quotes".EmptyProperty(false));
+            styleMembers.Add("resize".EmptyProperty(false));
+            styleMembers.Add("right".EmptyProperty(false));
+            styleMembers.Add("scrollBehavior".EmptyProperty(false));
+            styleMembers.Add("tableLayout".EmptyProperty(false));
+            styleMembers.Add("tabSize".EmptyProperty(false));
+            styleMembers.Add("textAlign".EmptyProperty(false));
+            styleMembers.Add("textAlignLast".EmptyProperty(false));
+            styleMembers.Add("textDecoration".EmptyProperty(false));
+            styleMembers.Add("textDecorationColor".EmptyProperty(false));
+            styleMembers.Add("textDecorationLine".EmptyProperty(false));
+            styleMembers.Add("textDecorationStyle".EmptyProperty(false));
+            styleMembers.Add("textIndent".EmptyProperty(false));
+            styleMembers.Add("textJustify".EmptyProperty(false));
+            styleMembers.Add("textOverflow".EmptyProperty(false));
+            styleMembers.Add("textShadow".EmptyProperty(false));
+            styleMembers.Add("textTransform".EmptyProperty(false));
+            styleMembers.Add("top".EmptyProperty(false));
+            styleMembers.Add("transform".EmptyProperty(false));
+            styleMembers.Add("transformOrigin".EmptyProperty(false));
+            styleMembers.Add("transformStyle".EmptyProperty(false));
+            styleMembers.Add("transition".EmptyProperty(false));
+            styleMembers.Add("transitionProperty".EmptyProperty(false));
+            styleMembers.Add("transitionDuration".EmptyProperty(false));
+            styleMembers.Add("transitionTimingFunction".EmptyProperty(false));
+            styleMembers.Add("transitionDelay".EmptyProperty(false));
+            styleMembers.Add("unicodeBidi".EmptyProperty(false));
+            styleMembers.Add("userSelect".EmptyProperty(false));
+            styleMembers.Add("verticalAlign".EmptyProperty(false));
+            styleMembers.Add("visibility".EmptyProperty(false));
+            styleMembers.Add("whiteSpace".EmptyProperty(false));
+            styleMembers.Add("width".EmptyProperty(false));
+            styleMembers.Add("wordBreak".EmptyProperty(false));
+            styleMembers.Add("wordSpacing".EmptyProperty(false));
+            styleMembers.Add("wordWrap".EmptyProperty(false));
+            styleMembers.Add("widows".EmptyProperty(false));
+            styleMembers.Add("zIndex".EmptyProperty(false));
+
+            // obsolete members
+            styleMembers.Add("pixelheight".EmptyProperty(false, true, "height"));
+            styleMembers.Add("pixelwidth".EmptyProperty(false, true, "width"));
+
+            hostMembers.Add(new ClassSymbol("HTMLStyleElement", Option.None, styleMembers, Option.None));
+
             return hostMembers;
         }
 
@@ -399,10 +595,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             => new PropertySetSymbol(@this, isPublic, false, _NoMembers);
         public static FunctionSymbol EmptyFunction(this String @this, Boolean isPublic = true)
             => new FunctionSymbol(@this, isPublic, _NoMembers);
-        public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true)
+        public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true, String? newName = null)
             => new PropertySymbol(@this,
-                                  @this.EmptyPropertyGet(true).Some<FunctionSymbol>(),
-                                  readOnly ? Option.None : @this.EmptyPropertySet(true).Some<FunctionSymbol>());
+                                  newName == null ? @this.EmptyPropertyGet(isPublic).Some<FunctionSymbol>()
+                                                  : @this.EmptyPropertyGet(isPublic).Renamed(newName).Some<FunctionSymbol>(),
+                                  readOnly
+                                  ? Option.None
+                                  : newName == null ? @this.EmptyPropertySet(isPublic).Some<FunctionSymbol>()
+                                                    : @this.EmptyPropertySet(isPublic).Renamed(newName).Some<FunctionSymbol>());
         public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null)
             => new VariableSymbol(@this, Option.None, isPublic, @class == null ? Option.None : @class.Name.Some());
 

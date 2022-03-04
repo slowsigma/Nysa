@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net6.0-windows/Nysa.CodeAnalysis.Visualizer.dll",
             "args": [
-                "/path", "C:\\Git\\odyssey_2019.0\\Webs\\Common"
+                "/path", "C:\\Git\\cj-code_analysis\\Tyler.CodeAnalysis.Testing\\Data"
             ],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
