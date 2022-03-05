@@ -3,7 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 using Nysa.CodeAnalysis.VbScript.Semantics;
 using Nysa.Logics;
@@ -35,7 +43,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             : base(parent)
         {
             this.Basis = basis;
-            this.Members = new ObservableCollection<NodeViewModel>();
+            //this.Members = new ObservableCollection<NodeViewModel>();
 
             // var first = this.Basis.Select(node => node.First(), token => token.Span);
             // var last = this.Basis.Select(node => node.Last(), token => token.Span);
@@ -43,8 +51,8 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             // this.Position = first.Select(f => f.Position);
             // this.Length = first.Select(f => last.Select(l => (l.Position - f.Position) + l.Length));
 
-            foreach (var member in this.Basis.Select(node => node.Members, token => new NodeOrToken[] { }))
-                this.Members.Add(new NodeViewModel(this.Parent, member));
+            //foreach (var member in this.Basis.Select(node => node.Members, token => new NodeOrToken[] { }))
+            //    this.Members.Add(new NodeViewModel(this.Parent, member));
         }
     }
 

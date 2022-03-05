@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-
 using Nysa.CodeAnalysis.VbScript;
 using Nysa.CodeAnalysis.VbScript.Semantics;
 using Nysa.Logics;
 using Nysa.Windows.Input;
+
+using Dorata.Text.Parsing;
 
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
@@ -49,8 +50,8 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             view._SourceText.Document.PageWidth = 2000;
             view._SourceText.Document.Blocks.Add(paragraph);
 
-            if (nvm != null)
-                this.Colorize(nvm);
+            //if (nvm != null)
+            //    this.Colorize(nvm);
         }
 
         // private void Colorize(NodeViewModel node)
