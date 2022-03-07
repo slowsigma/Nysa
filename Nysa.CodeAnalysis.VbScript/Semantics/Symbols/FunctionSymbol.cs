@@ -14,8 +14,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IReadOnlyList<Symbol>       Members  { get; private set; }
         public IDictionary<String, Symbol> Index    { get; private set; }
 
-        public FunctionSymbol(String name, Option<String> newName, Boolean isPublic, IEnumerable<Symbol> members)
-            : base(name, newName, isPublic)
+        public FunctionSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, IEnumerable<Symbol> members)
+            : base(name, newName, errMessage, isPublic)
         {
             var parts = Symbols.Distinct(members);
 
@@ -23,13 +23,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this.Index    = parts.Index;
         }
 
-        public FunctionSymbol(String name, Boolean isPublic, IEnumerable<Symbol> members)
-            : this(name, Option.None, isPublic, members)
-        {
-        }
-
         public FunctionSymbol Renamed(String newName)
-            => new FunctionSymbol(this.Name, newName.Some(), this.IsPublic, this.Members);
+            => new FunctionSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.Members);
     }
 
 }

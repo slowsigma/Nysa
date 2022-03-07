@@ -15,8 +15,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IDictionary<String, Symbol> Index    { get; private set; }
         public Option<Symbol>              Default  { get; private set; }
 
-        public ClassSymbol(String name, Option<String> newName, IEnumerable<Symbol> members, Option<Symbol> @default)
-            : base(name, newName)
+        public ClassSymbol(String name, Option<String> newName, Option<String> errMessage, IEnumerable<Symbol> members, Option<Symbol> @default)
+            : base(name, newName, errMessage)
         {
             if (members.Any(s => s is ArgumentSymbol || s is ClassSymbol))
                 throw new ArgumentException("ClassSymbol members can only be of type: ConstantSymbol, FunctionSymbol, VariableSymbol, or PropertySymbol.");
@@ -33,17 +33,17 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         }
 
         public ClassSymbol(String name, IEnumerable<Symbol> members)
-            : this(name, Option.None, members, Option.None)
+            : this(name, Option.None, Option.None, members, Option.None)
         {
         }
 
         public ClassSymbol(String name, IEnumerable<Symbol> members, Option<Symbol> @default)
-            : this(name, Option.None, members, @default)
+            : this(name, Option.None, Option.None, members, @default)
         {
         }
 
         public ClassSymbol Renamed(String newName)
-            => new ClassSymbol(this.Name, newName.Some(), this.Members, this.Default);
+            => new ClassSymbol(this.Name, newName.Some(), Option.None, this.Members, this.Default);
     }
 
 }

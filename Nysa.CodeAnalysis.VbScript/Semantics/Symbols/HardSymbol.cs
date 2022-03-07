@@ -10,22 +10,22 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public abstract record HardSymbol : Symbol
     {
-        public Option<String> NewName { get; private set; }
+        public Option<String> NewName       { get; private set; }
+        /// <summary>
+        /// Used to flag the use of this in code as an error.
+        /// Used primarily to flag global functions having no
+        /// equivalent translation as needing manual attention.
+        /// </summary>
+        public Option<String> ErrMessage    { get; private set; }
 
-        protected HardSymbol(String name, Option<String> newName)
+        protected HardSymbol(String name, Option<String> newName, Option<String> errMessage)
             : base(name)
         {
-            this.NewName = newName;
-        }
+            if (newName is Some<String> && errMessage is Some<String>)
+                throw new Exception("Symbols that generate an error cannot be renamed.");
 
-        protected HardSymbol(String name, String newName)
-            : this(name, newName.Some())
-        {
-        }
-
-        protected HardSymbol(String name)
-            : this(name, Option<String>.None)
-        {
+            this.NewName    = newName;
+            this.ErrMessage = errMessage;
         }
     }
 

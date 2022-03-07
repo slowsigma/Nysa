@@ -26,7 +26,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         private static IEnumerable<T> CodeNodes<T>(this IEnumerable<TransformItem> @this)
             where T : CodeNode
-            => @this.Select(n => n as SemanticItem).Where(o => o != null && o.Value is T).Select(p => p.Value as T);
+        {
+            foreach (var item in @this)
+                if (item is SemanticItem s && s.Value is T node)
+                    yield return node;
+        }
 
         private static TransformItem[] ToResults<T>(this IEnumerable<T> @this)
             where T : CodeNode

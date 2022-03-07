@@ -18,7 +18,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public abstract record Symbol
     {
-        public String Name { get; private set; }    // this is the one that must be used in access expressions
+        /// <summary>
+        /// The name that is used to lookup the symbol.
+        /// </summary>
+        public String Name { get; private set; }
 
         protected Symbol(String name)
         {

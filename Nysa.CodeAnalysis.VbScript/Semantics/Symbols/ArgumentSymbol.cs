@@ -11,7 +11,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     public record ArgumentSymbol : HardSymbol
     {
         public ArgumentSymbol(String name, Option<String> newName)
-            : base(name, newName)
+            : base(name, newName, Option.None)
         {
         }
 

@@ -52,7 +52,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("DateSerial".EmptyFunction());
             hostMembers.Add("DateValue".EmptyFunction());
             hostMembers.Add("Day".EmptyFunction().Renamed("Global.Day"));
-            hostMembers.Add("Eval".EmptyFunction());
+            hostMembers.Add("Eval".EmptyFunction("Eval has no equivalent translation."));
+            hostMembers.Add("Execute".EmptyFunction("Execute has no equivalent translation."));
             hostMembers.Add("Exp".EmptyFunction());
             hostMembers.Add("Filter".EmptyFunction());
             hostMembers.Add("Fix".EmptyFunction().Renamed("Global.Fix"));
@@ -88,7 +89,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("Minute".EmptyFunction().Renamed("Global.Minute"));
             hostMembers.Add("Month".EmptyFunction().Renamed("Global.Month"));
             hostMembers.Add("MonthName".EmptyFunction());
-            hostMembers.Add("MsgBox".EmptyFunction());
+            hostMembers.Add("MsgBox".EmptyFunction().Renamed("Global.external.MsgBox"));
             hostMembers.Add("Now".EmptyFunction().Renamed("Global.Now"));
             hostMembers.Add("Oct".EmptyFunction());
             hostMembers.Add("Replace".EmptyFunction().Renamed("Global.Replace"));
@@ -120,7 +121,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("TypeName".EmptyFunction().Renamed("Global.TypeName"));
             hostMembers.Add("UBound".EmptyFunction().Renamed("Global.UBound"));
             hostMembers.Add("UCase".EmptyFunction().Renamed("Global.UCase"));
-            hostMembers.Add("VarType".EmptyFunction());
+            hostMembers.Add("VarType".EmptyFunction("VarType has no equivalent translation."));
             hostMembers.Add("Weekday".EmptyFunction());
             hostMembers.Add("WeekdayName".EmptyFunction());
             hostMembers.Add("Year".EmptyFunction().Renamed("Global.Year"));
@@ -375,14 +376,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             tableMembers.Add("caption".EmptyProperty(true, true));
             tableMembers.Add("tFoot".EmptyProperty(true, true));
             tableMembers.Add("tHead".EmptyProperty(true, true));
-            tableMembers.Add("createCaption".EmptyFunction(true));
-            tableMembers.Add("createTFoot".EmptyFunction(true));
-            tableMembers.Add("createTHead".EmptyFunction(true));
-            tableMembers.Add("deleteCaption".EmptyFunction(true));
-            tableMembers.Add("deleteRow".EmptyFunction(true));
-            tableMembers.Add("deleteTFoot".EmptyFunction(true));
-            tableMembers.Add("deleteTHead".EmptyFunction(true));
-            tableMembers.Add("insertRow".EmptyFunction(true));
+            tableMembers.Add("createCaption".EmptyFunction());
+            tableMembers.Add("createTFoot".EmptyFunction());
+            tableMembers.Add("createTHead".EmptyFunction());
+            tableMembers.Add("deleteCaption".EmptyFunction());
+            tableMembers.Add("deleteRow".EmptyFunction());
+            tableMembers.Add("deleteTFoot".EmptyFunction());
+            tableMembers.Add("deleteTHead".EmptyFunction());
+            tableMembers.Add("insertRow".EmptyFunction());
 
             hostMembers.Add(new ClassSymbol("HTMLTableElement", tableMembers));
 
@@ -580,7 +581,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             styleMembers.Add("pixelheight".EmptyProperty(false, true, "height"));
             styleMembers.Add("pixelwidth".EmptyProperty(false, true, "width"));
 
-            hostMembers.Add(new ClassSymbol("HTMLStyleElement", Option.None, styleMembers, Option.None));
+            hostMembers.Add(new ClassSymbol("HTMLStyleElement", Option.None, Option.None, styleMembers, Option.None));
 
             return hostMembers;
         }
@@ -588,13 +589,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         private static Symbol[] _NoMembers = new Symbol[] { };
 
         public static ConstantSymbol ToConstant(this String @this, Boolean isPublic = true)
-            => new ConstantSymbol(@this, isPublic);
+            => new ConstantSymbol(@this, Option.None, Option.None, isPublic);
         public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)
             => new PropertyGetSymbol(@this, isPublic, _NoMembers);
         public static PropertySetSymbol EmptyPropertySet(this String @this, Boolean isPublic = true)
             => new PropertySetSymbol(@this, isPublic, false, _NoMembers);
-        public static FunctionSymbol EmptyFunction(this String @this, Boolean isPublic = true)
-            => new FunctionSymbol(@this, isPublic, _NoMembers);
+        public static FunctionSymbol EmptyFunction(this String @this, String? errMessage = null, Boolean isPublic = true)
+            => new FunctionSymbol(@this, Option.None, errMessage.AsOption(), isPublic, _NoMembers);
         public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true, String? newName = null)
             => new PropertySymbol(@this,
                                   newName == null ? @this.EmptyPropertyGet(isPublic).Some<FunctionSymbol>()
@@ -604,7 +605,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                   : newName == null ? @this.EmptyPropertySet(isPublic).Some<FunctionSymbol>()
                                                     : @this.EmptyPropertySet(isPublic).Renamed(newName).Some<FunctionSymbol>());
         public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null)
-            => new VariableSymbol(@this, Option.None, isPublic, @class == null ? Option.None : @class.Name.Some());
+            => new VariableSymbol(@this, Option.None, Option.None, isPublic, @class == null ? Option.None : @class.Name.Some());
 
         public static IEnumerable<Symbol> Members(params Symbol[] members)
             => members;
