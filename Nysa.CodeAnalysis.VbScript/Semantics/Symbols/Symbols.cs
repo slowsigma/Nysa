@@ -583,6 +583,31 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             hostMembers.Add(new ClassSymbol("HTMLStyleElement", Option.None, Option.None, styleMembers, Option.None));
 
+
+            var imageMembers = new List<Symbol>();
+
+            imageMembers.Add("align".EmptyProperty(false));
+            imageMembers.Add("alt".EmptyProperty(false));
+            imageMembers.Add("border".EmptyProperty(false));
+
+            imageMembers.Add("complete".EmptyFunction());
+
+            imageMembers.Add("crossOrigin".EmptyProperty(false));
+            imageMembers.Add("height".EmptyProperty(false));
+            imageMembers.Add("hspace".EmptyProperty(false));
+            imageMembers.Add("isMap".EmptyProperty(false));
+            imageMembers.Add("longDesc".EmptyProperty(false));
+            imageMembers.Add("lowsrc".EmptyProperty(false));
+            imageMembers.Add("name".EmptyProperty(false));
+            imageMembers.Add("naturalHeight".EmptyProperty(true));
+            imageMembers.Add("naturalWidth".EmptyProperty(true));
+            imageMembers.Add("src".EmptyProperty(false));
+            imageMembers.Add("useMap".EmptyProperty(false));
+            imageMembers.Add("vspace".EmptyProperty(false));
+            imageMembers.Add("width".EmptyProperty(false));
+
+            hostMembers.Add(new ClassSymbol("HTMLImageElement", Option.None, Option.None, imageMembers, Option.None));
+
             return hostMembers;
         }
 
