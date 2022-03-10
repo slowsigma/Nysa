@@ -126,10 +126,10 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         // ^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^
 
         public static ViewInfo ToViewInfo(this PathExpression @this)
-            => new ViewInfo(nameof(PathExpression), @this, () => @this.Select(i => i.ToViewInfo()));
+            => @this.TypedInfo(() => @this.Select(i => i.ToViewInfo()));
 
         public static ViewInfo ToViewInfo(this NewObjectExpression @this)
-            => new ViewInfo(nameof(NewObjectExpression), @this, Properties(@this.Object.ToViewInfo().AsProperty("Class")));
+            => @this.TypedInfo(Properties(@this.Object.ToViewInfo().AsProperty("Class")));
 
         public static ViewInfo ToViewInfo(this AccessExpression @this)
             => @this switch
@@ -146,57 +146,41 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                                        @this.Right.ToViewInfo().AsProperty(nameof(AssignStatement.Right))));
 
         public static ViewInfo ToViewInfo(this CallStatement @this)
-            => new ViewInfo(nameof(CallStatement),
-                            @this,
-                            Properties(@this.AccessExpression.ToViewInfo().AsProperty("Call")));
+            => @this.TypedInfo(Properties(@this.AccessExpression.ToViewInfo().AsProperty("Call")));
 
         public static ViewInfo ToViewInfo(this Constant @this)
-            => new ViewInfo(nameof(Constant),
-                            @this,
-                            Properties(@this.ValueProperty(nameof(Constant.Name), @this.Name.Value),
-                                       @this.Expression.Map(e => e.ToViewInfo().AsProperty("Value")).OrNull()));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(Constant.Name), @this.Name.Value),
+                                          @this.Expression.Map(e => e.ToViewInfo().AsProperty("Value")).OrNull()));
 
         public static ViewInfo ToViewInfo(this ConstantDeclaration @this)
-            => new ViewInfo(nameof(ConstantDeclaration),
-                            @this,
-                            () => @this.Constants.Select(c => c.ToViewInfo()));
+            => @this.TypedInfo(() => @this.Constants.Select(c => c.ToViewInfo()));
 
         public static ViewInfo ToViewInfo(this ConstantStatement @this)
-            => new ViewInfo(nameof(ConstantStatement), @this, () => @this.Constants.Select(c => c.ToViewInfo()));
+            => @this.TypedInfo(() => @this.Constants.Select(c => c.ToViewInfo()));
 
         public static ViewInfo ToViewInfo(this DoLoopStatement @this)
-            => new ViewInfo(nameof(DoLoopStatement),
-                            @this,
-                            () => @this.Statements.Select(s => s.ToViewInfo()));
+            => @this.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo()));
 
         public static ViewInfo ToViewInfo(this DoLoopTestStatement @this)
-            => new ViewInfo(nameof(DoLoopTestStatement),
-                            @this,
-                            Properties(@this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(DoLoopTestStatement.Statements)),
-                                       @this.Condition.ToViewInfo().AsProperty(nameof(DoLoopTestStatement.Condition))));
+            => @this.TypedInfo(Properties(@this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(DoLoopTestStatement.Statements)),
+                                          @this.Condition.ToViewInfo().AsProperty(nameof(DoLoopTestStatement.Condition))));
 
         public static ViewInfo ToViewInfo(this DoTestLoopStatement @this)
-            => new ViewInfo(nameof(DoTestLoopStatement),
-                            @this,
-                            Properties(@this.Condition.ToViewInfo().AsProperty(nameof(DoTestLoopStatement.Condition)),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(DoTestLoopStatement.Statements))));
+            => @this.TypedInfo(Properties(@this.Condition.ToViewInfo().AsProperty(nameof(DoTestLoopStatement.Condition)),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(DoTestLoopStatement.Statements))));
 
         public static ViewInfo ToViewInfo(this ElseIfBlock @this)
-            => new ViewInfo(nameof(ElseIfBlock),
-                            @this,
-                            Properties(@this.Predicate.ToViewInfo().AsProperty(nameof(ElseIfBlock.Predicate)),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ElseIfBlock.Statements))));
+            => @this.TypedInfo(Properties(@this.Predicate.ToViewInfo().AsProperty(nameof(ElseIfBlock.Predicate)),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ElseIfBlock.Statements))));
 
         public static ViewInfo ToViewInfo(this FinalElseBlock @this)
-            => new ViewInfo(nameof(FinalElseBlock),
-                            @this,
-                            Properties(@this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(FinalElseBlock.Statements))));
+            => @this.TypedInfo(Properties(@this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(FinalElseBlock.Statements))));
 
         public static ViewInfo ToViewInfo(this EraseStatement @this)
-            => new ViewInfo(nameof(EraseStatement), @this, Properties(@this.ValueProperty(nameof(EraseStatement.Name), @this.Name.Value)));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(EraseStatement.Name), @this.Name.Value)));
 
         public static ViewInfo ToViewInfo(this ExitStatement @this)
-            => new ViewInfo(nameof(ExitStatement), @this, Properties(@this.ValueProperty(nameof(ExitStatement.Type), @this.Type.ToString())));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(ExitStatement.Type), @this.Type.ToString())));
 
         public static ViewInfo ToViewInfo(this Variable @this)
             => @this.ArrayRanks
@@ -205,66 +189,50 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                            () => @this.TypedInfo().AsProperty(String.Concat("'", @this.Name, "'")));
 
         public static ViewInfo ToViewInfo(this FieldDeclaration @this)
-            => new ViewInfo(nameof(FieldDeclaration),
-                            @this,
-                            Properties(@this.ValueProperty(nameof(FieldDeclaration.Visibility), @this.Visibility.ToString()),
-                                       new ViewInfo(nameof(FieldDeclaration.Fields), @this, () => @this.Fields.Select(f => f.ToViewInfo()))));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(FieldDeclaration.Visibility), @this.Visibility.ToString()),
+                                          new ViewInfo(nameof(FieldDeclaration.Fields), @this, () => @this.Fields.Select(f => f.ToViewInfo()))));
 
         public static ViewInfo ToViewInfo(this ForEachStatement @this)
-            => new ViewInfo(nameof(ForEachStatement),
-                            @this,
-                            Properties(@this.ValueProperty(nameof(ForEachStatement.Variable), @this.Variable.Value),
-                                       @this.In.ToViewInfo().AsProperty(nameof(ForEachStatement.In)),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ForEachStatement.Statements))));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(ForEachStatement.Variable), @this.Variable.Value),
+                                          @this.In.ToViewInfo().AsProperty(nameof(ForEachStatement.In)),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ForEachStatement.Statements))));
 
         public static ViewInfo ToViewInfo(this ForStatement @this)
-            => new ViewInfo(nameof(ForStatement),
-                            @this,
-                            Properties(@this.ValueProperty(nameof(ForStatement.Variable), @this.Variable.Value),
-                                       @this.From.ToViewInfo().AsProperty(nameof(ForStatement.From)),
-                                       @this.To.ToViewInfo().AsProperty(nameof(ForStatement.To)),
-                                       @this.Step.Map(s => s.ToViewInfo().AsProperty(nameof(ForStatement.Step))).OrNull(),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ForStatement.Statements))));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(ForStatement.Variable), @this.Variable.Value),
+                                          @this.From.ToViewInfo().AsProperty(nameof(ForStatement.From)),
+                                          @this.To.ToViewInfo().AsProperty(nameof(ForStatement.To)),
+                                          @this.Step.Map(s => s.ToViewInfo().AsProperty(nameof(ForStatement.Step))).OrNull(),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ForStatement.Statements))));
 
         public static ViewInfo ToViewInfo(this IfStatement @this)
-            => new ViewInfo(nameof(IfStatement),
-                            @this,
-                            () => Return.Enumerable(@this.Predicate.ToViewInfo().AsProperty(nameof(IfStatement.Predicate)),
-                                                    @this.Consequent.TypedInfo(() => @this.Consequent.Select(s => s.ToViewInfo())).AsProperty("IfTrue"))
-                                        .Concat(@this.Alternatives.Select(a => a.ToViewInfo())));
+            => @this.TypedInfo(() => Return.Enumerable(@this.Predicate.ToViewInfo().AsProperty(nameof(IfStatement.Predicate)),
+                                                       @this.Consequent.TypedInfo(() => @this.Consequent.Select(s => s.ToViewInfo())).AsProperty("IfTrue"))
+                                           .Concat(@this.Alternatives.Select(a => a.ToViewInfo())));
 
         public static ViewInfo ToViewInfo(this InlineCallStatement @this)
-            => new ViewInfo(nameof(InlineCallStatement),
-                            @this,
-                            Properties(@this.AccessExpression.ToViewInfo().AsProperty(nameof(InlineCallStatement.AccessExpression))));
+            => @this.TypedInfo(Properties(@this.AccessExpression.ToViewInfo().AsProperty(nameof(InlineCallStatement.AccessExpression))));
 
         public static ViewInfo ToViewInfo(this FunctionDeclaration @this)
-            => new ViewInfo(nameof(FunctionDeclaration),
-                            @this,
-                            Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
-                                       @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
-                                       @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                       new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
+            => @this.TypedInfo(Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
+                                          @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
+                                          @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
+                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this PropertyDeclaration @this)
-            => new ViewInfo(nameof(PropertyDeclaration),
-                            @this,
-                            Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
-                                       @this.ValueProperty(nameof(PropertyDeclaration.Access), @this.Access.ToString()),
-                                       @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
-                                       @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                       new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
+            => @this.TypedInfo(Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
+                                         @this.ValueProperty(nameof(PropertyDeclaration.Access), @this.Access.ToString()),
+                                         @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
+                                         @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
+                                         new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                         @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this SubroutineDeclaration @this)
-            => new ViewInfo(nameof(SubroutineDeclaration),
-                            @this,
-                            Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
-                                       @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
-                                       @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                       new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
-                                       @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
+            => @this.TypedInfo(Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
+                                          @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
+                                          @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
+                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this RedimVariable @this)
             => new ViewInfo(String.Concat("'", @this.Name, "'"),
@@ -272,10 +240,22 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                             Properties(new ViewInfo("Ranks", @this, () => @this.RankExpressions.Select(r => r.ToViewInfo()))));
 
         public static ViewInfo ToViewInfo(this RedimStatement @this)
-            => new ViewInfo(nameof(RedimStatement),
-                            @this,
-                            Properties(@this.ValueProperty(nameof(RedimStatement.Preserve), @this.Preserve.ToString()),
-                                       new ViewInfo(nameof(RedimStatement.Variables), @this, () => @this.Variables.Select(v => v.ToViewInfo()))));
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(RedimStatement.Preserve), @this.Preserve.ToString()),
+                                          new ViewInfo(nameof(RedimStatement.Variables), @this, () => @this.Variables.Select(v => v.ToViewInfo()))));
+
+        public static ViewInfo ToViewInfo(this SelectCaseElse @this)
+            => @this.TypedInfo(Properties(@this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(SelectCaseElse.Statements))));
+
+        public static ViewInfo ToViewInfo(this SelectCaseWhen @this)
+            => @this.TypedInfo(Properties(@this.When.TypedInfo(() => @this.When.Select(e => e.ToViewInfo())).AsProperty(),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty()));
+
+        public static ViewInfo ToViewInfo(this SelectStatement @this)
+            => @this.TypedInfo(Properties(@this.Value.ToViewInfo().AsProperty(nameof(SelectStatement.Value)),
+                                          new ViewInfo(nameof(SelectStatement.Cases), @this, () => @this.Cases.Select(c => c.ToViewInfo()))));
+
+        public static ViewInfo ToViewInfo(this VariableDeclaration @this)
+            => @this.TypedInfo(() => @this.Variables.Select(v => v.ToViewInfo()));
 
         public static ViewInfo ToViewInfo(this Statement @this)
             => @this switch
