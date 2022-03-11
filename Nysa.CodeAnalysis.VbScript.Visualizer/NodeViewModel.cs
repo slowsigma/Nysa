@@ -21,9 +21,9 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
     public class NodeViewModel : ViewModelObject<CodeVisualizerViewModel>
     {
-        public CodeNode Basis { get; private set; }
+        public ViewInfo Basis { get; private set; }
         public ObservableCollection<NodeViewModel> Members { get; private set; }
-        public String Title => this.Basis.Make(b => b.GetType().Name);
+        public String Title => this.Basis.Title;
         public Option<Int32> Position { get; private set; }
         public Option<Int32> Length { get; private set; }
 
@@ -39,11 +39,17 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             }
         }
 
-        public NodeViewModel(CodeVisualizerViewModel parent, CodeNode basis)
+        public NodeViewModel(CodeVisualizerViewModel parent, ViewInfo basis)
             : base(parent)
         {
             this.Basis = basis;
-            //this.Members = new ObservableCollection<NodeViewModel>();
+            this.Position = Option.None;
+            this.Length = Option.None;
+
+            this.Members = new ObservableCollection<NodeViewModel>();
+
+            foreach (var member in this.Basis.Children())
+                this.Members.Add(new NodeViewModel(this.Parent, member));
 
             // var first = this.Basis.Select(node => node.First(), token => token.Span);
             // var last = this.Basis.Select(node => node.Last(), token => token.Span);

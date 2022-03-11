@@ -37,18 +37,19 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
             this.Root = new ObservableCollection<NodeViewModel>();
 
-            var nvm = rootOrError.Match(pr => (NodeViewModel?)new NodeViewModel(this, pr), err => null);
+            if (rootOrError is Confirmed<Nysa.CodeAnalysis.VbScript.Semantics.Program> goodProgram)
+            {
+                var nvm = new NodeViewModel(this, goodProgram.Value.ToViewInfo());
 
-            if (nvm != null)
+                var paragraph = new Paragraph(new Run(this.Content)) {  };
+                paragraph.FontFamily = new System.Windows.Media.FontFamily("Courier New");
+
                 this.Root.Add(nvm);
 
-            var paragraph = new Paragraph(new Run(this.Content)) {  };
-            paragraph.FontFamily = new System.Windows.Media.FontFamily("Courier New");
-
-
-            view._SourceText.Document = new FlowDocument();
-            view._SourceText.Document.PageWidth = 2000;
-            view._SourceText.Document.Blocks.Add(paragraph);
+                view._SourceText.Document = new FlowDocument();
+                view._SourceText.Document.PageWidth = 2000;
+                view._SourceText.Document.Blocks.Add(paragraph);
+            }
 
             //if (nvm != null)
             //    this.Colorize(nvm);

@@ -31,7 +31,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
         public static ViewInfo TypedInfo<T>(this T @this, Func<IEnumerable<ViewInfo>>? children = null)
             where T : CodeNode
-            => new ViewInfo(nameof(T), @this, children ?? _NoMore);
+            => new ViewInfo(@this.GetType().Name, @this, children ?? _NoMore);
 
         public static ViewInfo AsProperty(this ViewInfo @this, params String[] propertyName)
             => new ViewInfo(String.Concat(String.Join(String.Empty, propertyName), " : ", @this.Title), @this.Node, @this.Children);
@@ -148,6 +148,10 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         public static ViewInfo ToViewInfo(this CallStatement @this)
             => @this.TypedInfo(Properties(@this.AccessExpression.ToViewInfo().AsProperty("Call")));
 
+        public static ViewInfo ToViewInfo(this ClassDeclaration @this)
+            => @this.TypedInfo(Properties(@this.ValueProperty(nameof(ClassDeclaration.Name), @this.Name.Value, _NoMore),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(ClassDeclaration.Statements))));
+
         public static ViewInfo ToViewInfo(this Constant @this)
             => @this.TypedInfo(Properties(@this.ValueProperty(nameof(Constant.Name), @this.Name.Value),
                                           @this.Expression.Map(e => e.ToViewInfo().AsProperty("Value")).OrNull()));
@@ -257,6 +261,14 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         public static ViewInfo ToViewInfo(this VariableDeclaration @this)
             => @this.TypedInfo(() => @this.Variables.Select(v => v.ToViewInfo()));
 
+        public static ViewInfo ToViewInfo(this WhileStatement @this)
+            => @this.TypedInfo(Properties(@this.Condition.ToViewInfo().AsProperty(nameof(WhileStatement.Condition)),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(WhileStatement.Statements))));
+
+        public static ViewInfo ToViewInfo(this WithStatement @this)
+            => @this.TypedInfo(Properties(@this.Expression.ToViewInfo().AsProperty(nameof(WithStatement.Expression)),
+                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(WithStatement.Statements))));
+
         public static ViewInfo ToViewInfo(this Statement @this)
             => @this switch
             {
@@ -293,8 +305,8 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                 _ => throw new Exception("Program error.")
             };
 
-        public static (String Title, IEnumerable<CodeNode> Children) ToViewInfo(this Program @this)
-            => (nameof(Program), @this.Statements);
+        public static ViewInfo ToViewInfo(this Program @this)
+            => @this.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo()));
 
     }
 
