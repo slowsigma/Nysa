@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 using Nysa.Logics;
@@ -44,13 +45,8 @@ namespace Nysa.CodeAnalysis.VbScript
         public static Suspect<Parse> Parse(this Content content, HashSet<String>? eventAttributes = null)
             =>   content is HtmlContent      html     ? html.Parse(eventAttributes).Map(s => (Parse)s)
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
-               : content is XslContent       xsl      ? xsl.Parse().Map(s => (Parse)s)
+               : content is XslContent       xsl      ? xsl.Parse(eventAttributes).Map(s => (Parse)s)
                :                                        throw new ArgumentException("Parse does not accept content of this type.");
-
-        public static VbScriptParse Parse(this VbScriptContent @this)
-            => @this.Value
-                    .Parse()
-                    .Make(p => new VbScriptParse(@this, p));
 
         private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
@@ -109,7 +105,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
-        public static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
+        private static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
             (List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
             {
@@ -168,6 +164,11 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
+        public static VbScriptParse Parse(this VbScriptContent @this)
+            => @this.Value
+                    .Parse()
+                    .Make(p => new VbScriptParse(@this, p));
+
         public static Suspect<Parse> Parse(this HtmlContent @this, HashSet<String>? eventAttributes = null)
             => @this.ParseXml(eventAttributes)
                     .Match(xp => xp.Confirmed<Parse>(),
@@ -183,23 +184,81 @@ namespace Nysa.CodeAnalysis.VbScript
                     var pref = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("implements-prefix")).Map(a => a.Value);
                     var path = script.Path();
 
-                    var cont = new VbScriptContent(path, script.Value);
+                    var parse = (new VbScriptContent(path, script.Value)).Parse();
 
                     if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                        yield return new XslVbScriptParse(cont, cont.Value.Parse(), pref, script, null, null);
+                        yield return new XslVbScriptParse(parse.Content, parse.SyntaxRoot, pref, script, null, false, null);
                 }
 
                 if (eventAttributes != null)
                 {
                     foreach (var element in document.Descendants())
                     {
+
                         if (element.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && element.Name.LocalName.DataEquals("attribute"))
                         {
                             var nameAttr = element.Attributes().FirstOrNone(a => a.Name.LocalName.DataEquals("name"));
 
                             if (nameAttr is Some<XAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
                             {
+                                // at this point we have several possibilities
+                                //   1. element contains all text with no sub-elements
+                                //   2. element contains a mix of text and sub-elements and sub-elements are only xsl:value
+                                //   3. element contains a mix of text and sub-elements and sub-elements are only xsl:value and xsl:text
+                                //      if we know there is no text outside of xsl:text elements, then we might be able to take a translation
+                                //      of the vbscript that contains substitutions (placeholders), and break that back down to xsl:text
+                                //      using the substitution markers to know where to split up the translation
 
+                                var build = new StringBuilder();
+                                var xtxt  = false;
+                                var xstxt = false;
+                                var subs  = new List<(String name, XElement xslValue)>();
+                                var subNo = 0;
+                                var bail  = false;
+
+                                foreach (var node in element.Nodes())
+                                {
+                                    if (node is XText xText)
+                                    {
+                                        xtxt = true;
+                                        if (xstxt)
+                                            bail = true;
+
+                                        build.Append(xText.Value);
+                                    }
+                                    else if (node is XElement xslText && xslText.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslText.Name.LocalName.DataEquals("text"))
+                                    {
+                                        xstxt = true;
+                                        if (xtxt)
+                                            bail = true;
+
+                                        build.Append(xslText.Value);
+                                    }
+                                    else if (node is XElement xslValue && xslValue.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslValue.Name.LocalName.DataEquals("value"))
+                                    {
+                                        var subName = $"xsl_value_placeholder_{++subNo}";
+                                        build.Append(subName);
+                                        subs.Add((subName, xslValue));
+                                    }
+                                    else if (node is XElement xOther)
+                                    {
+                                        bail = true;
+                                    }
+
+                                    if (bail)
+                                        break;
+                                }
+
+                                if (!bail)
+                                {
+                                    var parseText = build.ToString();
+
+                                    if (parseText.DataStartsWith(_vbscript_colon))
+                                    {
+                                        var vbParse = (new VbScriptContent(element.Path(), parseText)).Parse();
+                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, xstxt, subs);
+                                    }
+                                }
                             }
                         }
                         else
@@ -212,7 +271,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                     var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
 
-                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, null);
+                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, false, null);
                                 }
                             }
                         }
