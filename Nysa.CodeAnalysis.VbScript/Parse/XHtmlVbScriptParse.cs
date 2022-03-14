@@ -10,11 +10,11 @@ using SyntaxNode = Dorata.Text.Parsing.Node;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class HtmlXmlVbScriptParse : VbScriptParse
+    public class XHtmlVbScriptParse : VbScriptParse
     {
         public XElement     Element     { get; private set; }
         public XAttribute?  Attribute   { get; private set; }
-        public HtmlXmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, XElement element, XAttribute? attribute = null)
+        public XHtmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, XElement element, XAttribute? attribute = null)
             : base(content, syntaxRoot)
         {
             this.Element   = element;

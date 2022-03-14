@@ -19,6 +19,7 @@ namespace Nysa.CodeAnalysis.VbScript
     public static class ParseFunctions
     {
         private static readonly String _vbscript_colon = "vbscript:";
+        private static readonly String _xsl_namespace_uri = "http://www.w3.org/1999/XSL/Transform";
 
         private static String Path(this XElement element)
             => element.Parent == null
@@ -41,7 +42,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 : (Failed<ParseNode>)g.B.ToParseError());
 
         public static Suspect<Parse> Parse(this Content content, HashSet<String>? eventAttributes = null)
-            =>   content is HtmlContent      html     ? html.Parse().Map(s => (Parse)s)
+            =>   content is HtmlContent      html     ? html.Parse(eventAttributes).Map(s => (Parse)s)
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
                : content is XslContent       xsl      ? xsl.Parse().Map(s => (Parse)s)
                :                                        throw new ArgumentException("Parse does not accept content of this type.");
@@ -51,12 +52,12 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Parse()
                     .Make(p => new VbScriptParse(@this, p));
 
-        private static Suspect<HtmlXmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
+        private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
-            (XDocument Document, List<(String Source, XElement Element)> Includes, List<HtmlXmlVbScriptParse> VbParses) FromDocument(XDocument document)
+            (List<(String Source, XElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XDocument document)
             {
                 var includes = new Dictionary<String, XElement>(StringComparer.OrdinalIgnoreCase);
-                var parses   = new List<HtmlXmlVbScriptParse>();
+                var parses   = new List<XHtmlVbScriptParse>();
 
                 foreach (var script in document.Descendants().Where(e => e.Name.LocalName.DataEquals("script")))
                 {
@@ -76,7 +77,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         {
                             var vbParse = (new VbScriptContent(script.Path(), script.Value)).Parse();
 
-                            parses.Add(new HtmlXmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                            parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
                         }
                     }
                 }
@@ -91,26 +92,26 @@ namespace Nysa.CodeAnalysis.VbScript
                             {
                                 var vbParse = (new VbScriptContent(element.Path(attribute), String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n"))).Parse();
 
-                                parses.Add(new HtmlXmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
+                                parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
                             }
                         }
                     }
                 }
 
-                return (document, includes.Select(kv => (Source: kv.Key, Element: kv.Value)).ToList(), parses);
+                return (includes.Select(kv => (Source: kv.Key, Element: kv.Value)).ToList(), parses);
             }
 
             return Return.Try(() =>
                                {
                                    var doc = XDocument.Parse(htmlContent.Value, LoadOptions.PreserveWhitespace);
 
-                                   return FromDocument(doc).Make(t => new HtmlXmlParse(htmlContent, t.Document, t.Includes, t.VbParses));
+                                   return FromDocument(doc).Make(t => new XHtmlParse(htmlContent, doc, t.Includes, t.VbParses));
                                });
         }
 
         public static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
-            (HtmlDocument Document, List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
+            (List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
             {
                 var includes = new Dictionary<String, HtmlNode>(StringComparer.OrdinalIgnoreCase);
                 var parses   = new List<HtmlVbScriptParse>();
@@ -156,14 +157,14 @@ namespace Nysa.CodeAnalysis.VbScript
                     }
                 }
 
-                return (document, includes.Select(kv => (Source: kv.Key, Node: kv.Value)).ToList(), parses);
+                return (includes.Select(kv => (Source: kv.Key, Node: kv.Value)).ToList(), parses);
             }
 
             return Return.Try(() =>
                                {
                                    var doc = new HtmlDocument();
                                    doc.LoadHtml(htmlContent.Value);
-                                   return FromDocument(doc).Make(t => new HtmlParse(htmlContent, t.Document, t.Includes, t.Parses));
+                                   return FromDocument(doc).Make(t => new HtmlParse(htmlContent, doc, t.Includes, t.Parses));
                                });
         }
 
@@ -172,11 +173,11 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Match(xp => xp.Confirmed<Parse>(),
                            e => @this.ParseHtml(eventAttributes).Bind(hp => hp.Confirmed<Parse>()));
 
-        public static Suspect<XslParse> Parse(this XslContent xslContent)
+        public static Suspect<XslParse> Parse(this XslContent xslContent, HashSet<String>? eventAttributes = null)
         {
-            IEnumerable<XslVbScriptParse> ParseOver(XElement root)
+            IEnumerable<XslVbScriptParse> FromDocument(XDocument document)
             {
-                foreach (var script in root.DescendantsAndSelf().Where(d => d.Name.LocalName.Equals("script")))
+                foreach (var script in document.Descendants().Where(d => d.Name.LocalName.Equals("script")))
                 {
                     var lang = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("language"));
                     var pref = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("implements-prefix")).Map(a => a.Value);
@@ -184,13 +185,47 @@ namespace Nysa.CodeAnalysis.VbScript
 
                     var cont = new VbScriptContent(path, script.Value);
 
-                    if (lang.Match(a => a.Value.DataEquals("vbscript"), false))
-                        yield return new XslVbScriptParse(cont, pref, cont.Value.Parse());
+                    if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
+                        yield return new XslVbScriptParse(cont, cont.Value.Parse(), pref, script, null, null);
+                }
+
+                if (eventAttributes != null)
+                {
+                    foreach (var element in document.Descendants())
+                    {
+                        if (element.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && element.Name.LocalName.DataEquals("attribute"))
+                        {
+                            var nameAttr = element.Attributes().FirstOrNone(a => a.Name.LocalName.DataEquals("name"));
+
+                            if (nameAttr is Some<XAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
+                            {
+
+                            }
+                        }
+                        else
+                        {
+                            foreach (var attribute in element.Attributes().Where(a => eventAttributes.Contains(a.Name.LocalName)))
+                            {
+                                if (attribute.Value.DataStartsWith(_vbscript_colon))
+                                {
+                                    var attrValue = HtmlEntity.DeEntitize(attribute.Value);
+                                    var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                    var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
+
+                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, null);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-            return Return.Try(() => XElement.Parse(xslContent.Value))
-                         .Map(r => new XslParse(xslContent, r, ParseOver(r)));
+            return Return.Try(() =>
+                                {
+                                    var doc = XDocument.Parse(xslContent.Value, LoadOptions.PreserveWhitespace);
+
+                                    return FromDocument(doc).Make(p => new XslParse(xslContent, doc, p));
+                                });
         }
 
     }

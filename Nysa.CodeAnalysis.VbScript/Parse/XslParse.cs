@@ -10,13 +10,13 @@ namespace Nysa.CodeAnalysis.VbScript
     public class XslParse : Parse
     {
         public XslContent                       Content     { get; private set; }
-        public XElement                         Root        { get; private set; }
+        public XDocument                        Document    { get; private set; }
         public IReadOnlyList<XslVbScriptParse>  VbParses    { get; private set; }
 
-        public XslParse(XslContent content, XElement root, IEnumerable<XslVbScriptParse> vbParses)
+        public XslParse(XslContent content, XDocument document, IEnumerable<XslVbScriptParse> vbParses)
         {
             this.Content    = content;
-            this.Root       = root;
+            this.Document   = document;
             this.VbParses   = vbParses.ToArray();
         }
     }

@@ -9,14 +9,14 @@ using HtmlAgilityPack;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class HtmlXmlParse : Parse
+    public class XHtmlParse : Parse
     {
         public HtmlContent                                      Content     { get; private set; }
         public XDocument                                        Document    { get; private set; }
         public IReadOnlyList<(String Source, XElement Element)> VbsIncludes { get; private set; }
-        public IReadOnlyList<HtmlXmlVbScriptParse>              VbsParses   { get; private set; }
+        public IReadOnlyList<XHtmlVbScriptParse>                VbsParses   { get; private set; }
 
-        public HtmlXmlParse(HtmlContent content, XDocument document, IEnumerable<(String Source, XElement)> vbsIncludes, IEnumerable<HtmlXmlVbScriptParse> vbsParses)
+        public XHtmlParse(HtmlContent content, XDocument document, IEnumerable<(String Source, XElement)> vbsIncludes, IEnumerable<XHtmlVbScriptParse> vbsParses)
         {
             this.Content        = content;
             this.Document       = document;
