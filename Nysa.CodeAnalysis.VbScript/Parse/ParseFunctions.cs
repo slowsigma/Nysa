@@ -213,8 +213,8 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var build = new StringBuilder();
                                 var xtxt  = false;
                                 var xstxt = false;
-                                var subs  = new List<(String name, XElement xslValue)>();
-                                var subNo = 0;
+                                var conts = new List<(XNode TextOrPlaceholder, XElement? xslValueOf)>();
+                                var plhNo = 0;
                                 var bail  = false;
 
                                 foreach (var node in element.Nodes())
@@ -226,6 +226,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                             bail = true;
 
                                         build.Append(xText.Value);
+                                        conts.Add((node, null));
                                     }
                                     else if (node is XElement xslText && xslText.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslText.Name.LocalName.DataEquals("text"))
                                     {
@@ -234,12 +235,13 @@ namespace Nysa.CodeAnalysis.VbScript
                                             bail = true;
 
                                         build.Append(xslText.Value);
+                                        conts.Add((node, null));
                                     }
-                                    else if (node is XElement xslValue && xslValue.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslValue.Name.LocalName.DataEquals("value"))
+                                    else if (node is XElement xslValueOf && xslValueOf.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslValueOf.Name.LocalName.DataEquals("value-of"))
                                     {
-                                        var subName = $"xsl_value_placeholder_{++subNo}";
+                                        var subName = $"xsl_value_placeholder_{++plhNo}";
                                         build.Append(subName);
-                                        subs.Add((subName, xslValue));
+                                        conts.Add((new XText(subName), xslValueOf));
                                     }
                                     else if (node is XElement xOther)
                                     {
@@ -258,7 +260,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     {
                                         var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                         var vbParse = (new VbScriptContent(element.Path(), vbString)).Parse();
-                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, xstxt, subs);
+                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, xstxt, conts);
                                     }
                                 }
                             }

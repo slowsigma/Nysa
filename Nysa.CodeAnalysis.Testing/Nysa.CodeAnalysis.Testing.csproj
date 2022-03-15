@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
     <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

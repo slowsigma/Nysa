@@ -17,18 +17,21 @@ namespace Nysa.CodeAnalysis.VbScript
         public XAttribute?      Attribute   { get; private set; }
 
         public Boolean          TextWrapped { get; private set; } // true = all text is in xsl:text elements; false = contains no xsl:text elements
-        public IReadOnlyList<(String Name, XElement XslValue)> Substitutions { get; private set; } // content means xsl:value elements in the original
 
-        public XslVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, Option<String> prefix, XElement element, XAttribute? attribute, Boolean textWrapped, IEnumerable<(String name, XElement xslValue)>? substitutions)
+        // When XslValueOf is not null, XNode is disconnected XText with placeholder name,
+        // otherwise TextOrPlaceholder contains original XText or XElement of <xsl.text/>
+        public IReadOnlyList<(XNode TextOrPlaceholder, XElement? XslValueOf)> Contents { get; private set; }
+
+        public XslVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, Option<String> prefix, XElement element, XAttribute? attribute, Boolean textWrapped, IEnumerable<(XNode textOrPlaceholder, XElement? xslValueOf)>? contents)
             : base(content, syntaxRoot)
         {
             this.Prefix         = prefix;
             this.Element        = element;
             this.Attribute      = attribute;
             this.TextWrapped    = textWrapped;
-            this.Substitutions  = substitutions == null
-                                  ? new (String Name, XElement XslValue)[] { }
-                                  : substitutions.ToArray();
+            this.Contents       = contents == null
+                                  ? new (XNode, XElement?)[] { }
+                                  : contents.ToArray();
         }
     }
 
