@@ -86,7 +86,8 @@ namespace Nysa.CodeAnalysis.VbScript
                         {
                             if (attribute.Value.DataStartsWith(_vbscript_colon))
                             {
-                                var vbParse = (new VbScriptContent(element.Path(attribute), String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n"))).Parse();
+                                var vbString = String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
 
                                 parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
                             }
@@ -255,7 +256,8 @@ namespace Nysa.CodeAnalysis.VbScript
 
                                     if (parseText.DataStartsWith(_vbscript_colon))
                                     {
-                                        var vbParse = (new VbScriptContent(element.Path(), parseText)).Parse();
+                                        var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                        var vbParse = (new VbScriptContent(element.Path(), vbString)).Parse();
                                         yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, xstxt, subs);
                                     }
                                 }
