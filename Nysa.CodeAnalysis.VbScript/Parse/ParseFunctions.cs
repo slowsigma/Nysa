@@ -212,12 +212,15 @@ namespace Nysa.CodeAnalysis.VbScript
 
                                 var build = new StringBuilder();
                                 var conts = new List<(XNode TextOrPlaceholder, XElement? xslValueOf)>();
+                                var xsTxt = element.Nodes()
+                                                   .Where(n => n is XElement elem && elem.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && elem.Name.LocalName.DataEquals("text"))
+                                                   .Count();
                                 var plhNo = 0;
                                 var bail  = false;
 
                                 foreach (var node in element.Nodes())
                                 {
-                                    if (node is XText xText)
+                                    if (xsTxt == 0 && node is XText xText) // ignore all XText nodes if we have xslText elements
                                     {
                                         build.Append(xText.Value);
                                         conts.Add((node, null));

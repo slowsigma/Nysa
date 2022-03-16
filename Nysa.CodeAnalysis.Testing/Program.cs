@@ -97,7 +97,7 @@ namespace Nysa.CodeAnalysis.Testing
         {
             var events = _DefaultEventAttributeNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            var testfile = @"C:\Git\cj-odyssey_mainline\Webs\CaseManagement\AttorneyManager\ChargingInstruments\XML\ChargingParagraphAssignment.xsl";
+            var testfile = @"C:\Git\cj-odyssey_mainline\Webs\CaseManagement\AttorneyManager\Charges\XML\tabProsecutorCharges.xsl";
 
             if (testfile.ToContent() is Suspect<Content> suspect && suspect is Confirmed<Content> goodContent && goodContent.Value is XslContent xslContent)
             {
