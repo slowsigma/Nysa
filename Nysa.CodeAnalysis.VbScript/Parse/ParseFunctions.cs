@@ -188,7 +188,7 @@ namespace Nysa.CodeAnalysis.VbScript
                     var parse = (new VbScriptContent(path, script.Value)).Parse();
 
                     if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                        yield return new XslVbScriptParse(parse.Content, parse.SyntaxRoot, pref, script, null, false, null);
+                        yield return new XslVbScriptParse(parse.Content, parse.SyntaxRoot, pref, script, null, null);
                 }
 
                 if (eventAttributes != null)
@@ -211,8 +211,6 @@ namespace Nysa.CodeAnalysis.VbScript
                                 //      using the substitution markers to know where to split up the translation
 
                                 var build = new StringBuilder();
-                                var xtxt  = false;
-                                var xstxt = false;
                                 var conts = new List<(XNode TextOrPlaceholder, XElement? xslValueOf)>();
                                 var plhNo = 0;
                                 var bail  = false;
@@ -221,19 +219,11 @@ namespace Nysa.CodeAnalysis.VbScript
                                 {
                                     if (node is XText xText)
                                     {
-                                        xtxt = true;
-                                        if (xstxt)
-                                            bail = true;
-
                                         build.Append(xText.Value);
                                         conts.Add((node, null));
                                     }
                                     else if (node is XElement xslText && xslText.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslText.Name.LocalName.DataEquals("text"))
                                     {
-                                        xstxt = true;
-                                        if (xtxt)
-                                            bail = true;
-
                                         build.Append(xslText.Value);
                                         conts.Add((node, null));
                                     }
@@ -246,10 +236,8 @@ namespace Nysa.CodeAnalysis.VbScript
                                     else if (node is XElement xOther)
                                     {
                                         bail = true;
-                                    }
-
-                                    if (bail)
                                         break;
+                                    }
                                 }
 
                                 if (!bail)
@@ -260,7 +248,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     {
                                         var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                         var vbParse = (new VbScriptContent(element.Path(), vbString)).Parse();
-                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, xstxt, conts);
+                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, conts);
                                     }
                                 }
                             }
@@ -275,7 +263,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                     var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
 
-                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, false, null);
+                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, null);
                                 }
                             }
                         }
