@@ -293,7 +293,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("title".EmptyProperty(false));
             domElemMembers.Add("toString".EmptyFunction());
 
-            hostMembers.Add(new ClassSymbol("Element", domElemMembers));
+            hostMembers.Add(new ClassSymbol("_Element", domElemMembers));
 
             var namedNodeMapMembers = new List<Symbol>();
 
@@ -306,7 +306,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             namedNodeMapMembers.Add("setNamedItem".EmptyFunction());
             namedNodeMapMembers.Add("setNamedItemNS".EmptyFunction());
 
-            hostMembers.Add(new ClassSymbol("NamedNodeMap", namedNodeMapMembers));
+            hostMembers.Add(new ClassSymbol("_NamedNodeMap", namedNodeMapMembers));
 
             var attributeMembers = new List<Symbol>();
 
@@ -314,7 +314,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             attributeMembers.Add("value".EmptyProperty(false));
             attributeMembers.Add("specified".EmptyProperty(true));
 
-            hostMembers.Add(new ClassSymbol("Attr", attributeMembers));
+            hostMembers.Add(new ClassSymbol("_Attr", attributeMembers));
 
             var documentMembers = new List<Symbol>();
 
@@ -374,7 +374,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             documentMembers.Add("write".EmptyFunction());  //Writes HTML expressions or JavaScript code to a document
             documentMembers.Add("writeln".EmptyFunction());  //Same as write(), but adds a newline character after each statement
 
-            hostMembers.Add(new ClassSymbol("Document", documentMembers));
+            var docClass = new ClassSymbol("_Document", documentMembers);
+
+            hostMembers.Add(docClass);
+
+            hostMembers.Add(new VariableSymbol("document", Option.None, Option.None, true, docClass.Name.Some()));
 
             var tableMembers = new List<Symbol>();
 
@@ -392,7 +396,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             tableMembers.Add("deleteTHead".EmptyFunction());
             tableMembers.Add("insertRow".EmptyFunction());
 
-            hostMembers.Add(new ClassSymbol("HTMLTableElement", tableMembers));
+            hostMembers.Add(new ClassSymbol("_HTMLTableElement", tableMembers));
 
             var styleMembers = new List<Symbol>();
 
@@ -588,7 +592,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             styleMembers.Add("pixelheight".EmptyProperty(false, true, "height"));
             styleMembers.Add("pixelwidth".EmptyProperty(false, true, "width"));
 
-            hostMembers.Add(new ClassSymbol("HTMLStyleElement", Option.None, Option.None, styleMembers, Option.None));
+            hostMembers.Add(new ClassSymbol("_HTMLStyleElement", Option.None, Option.None, styleMembers, Option.None));
 
 
             var imageMembers = new List<Symbol>();
@@ -613,7 +617,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             imageMembers.Add("vspace".EmptyProperty(false));
             imageMembers.Add("width".EmptyProperty(false));
 
-            hostMembers.Add(new ClassSymbol("HTMLImageElement", Option.None, Option.None, imageMembers, Option.None));
+            hostMembers.Add(new ClassSymbol("_HTMLImageElement", Option.None, Option.None, imageMembers, Option.None));
 
             return hostMembers;
         }
