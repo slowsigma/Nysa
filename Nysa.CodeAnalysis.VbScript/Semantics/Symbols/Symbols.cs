@@ -193,6 +193,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("vbBinaryCompare".ToConstant().Renamed("Global.BinaryCompare"));
             hostMembers.Add("vbTextCompare".ToConstant().Renamed("Global.TextCompare"));
 
+            return hostMembers;
+        }
+
+        public static IReadOnlyList<Symbol> WebApiSymbols()
+        {
+            var hostMembers = new List<Symbol>();
+
             var domElemMembers = new List<Symbol>();
 
             domElemMembers.Add("accessKey".EmptyProperty(false));
@@ -286,7 +293,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("title".EmptyProperty(false));
             domElemMembers.Add("toString".EmptyFunction());
 
-            hostMembers.Add(new ClassSymbol("_Html_Element", domElemMembers));
+            hostMembers.Add(new ClassSymbol("Element", domElemMembers));
 
             var namedNodeMapMembers = new List<Symbol>();
 
@@ -299,7 +306,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             namedNodeMapMembers.Add("setNamedItem".EmptyFunction());
             namedNodeMapMembers.Add("setNamedItemNS".EmptyFunction());
 
-            hostMembers.Add(new ClassSymbol("_Html_NamedNodeMap", namedNodeMapMembers));
+            hostMembers.Add(new ClassSymbol("NamedNodeMap", namedNodeMapMembers));
 
             var attributeMembers = new List<Symbol>();
 
@@ -307,7 +314,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             attributeMembers.Add("value".EmptyProperty(false));
             attributeMembers.Add("specified".EmptyProperty(true));
 
-            hostMembers.Add(new ClassSymbol("_Html_Attribute", attributeMembers));
+            hostMembers.Add(new ClassSymbol("Attr", attributeMembers));
 
             var documentMembers = new List<Symbol>();
 
@@ -367,7 +374,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             documentMembers.Add("write".EmptyFunction());  //Writes HTML expressions or JavaScript code to a document
             documentMembers.Add("writeln".EmptyFunction());  //Same as write(), but adds a newline character after each statement
 
-            hostMembers.Add(new ClassSymbol("_Html_Document", documentMembers));
+            hostMembers.Add(new ClassSymbol("Document", documentMembers));
 
             var tableMembers = new List<Symbol>();
 
