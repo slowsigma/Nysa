@@ -27,7 +27,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             var hostMembers = new List<Symbol>();
 
             hostMembers.Add(vbsErrClass);
-            hostMembers.Add("Err".ToVariable(true, vbsErrClass));
+            hostMembers.Add("Err".ToVariable(true, vbsErrClass, "Err object has no equivalent translation."));
             hostMembers.Add("me".ToVariable(true).Renamed("this"));
 
             hostMembers.Add("Abs".EmptyFunction().Renamed("Global.Abs"));
@@ -118,7 +118,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("TimeSerial".EmptyFunction());
             hostMembers.Add("TimeValue".EmptyFunction());
             hostMembers.Add("Trim".EmptyFunction().Renamed("Global.Trim"));
-            hostMembers.Add("TypeName".EmptyFunction().Renamed("Global.TypeName"));
+            hostMembers.Add("TypeName".EmptyFunction("TypeName has no equivalent translation."));
             hostMembers.Add("UBound".EmptyFunction().Renamed("Global.UBound"));
             hostMembers.Add("UCase".EmptyFunction().Renamed("Global.UCase"));
             hostMembers.Add("VarType".EmptyFunction("VarType has no equivalent translation."));
@@ -640,8 +640,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                   ? Option.None
                                   : newName == null ? @this.EmptyPropertySet(isPublic).Some<FunctionSymbol>()
                                                     : @this.EmptyPropertySet(isPublic).Renamed(newName).Some<FunctionSymbol>());
-        public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null)
-            => new VariableSymbol(@this, Option.None, Option.None, isPublic, @class == null ? Option.None : @class.Name.Some());
+        public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null, String? errMessage = null)
+            => new VariableSymbol(@this, Option.None, errMessage.AsOption(), isPublic, @class == null ? Option.None : @class.Name.Some());
 
         public static IEnumerable<Symbol> Members(params Symbol[] members)
             => members;
