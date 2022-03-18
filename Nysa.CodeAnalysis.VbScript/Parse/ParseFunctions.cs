@@ -129,8 +129,8 @@ namespace Nysa.CodeAnalysis.VbScript
                         {
                             var srcValue = HttpUtility.UrlDecode(src.Value);
 
-                            if (!includes.ContainsKey(src.Value))
-                                includes.Add(src.Value, script);
+                            if (!includes.ContainsKey(srcValue))
+                                includes.Add(srcValue, script);
                         }
                         else if (!String.IsNullOrWhiteSpace(script.InnerText))
                         {
