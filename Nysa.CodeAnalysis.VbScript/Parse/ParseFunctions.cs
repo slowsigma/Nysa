@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Xml.Linq;
 
 using Nysa.Logics;
@@ -66,8 +67,10 @@ namespace Nysa.CodeAnalysis.VbScript
                     {
                         if (!String.IsNullOrWhiteSpace(src?.Value))
                         {
-                            if (!includes.ContainsKey(src.Value))
-                                includes.Add(src.Value, script);
+                            var srcValue = HttpUtility.UrlDecode(src.Value);
+
+                            if (!includes.ContainsKey(srcValue))
+                                includes.Add(srcValue, script);
                         }
                         else if (!String.IsNullOrWhiteSpace(script.Value))
                         {
@@ -124,6 +127,8 @@ namespace Nysa.CodeAnalysis.VbScript
                     {
                         if (!String.IsNullOrWhiteSpace(src?.Value))
                         {
+                            var srcValue = HttpUtility.UrlDecode(src.Value);
+
                             if (!includes.ContainsKey(src.Value))
                                 includes.Add(src.Value, script);
                         }
