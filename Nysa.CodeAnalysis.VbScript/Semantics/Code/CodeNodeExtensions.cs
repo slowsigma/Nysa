@@ -22,6 +22,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                    : (Start: null, End: null, StartPlusOne: null, EndMinusOne: null);
         }
 
+        public static Token LeadToken(this CodeNode @this)
+            => @this.Node.Map(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).First()) is Some<Token> someToken
+               ? someToken.Value
+               : throw new Exception("Unexpected type in call to LeadToken function.");
+
         public static Token? FirstToken(this CodeNode @this, Dorata.Text.Identifier tokenId)
         {
             return @this.Node.Match(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).FirstOrNone(tk => tk.Id.Equals(tokenId)).Match(f => f, () => (Token?)null),

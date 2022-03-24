@@ -667,6 +667,29 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             return (symbols, unique);
         }
+
+        public static String BlockSymbolName(this IfStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this ElseBlock @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this SelectCase @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this ForEachStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this ForStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this DoLoopStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this DoLoopTestStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this DoTestLoopStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this WhileStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+        public static String BlockSymbolName(this WithStatement @this)
+            => String.Concat(@this.LeadToken().Span.Position.ToString());
+
+        
     }
 
 }
