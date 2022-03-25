@@ -86,14 +86,10 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
                 if (parse is Confirmed<Parse> goodParse)
                 {
-                    //if (goodParse.Value is HtmlParse html)
-                    //    html.VbsParses.Affect(p => views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.SyntaxRoot)).View));
-                    //else
-                    
-                    if (goodParse.Value is VbScriptParse vbs)
-                    {
+                    if (goodParse.Value is HtmlParse html)
+                        html.VbsParses.Affect(p => views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.ToProgram())).View));
+                    else if (goodParse.Value is VbScriptParse vbs)
                         views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, content.Source, content.Value, vbs.ToProgram())).View);
-                    }
                 }
             }
 
