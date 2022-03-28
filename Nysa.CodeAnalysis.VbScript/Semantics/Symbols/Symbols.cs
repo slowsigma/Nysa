@@ -635,11 +635,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true, String? newName = null)
             => new PropertySymbol(@this,
                                   newName == null ? @this.EmptyPropertyGet(isPublic).Some<FunctionSymbol>()
-                                                  : @this.EmptyPropertyGet(isPublic).Renamed(newName).Some<FunctionSymbol>(),
+                                                  : newName.EmptyPropertyGet(isPublic).Some<FunctionSymbol>(),
                                   readOnly
                                   ? Option.None
                                   : newName == null ? @this.EmptyPropertySet(isPublic).Some<FunctionSymbol>()
-                                                    : @this.EmptyPropertySet(isPublic).Renamed(newName).Some<FunctionSymbol>());
+                                                    : newName.EmptyPropertySet(isPublic).Some<FunctionSymbol>());
         public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null, String? errMessage = null)
             => new VariableSymbol(@this, Option.None, errMessage.AsOption(), isPublic, @class == null ? Option.None : @class.Name.Some());
 
