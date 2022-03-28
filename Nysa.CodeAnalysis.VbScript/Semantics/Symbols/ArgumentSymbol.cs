@@ -11,13 +11,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     public record ArgumentSymbol : HardSymbol
     {
         public Boolean IsByRef { get; private set; }
-        public ArgumentSymbol(String name, Option<String> newName, Boolean isByRef = false)
+        public ArgumentSymbol(String name, Option<String> newName, Boolean isByRef = true)
             : base(name, newName, Option.None)
         {
             this.IsByRef = isByRef;
         }
 
-        public ArgumentSymbol(String name, Boolean isByRef = false)
+        public ArgumentSymbol(String name, Boolean isByRef = true)
             : this(name, Option.None, isByRef)
         {
         }
