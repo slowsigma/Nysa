@@ -34,7 +34,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("Array".EmptyFunction());
             hostMembers.Add("Asc".EmptyFunction().Renamed("Global.Asc"));
             hostMembers.Add("Atn".EmptyFunction());
-            hostMembers.Add("CBool".EmptyFunction());
+            hostMembers.Add("CBool".EmptyFunction().Renamed("Global.CBool"));
             hostMembers.Add("CByte".EmptyFunction());
             hostMembers.Add("CCur".EmptyFunction());
             hostMembers.Add("CDate".EmptyFunction());
