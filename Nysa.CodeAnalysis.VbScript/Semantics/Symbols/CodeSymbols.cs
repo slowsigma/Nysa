@@ -11,8 +11,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class CodeSymbols : ScriptSymbols
     {
-        public CodeSymbols(IEnumerable<Symbol> members)
-            : base(members)
+        public CodeSymbols(IEnumerable<Symbol> members, String[]? tags = null)
+            : base(members, tags)
         {
         }
 

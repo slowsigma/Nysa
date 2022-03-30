@@ -10,6 +10,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public interface ISymbolScope
     {
+        IReadOnlySet<String>        Tags    { get; }
         IReadOnlyList<Symbol>       Members { get; }
         IDictionary<String, Symbol> Index   { get; }
 

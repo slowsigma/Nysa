@@ -11,8 +11,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class PageSymbols : ScriptSymbols
     {
-        public PageSymbols(IEnumerable<Symbol> members)
-            : base(members)
+        public PageSymbols(IEnumerable<Symbol> members, String[]? tags = null)
+            : base(members, tags)
         {
         }
     }

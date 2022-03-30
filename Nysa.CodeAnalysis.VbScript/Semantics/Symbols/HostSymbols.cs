@@ -11,8 +11,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public class HostSymbols : ScriptSymbols
     {
-        public HostSymbols(IEnumerable<Symbol> members)
-            : base(members)
+        public HostSymbols(IEnumerable<Symbol> members, String[]? tags = null)
+            : base(members, tags)
         {
         }
     }

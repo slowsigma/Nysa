@@ -8,14 +8,20 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record PropertySetSymbol : FunctionSymbol
+    public sealed record PropertySetSymbol : FunctionSymbol
     {
         public Boolean IsLet { get; private set; }
-        public PropertySetSymbol(String name, Boolean isPublic, Boolean isLet, IEnumerable<Symbol> members)
-            : base(name, Option.None, Option.None, isPublic, members)
+        public PropertySetSymbol(String name, Boolean isPublic, Option<String> typeName, Boolean isLet, IEnumerable<Symbol> members)
+            : base(name, Option.None, Option.None, isPublic, typeName, members)
         {
             this.IsLet = isLet;
         }
+
+        public override PropertySetSymbol WithType(String typeName)
+            => new PropertySetSymbol(this.Name, this.IsPublic, typeName.Some(), this.IsLet, this.Members);
+
+        public override PropertySetSymbol Renamed(String newName)
+            => new PropertySetSymbol(newName, this.IsPublic, this.TypeName, this.IsLet, this.Members);
     }
 
 }

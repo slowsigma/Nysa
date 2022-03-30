@@ -625,13 +625,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         private static Symbol[] _NoMembers = new Symbol[] { };
 
         public static ConstantSymbol ToConstant(this String @this, Boolean isPublic = true)
-            => new ConstantSymbol(@this, Option.None, Option.None, isPublic);
+            => new ConstantSymbol(@this, Option.None, Option.None, isPublic, Option.None);
         public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)
-            => new PropertyGetSymbol(@this, isPublic, _NoMembers);
+            => new PropertyGetSymbol(@this, isPublic, Option.None, _NoMembers);
         public static PropertySetSymbol EmptyPropertySet(this String @this, Boolean isPublic = true)
-            => new PropertySetSymbol(@this, isPublic, false, _NoMembers);
+            => new PropertySetSymbol(@this, isPublic, Option.None, false, _NoMembers);
         public static FunctionSymbol EmptyFunction(this String @this, String? errMessage = null, Boolean isPublic = true)
-            => new FunctionSymbol(@this, Option.None, errMessage.AsOption(), isPublic, _NoMembers);
+            => new FunctionSymbol(@this, Option.None, errMessage.AsOption(), isPublic, Option.None, _NoMembers);
         public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true, String? newName = null)
             => new PropertySymbol(@this,
                                   newName == null ? @this.EmptyPropertyGet(isPublic).Some<FunctionSymbol>()

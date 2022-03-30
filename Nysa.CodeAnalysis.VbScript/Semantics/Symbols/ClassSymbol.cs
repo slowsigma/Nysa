@@ -11,11 +11,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record ClassSymbol : HardSymbol, ISymbolScope
     {
-        public IReadOnlyList<Symbol>       Members  { get; private set; }
-        public IDictionary<String, Symbol> Index    { get; private set; }
-        public Option<Symbol>              Default  { get; private set; }
+        public IReadOnlyList<Symbol>        Members { get; private set; }
+        public IDictionary<String, Symbol>  Index   { get; private set; }
+        public Option<Symbol>               Default { get; private set; }
+        public IReadOnlySet<String>         Tags    { get; private set; }
 
-        public ClassSymbol(String name, Option<String> newName, Option<String> errMessage, IEnumerable<Symbol> members, Option<Symbol> @default)
+        public ClassSymbol(String name, Option<String> newName, Option<String> errMessage, IEnumerable<Symbol> members, Option<Symbol> @default, String[]? tags = null)
             : base(name, newName, errMessage)
         {
             if (members.Any(s => s is ArgumentSymbol || s is ClassSymbol))
@@ -30,20 +31,21 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this.Index   = parts.Index;
 
             this.Default = @default.Map(d => this.Index[d.Name]);
+            this.Tags    = new HashSet<String>((tags ?? new String[] { }), StringComparer.OrdinalIgnoreCase);
         }
 
-        public ClassSymbol(String name, IEnumerable<Symbol> members)
-            : this(name, Option.None, Option.None, members, Option.None)
+        public ClassSymbol(String name, IEnumerable<Symbol> members, String[]? tags = null)
+            : this(name, Option.None, Option.None, members, Option.None, tags)
         {
         }
 
-        public ClassSymbol(String name, IEnumerable<Symbol> members, Option<Symbol> @default)
-            : this(name, Option.None, Option.None, members, @default)
+        public ClassSymbol(String name, IEnumerable<Symbol> members, Option<Symbol> @default, String[]? tags = null)
+            : this(name, Option.None, Option.None, members, @default, tags)
         {
         }
 
         public ClassSymbol Renamed(String newName)
-            => new ClassSymbol(this.Name, newName.Some(), Option.None, this.Members, this.Default);
+            => new ClassSymbol(this.Name, newName.Some(), Option.None, this.Members, this.Default, this.Tags.ToArray());
     }
 
 }

@@ -10,6 +10,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record BlockSymbol : Symbol, ISymbolScope
     {
+        public IReadOnlySet<String>        Tags     { get; private set; }
         public IReadOnlyList<Symbol>       Members  { get; private set; }
         public IDictionary<String, Symbol> Index    { get; private set; }
 
@@ -18,6 +19,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         {
             var parts = Symbols.Distinct(members);
 
+            this.Tags       = new HashSet<String>();
             this.Members    = parts.Members;
             this.Index      = parts.Index;
         }
