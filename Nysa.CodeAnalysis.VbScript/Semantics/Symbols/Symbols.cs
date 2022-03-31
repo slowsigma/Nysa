@@ -287,6 +287,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("setAttribute".EmptyFunction());
             domElemMembers.Add("setAttributeNode".EmptyFunction());
             domElemMembers.Add("style".EmptyProperty(false));
+            domElemMembers.Add("runtimestyle".EmptyProperty(false, true, "style"));
             domElemMembers.Add("tabIndex".EmptyProperty(false));
             domElemMembers.Add("tagName".EmptyProperty(true));
             domElemMembers.Add("textContent".EmptyProperty(false));
