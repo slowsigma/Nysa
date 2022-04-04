@@ -30,6 +30,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("Err".ToVariable(true, vbsErrClass, "Err object has no equivalent translation."));
             hostMembers.Add("me".ToVariable(true).Renamed("this"));
 
+            hostMembers.Add(new ClassSymbol("_anytype", Symbols.Members(new PropertySymbol("runtimestyle", "style".EmptyPropertyGet(true).Some<FunctionSymbol>(), Option.None))));
+
             hostMembers.Add("Abs".EmptyFunction().Renamed("Global.Abs"));
             hostMembers.Add("Array".EmptyFunction());
             hostMembers.Add("Asc".EmptyFunction().Renamed("Global.Asc"));
