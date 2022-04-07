@@ -26,7 +26,10 @@ namespace Nysa.CodeAnalysis.VbScript
         private static String Path(this XmlElement element)
             => element.ParentNode == null
                ? element.Name.ToString()
-               : String.Concat(((XmlElement)element.ParentNode).Path(), "/", element.Name.ToString());
+               : element.ParentNode is XmlElement parentElem
+                 ? String.Concat(parentElem.Path(), "/", element.Name.ToString())
+                 : String.Empty;
+
         private static String Path(this XmlElement @this, XmlAttribute attribute)
             => String.Concat(@this.Path(), "/@", attribute.LocalName);
 
@@ -59,7 +62,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
                 if (descendants != null)
                 {
-                    foreach (var script in descendants.Cast<XmlElement>())
+                    foreach (var script in descendants.Cast<XmlNode>().Where(n => n is XmlElement).Cast<XmlElement>())
                     {
                         var lang = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("language"));
                         var type = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("type"));
@@ -86,7 +89,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
                     if (eventAttributes != null)
                     {
-                        foreach (var element in descendants.Cast<XmlElement>())
+                        foreach (var element in descendants.Cast<XmlNode>().Where(n => n is XmlElement).Cast<XmlElement>())
                         {
                             foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
                             {
@@ -194,7 +197,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
                 if (descendants != null)
                 {
-                    foreach (var script in descendants.Cast<XmlElement>().Where(d => d.LocalName.Equals("script")))
+                    foreach (var script in descendants.Cast<XmlNode>().Where(d => d is XmlElement elem && elem.LocalName.Equals("script")).Cast<XmlElement>())
                     {
                         var lang = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("language"));
                         var pref = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("implements-prefix"));
@@ -208,7 +211,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
                     if (eventAttributes != null)
                     {
-                        foreach (var element in descendants.Cast<XmlElement>())
+                        foreach (var element in descendants.Cast<XmlNode>().Where(n => n is XmlElement).Cast<XmlElement>())
                         {
 
                             if (element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("attribute"))
@@ -236,7 +239,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
                                     foreach (var node in element.ChildNodes.Cast<XmlNode>())
                                     {
-                                        if (xsTxt == 0 && node is XmlText xText) // ignore all XText nodes if we have xslText elements
+                                        if (xsTxt == 0 && node is XmlText xText) // ignore all XmlText nodes if we have xslText elements
                                         {
                                             build.Append(xText.Value);
                                             conts.Add((node, null));
