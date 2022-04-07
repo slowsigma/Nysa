@@ -246,7 +246,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                         }
                                         else if (node is XmlElement xslText && xslText.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslText.LocalName.DataEquals("text"))
                                         {
-                                            build.Append(xslText.Value);
+                                            build.Append(xslText.InnerText);
                                             conts.Add((node, null));
                                         }
                                         else if (node is XmlElement xslValueOf && xslValueOf.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslValueOf.LocalName.DataEquals("value-of"))
