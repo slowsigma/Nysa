@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Xml.Linq;
+using System.Xml;
 
 using Nysa.Logics;
 using Nysa.Text;
@@ -23,12 +23,12 @@ namespace Nysa.CodeAnalysis.VbScript
         private static readonly String _vbscript_colon = "vbscript:";
         private static readonly String _xsl_namespace_uri = "http://www.w3.org/1999/XSL/Transform";
 
-        private static String Path(this XElement element)
-            => element.Parent == null
+        private static String Path(this XmlElement element)
+            => element.ParentNode == null
                ? element.Name.ToString()
-               : String.Concat(element.Parent.Path(), "/", element.Name.ToString());
-        private static String Path(this XElement @this, XAttribute attribute)
-            => String.Concat(@this.Path(), "/@", attribute.Name.LocalName);
+               : String.Concat(((XmlElement)element.ParentNode).Path(), "/", element.Name.ToString());
+        private static String Path(this XmlElement @this, XmlAttribute attribute)
+            => String.Concat(@this.Path(), "/@", attribute.LocalName);
 
         private static ParseException ToParseError(this Dorata.Text.Parsing.VBScript.ParseError @this)
             => new ParseException(@this.Type == VBScript.ParseErrorTypes.InvalidSymbol ? "Invalid symbol." : "Unexpected symbol.",
@@ -51,48 +51,52 @@ namespace Nysa.CodeAnalysis.VbScript
 
         private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
-            (List<(String Source, XElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XDocument document)
+            (List<(String Source, XmlElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XmlDocument document)
             {
-                var includes = new Dictionary<String, XElement>(StringComparer.OrdinalIgnoreCase);
-                var parses   = new List<XHtmlVbScriptParse>();
+                var includes    = new Dictionary<String, XmlElement>(StringComparer.OrdinalIgnoreCase);
+                var parses      = new List<XHtmlVbScriptParse>();
+                var descendants = document.SelectNodes("//*");
 
-                foreach (var script in document.Descendants().Where(e => e.Name.LocalName.DataEquals("script")))
+                if (descendants != null)
                 {
-                    var lang = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("language"));
-                    var type = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("type"));
-                    var src  = script.Attributes().FirstOrDefault(a => a.Name.LocalName.DataEndsWith("src"));
-
-                    if ((lang?.Value ?? String.Empty).DataEquals("vbscript") ||
-                        (type?.Value ?? String.Empty).DataEquals(@"text/vbscript"))
+                    foreach (var script in descendants.Cast<XmlElement>())
                     {
-                        if (!String.IsNullOrWhiteSpace(src?.Value))
-                        {
-                            var srcValue = HttpUtility.UrlDecode(src.Value);
+                        var lang = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("language"));
+                        var type = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("type"));
+                        var src  = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("src"));
 
-                            if (!includes.ContainsKey(srcValue))
-                                includes.Add(srcValue, script);
-                        }
-                        else if (!String.IsNullOrWhiteSpace(script.Value))
+                        if (   lang.Map(a => a.Value.DataEquals("vbscript")).Or(false)
+                            || type.Map(a => a.Value.DataEquals(@"text/vbscript")).Or(false))
                         {
-                            var vbParse = (new VbScriptContent(script.Path(), script.Value)).Parse();
+                            if (src is Some<XmlAttribute> someSrcAttr)
+                            {
+                                var srcValue = HttpUtility.UrlDecode(someSrcAttr.Value.Value);
 
-                            parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                                if (!includes.ContainsKey(srcValue))
+                                    includes.Add(srcValue, script);
+                            }
+                            else if (!String.IsNullOrWhiteSpace(script.InnerText))
+                            {
+                                var vbParse = (new VbScriptContent(script.Path(), script.InnerText)).Parse();
+
+                                parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, script));
+                            }
                         }
                     }
-                }
 
-                if (eventAttributes != null)
-                {
-                    foreach (var element in document.Descendants())
+                    if (eventAttributes != null)
                     {
-                        foreach (var attribute in element.Attributes().Where(a => eventAttributes.Contains(a.Name.LocalName)))
+                        foreach (var element in descendants.Cast<XmlElement>())
                         {
-                            if (attribute.Value.DataStartsWith(_vbscript_colon))
+                            foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
                             {
-                                var vbString = String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
+                                if (attribute.Value.DataStartsWith(_vbscript_colon))
+                                {
+                                    var vbString = String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                    var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
 
-                                parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
+                                    parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
+                                }
                             }
                         }
                     }
@@ -103,7 +107,9 @@ namespace Nysa.CodeAnalysis.VbScript
 
             return Return.Try(() =>
                                {
-                                   var doc = XDocument.Parse(htmlContent.Value, LoadOptions.PreserveWhitespace);
+                                   var doc = new XmlDocument();
+                                   doc.PreserveWhitespace = true;
+                                   doc.LoadXml(htmlContent.Value);
 
                                    return FromDocument(doc).Make(t => new XHtmlParse(htmlContent, doc, t.Includes, t.VbParses));
                                });
@@ -182,96 +188,103 @@ namespace Nysa.CodeAnalysis.VbScript
 
         public static Suspect<XslParse> Parse(this XslContent xslContent, HashSet<String>? eventAttributes = null)
         {
-            IEnumerable<XslVbScriptParse> FromDocument(XDocument document)
+            IEnumerable<XslVbScriptParse> FromDocument(XmlDocument document)
             {
-                foreach (var script in document.Descendants().Where(d => d.Name.LocalName.Equals("script")))
+                var descendants = document.SelectNodes("//*");
+
+                if (descendants != null)
                 {
-                    var lang = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("language"));
-                    var pref = script.Attributes().FirstOrNone(a => a.Name.LocalName.DataEndsWith("implements-prefix")).Map(a => a.Value);
-                    var path = script.Path();
-
-                    var parse = (new VbScriptContent(path, script.Value)).Parse();
-
-                    if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                        yield return new XslVbScriptParse(parse.Content, parse.SyntaxRoot, pref, script, null, null);
-                }
-
-                if (eventAttributes != null)
-                {
-                    foreach (var element in document.Descendants())
+                    foreach (var script in descendants.Cast<XmlElement>().Where(d => d.LocalName.Equals("script")))
                     {
+                        var lang = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("language"));
+                        var pref = script.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("implements-prefix"));
+                        var path = script.Path();
 
-                        if (element.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && element.Name.LocalName.DataEquals("attribute"))
+                        var parse = (new VbScriptContent(path, script.InnerText)).Parse();
+
+                        if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
+                            yield return new XslVbScriptParse(parse.Content, parse.SyntaxRoot, pref.Map(a => a.Value), script, null, null);
+                    }
+
+                    if (eventAttributes != null)
+                    {
+                        foreach (var element in descendants.Cast<XmlElement>())
                         {
-                            var nameAttr = element.Attributes().FirstOrNone(a => a.Name.LocalName.DataEquals("name"));
 
-                            if (nameAttr is Some<XAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
+                            if (element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("attribute"))
                             {
-                                // at this point we have several possibilities
-                                //   1. element contains all text with no sub-elements
-                                //   2. element contains a mix of text and sub-elements and sub-elements are only xsl:value
-                                //   3. element contains a mix of text and sub-elements and sub-elements are only xsl:value and xsl:text
-                                //      if we know there is no text outside of xsl:text elements, then we might be able to take a translation
-                                //      of the vbscript that contains substitutions (placeholders), and break that back down to xsl:text
-                                //      using the substitution markers to know where to split up the translation
+                                var nameAttr = element.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("name"));
 
-                                var build = new StringBuilder();
-                                var conts = new List<(XNode TextOrPlaceholder, XElement? xslValueOf)>();
-                                var xsTxt = element.Nodes()
-                                                   .Where(n => n is XElement elem && elem.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && elem.Name.LocalName.DataEquals("text"))
-                                                   .Count();
-                                var plhNo = 0;
-                                var bail  = false;
-
-                                foreach (var node in element.Nodes())
+                                if (nameAttr is Some<XmlAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
                                 {
-                                    if (xsTxt == 0 && node is XText xText) // ignore all XText nodes if we have xslText elements
-                                    {
-                                        build.Append(xText.Value);
-                                        conts.Add((node, null));
-                                    }
-                                    else if (node is XElement xslText && xslText.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslText.Name.LocalName.DataEquals("text"))
-                                    {
-                                        build.Append(xslText.Value);
-                                        conts.Add((node, null));
-                                    }
-                                    else if (node is XElement xslValueOf && xslValueOf.Name.NamespaceName.DataEquals(_xsl_namespace_uri) && xslValueOf.Name.LocalName.DataEquals("value-of"))
-                                    {
-                                        var subName = $"xsl_value_placeholder_{++plhNo}";
-                                        build.Append(subName);
-                                        conts.Add((new XText(subName), xslValueOf));
-                                    }
-                                    else if (node is XElement xOther)
-                                    {
-                                        bail = true;
-                                        break;
-                                    }
-                                }
+                                    // at this point we have several possibilities
+                                    //   1. element contains all text with no sub-elements
+                                    //   2. element contains a mix of text and sub-elements and sub-elements are only xsl:value
+                                    //   3. element contains a mix of text and sub-elements and sub-elements are only xsl:value and xsl:text
+                                    //      if we know there is no text outside of xsl:text elements, then we might be able to take a translation
+                                    //      of the vbscript that contains substitutions (placeholders), and break that back down to xsl:text
+                                    //      using the substitution markers to know where to split up the translation
 
-                                if (!bail)
-                                {
-                                    var parseText = build.ToString();
+                                    var build = new StringBuilder();
+                                    var conts = new List<(XmlNode TextOrPlaceholder, XmlElement? xslValueOf)>();
+                                    var xsTxt = element.ChildNodes
+                                                       .Cast<XmlNode>()
+                                                       .Where(n => n is XmlElement elem && elem.NamespaceURI.DataEquals(_xsl_namespace_uri) && elem.LocalName.DataEquals("text"))
+                                                       .Count();
+                                    var plhNo = 0;
+                                    var bail  = false;
 
-                                    if (parseText.DataStartsWith(_vbscript_colon))
+                                    foreach (var node in element.ChildNodes.Cast<XmlNode>())
                                     {
-                                        var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                        var vbParse = (new VbScriptContent(element.Path(), vbString)).Parse();
-                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, conts);
+                                        if (xsTxt == 0 && node is XmlText xText) // ignore all XText nodes if we have xslText elements
+                                        {
+                                            build.Append(xText.Value);
+                                            conts.Add((node, null));
+                                        }
+                                        else if (node is XmlElement xslText && xslText.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslText.LocalName.DataEquals("text"))
+                                        {
+                                            build.Append(xslText.Value);
+                                            conts.Add((node, null));
+                                        }
+                                        else if (node is XmlElement xslValueOf && xslValueOf.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslValueOf.LocalName.DataEquals("value-of"))
+                                        {
+                                            var subName = $"xsl_value_placeholder_{++plhNo}";
+                                            build.Append(subName);
+                                            
+                                            conts.Add((document.CreateTextNode(subName), xslValueOf));
+                                        }
+                                        else if (node is XmlElement xOther)
+                                        {
+                                            bail = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!bail)
+                                    {
+                                        var parseText = build.ToString();
+
+                                        if (parseText.DataStartsWith(_vbscript_colon))
+                                        {
+                                            var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                            var vbParse = (new VbScriptContent(element.Path(), vbString)).Parse();
+                                            yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, null, conts);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            foreach (var attribute in element.Attributes().Where(a => eventAttributes.Contains(a.Name.LocalName)))
+                            else
                             {
-                                if (attribute.Value.DataStartsWith(_vbscript_colon))
+                                foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
                                 {
-                                    var attrValue = HtmlEntity.DeEntitize(attribute.Value);
-                                    var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                    var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
+                                    if (attribute.Value.DataStartsWith(_vbscript_colon))
+                                    {
+                                        var attrValue = HtmlEntity.DeEntitize(attribute.Value);
+                                        var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
+                                        var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
 
-                                    yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, null);
+                                        yield return new XslVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, Option.None, element, attribute, null);
+                                    }
                                 }
                             }
                         }
@@ -281,7 +294,9 @@ namespace Nysa.CodeAnalysis.VbScript
 
             return Return.Try(() =>
                                 {
-                                    var doc = XDocument.Parse(xslContent.Value, LoadOptions.PreserveWhitespace);
+                                    var doc = new XmlDocument();
+                                    doc.PreserveWhitespace = true;
+                                    doc.LoadXml(xslContent.Value);
 
                                     return FromDocument(doc).Make(p => new XslParse(xslContent, doc, p));
                                 });
