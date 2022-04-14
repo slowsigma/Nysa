@@ -93,13 +93,15 @@ namespace Nysa.CodeAnalysis.VbScript
                         {
                             foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
                             {
-                                if (attribute.Value.DataStartsWith(_vbscript_colon))
-                                {
-                                    var vbString = String.Concat(attribute.Value.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                    var vbParse = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
+                                var attrValue = HtmlEntity.DeEntitize(attribute.Value);
+                                
+                                var vbString  = attrValue.DataStartsWith(_vbscript_colon)
+                                                ? String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n")
+                                                : String.Concat(attrValue.Replace("'", "\""), "\r\n");
 
-                                    parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
-                                }
+                                var vbParse   = (new VbScriptContent(element.Path(attribute), vbString)).Parse();
+
+                                parses.Add(new XHtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, element, attribute));
                             }
                         }
                     }
@@ -159,8 +161,12 @@ namespace Nysa.CodeAnalysis.VbScript
                             if (attribute.Value.DataStartsWith(_vbscript_colon))
                             {
                                 var attrValue = HtmlEntity.DeEntitize(attribute.Value);
-                                var vbString = String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                var vbParse = (new VbScriptContent(attribute.XPath, vbString)).Parse();
+
+                                var vbString  = attrValue.DataStartsWith(_vbscript_colon)
+                                                ? String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n")
+                                                : String.Concat(attrValue.Replace("'", "\""), "\r\n");
+
+                                var vbParse   = (new VbScriptContent(attribute.XPath, vbString)).Parse();
 
                                 parses.Add(new HtmlVbScriptParse(vbParse.Content, vbParse.SyntaxRoot, node, attribute));
                             }
