@@ -15,21 +15,21 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IReadOnlyList<Symbol>       Members  { get; private set; }
         public IDictionary<String, Symbol> Index    { get; private set; }
 
-        public FunctionSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members)
+        public FunctionSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, params String[] tags)
             : base(name, newName, errMessage, isPublic, typeName)
         {
             var parts = Symbols.Distinct(members);
 
-            this.Tags     = new HashSet<String>();
+            this.Tags     = new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase);
             this.Members  = parts.Members;
             this.Index    = parts.Index;
         }
 
         public virtual FunctionSymbol Renamed(String newName)
-            => new FunctionSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.TypeName, this.Members);
+            => new FunctionSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.TypeName, this.Members, this.Tags.ToArray());
 
         public override FunctionSymbol WithType(String typeName)
-            => new FunctionSymbol(this.Name, this.NewName, this.ErrMessage, this.IsPublic, typeName.Some(), this.Members);
+            => new FunctionSymbol(this.Name, this.NewName, this.ErrMessage, this.IsPublic, typeName.Some(), this.Members, this.Tags.ToArray());
     }
 
 }

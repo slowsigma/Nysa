@@ -16,7 +16,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public Option<Symbol>               Default { get; private set; }
         public IReadOnlySet<String>         Tags    { get; private set; }
 
-        public ClassSymbol(String name, Option<String> newName, Option<String> errMessage, IEnumerable<Symbol> members, Option<Symbol> @default, String[]? tags = null)
+        public ClassSymbol(String name, Option<String> newName, Option<String> errMessage, IEnumerable<Symbol> members, Option<Symbol> @default, params String[] tags)
             : base(name, newName, errMessage)
         {
             if (members.Any(s => s is ArgumentSymbol || s is ClassSymbol))
@@ -31,15 +31,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this.Index   = parts.Index;
 
             this.Default = @default.Map(d => this.Index[d.Name]);
-            this.Tags    = new HashSet<String>((tags ?? new String[] { }), StringComparer.OrdinalIgnoreCase);
+            this.Tags    = new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase);
         }
 
-        public ClassSymbol(String name, IEnumerable<Symbol> members, String[]? tags = null)
+        public ClassSymbol(String name, IEnumerable<Symbol> members, params String[] tags)
             : this(name, Option.None, Option.None, members, Option.None, tags)
         {
         }
 
-        public ClassSymbol(String name, IEnumerable<Symbol> members, Option<Symbol> @default, String[]? tags = null)
+        public ClassSymbol(String name, IEnumerable<Symbol> members, Option<Symbol> @default, params String[] tags)
             : this(name, Option.None, Option.None, members, @default, tags)
         {
         }

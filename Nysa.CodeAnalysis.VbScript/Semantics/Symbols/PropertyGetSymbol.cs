@@ -10,8 +10,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public sealed record PropertyGetSymbol : FunctionSymbol
     {
-        public PropertyGetSymbol(String name, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members)
-            : base(name, Option.None, Option.None, isPublic, typeName, members)
+        public PropertyGetSymbol(String name, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, params String[] tags)
+            : base(name, Option.None, Option.None, isPublic, typeName, members, tags)
         {
         }
 

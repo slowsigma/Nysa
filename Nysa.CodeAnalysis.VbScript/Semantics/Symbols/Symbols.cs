@@ -16,184 +16,184 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         /// <returns></returns>
         public static IReadOnlyList<Symbol> VbScriptHostSymbols()
         {
-            var vbsErrClass = new ClassSymbol("_VbScriptEngineErrClass", Symbols.Members("Description".EmptyProperty(true),
-                                                                                         "HelpContext".EmptyProperty(true),
-                                                                                         "HelpFile".EmptyProperty(true),
-                                                                                         "Number".EmptyProperty(true, true),
-                                                                                         "Source".EmptyProperty(true),
-                                                                                         "Clear".EmptyFunction(),
-                                                                                         "Raise".EmptyFunction()));
+            var vbsErrClass = new ClassSymbol("_VbScriptEngineErrClass", Symbols.Members("Description".ToReadOnlyPropertySymbol(),
+                                                                                         "HelpContext".ToReadOnlyPropertySymbol(),
+                                                                                         "HelpFile".ToReadOnlyPropertySymbol(),
+                                                                                         "Number".ToReadOnlyPropertySymbol(),
+                                                                                         "Source".ToReadOnlyPropertySymbol(),
+                                                                                         "Clear".ToFunctionSymbol(),
+                                                                                         "Raise".ToFunctionSymbol()));
             
             var hostMembers = new List<Symbol>();
 
             hostMembers.Add(vbsErrClass);
-            hostMembers.Add("Err".ToVariable(true, vbsErrClass, "Err object has no equivalent translation."));
-            hostMembers.Add("me".ToVariable(true).Renamed("this"));
+            hostMembers.Add("Err".ToVariableSymbol(Option.None, vbsErrClass, "Err object has no equivalent translation."));
+            hostMembers.Add("me".ToVariableSymbol("this".Some()));
 
-            hostMembers.Add(new ClassSymbol("_anytype", Symbols.Members(new PropertySymbol("runtimestyle", "style".EmptyPropertyGet(true).Some<FunctionSymbol>(), Option.None))));
+            hostMembers.Add(new ClassSymbol("_anytype", Return.Enumerable("runtimestyle".ToPropertySymbol("style".Some()))));
 
-            hostMembers.Add("Abs".EmptyFunction().Renamed("Global.Abs"));
-            hostMembers.Add("Array".EmptyFunction());
-            hostMembers.Add("Asc".EmptyFunction().Renamed("Global.Asc"));
-            hostMembers.Add("Atn".EmptyFunction());
-            hostMembers.Add("CBool".EmptyFunction().Renamed("Global.CBool"));
-            hostMembers.Add("CByte".EmptyFunction());
-            hostMembers.Add("CCur".EmptyFunction());
-            hostMembers.Add("CDate".EmptyFunction());
-            hostMembers.Add("CDbl".EmptyFunction().Renamed("Global.CDbl"));
-            hostMembers.Add("CInt".EmptyFunction().Renamed("Global.CInt"));
-            hostMembers.Add("CLng".EmptyFunction().Renamed("Global.CLng"));
-            hostMembers.Add("Cos".EmptyFunction());
-            hostMembers.Add("CreateObject".EmptyFunction().Renamed("Global.external.CreateObject"));
-            hostMembers.Add("CSng".EmptyFunction().Renamed("Global.CSng"));
-            hostMembers.Add("CStr".EmptyFunction().Renamed("Global.CStr"));
-            hostMembers.Add("Date".EmptyFunction().Renamed("Global.Date"));
-            hostMembers.Add("DateAdd".EmptyFunction());
-            hostMembers.Add("DateDiff".EmptyFunction());
-            hostMembers.Add("DatePart".EmptyFunction());
-            hostMembers.Add("DateSerial".EmptyFunction());
-            hostMembers.Add("DateValue".EmptyFunction());
-            hostMembers.Add("Day".EmptyFunction().Renamed("Global.Day"));
-            hostMembers.Add("Eval".EmptyFunction("Eval has no equivalent translation."));
-            hostMembers.Add("Execute".EmptyFunction("Execute has no equivalent translation."));
-            hostMembers.Add("Exp".EmptyFunction());
-            hostMembers.Add("Filter".EmptyFunction());
-            hostMembers.Add("Fix".EmptyFunction().Renamed("Global.Fix"));
-            hostMembers.Add("FormatCurrency".EmptyFunction());
-            hostMembers.Add("FormatDateTime".EmptyFunction());
-            hostMembers.Add("FormatNumber".EmptyFunction().Renamed("Global.FormatNumber"));
-            hostMembers.Add("FormatPercent".EmptyFunction());
-            hostMembers.Add("GetLocale".EmptyFunction());
-            hostMembers.Add("GetObject".EmptyFunction());
-            hostMembers.Add("GetRef".EmptyFunction().Renamed("Global.GetRef"));
-            hostMembers.Add("Hex".EmptyFunction().Renamed("Global.Hex"));
-            hostMembers.Add("Hour".EmptyFunction().Renamed("Global.Hour"));
-            hostMembers.Add("Chr".EmptyFunction().Renamed("Global.Chr"));
-            hostMembers.Add("InputBox".EmptyFunction());
-            hostMembers.Add("InStr".EmptyFunction().Renamed("Global.InStr"));
-            hostMembers.Add("InStrRev".EmptyFunction().Renamed("Global.InStrRev"));
-            hostMembers.Add("Int".EmptyFunction().Renamed("Global.Int"));
-            hostMembers.Add("IsArray".EmptyFunction().Renamed("Global.IsArray"));
-            hostMembers.Add("IsDate".EmptyFunction().Renamed("Global.IsDate"));
-            hostMembers.Add("IsEmpty".EmptyFunction().Renamed("Global.IsEmpty"));
-            hostMembers.Add("IsNull".EmptyFunction().Renamed("Global.IsNullOrUndefined"));
-            hostMembers.Add("IsNumeric".EmptyFunction().Renamed("Global.IsNumeric"));
-            hostMembers.Add("IsObject".EmptyFunction().Renamed("Global.IsObject"));
-            hostMembers.Add("Join".EmptyFunction().Renamed("Global.Join"));
-            hostMembers.Add("LBound".EmptyFunction().Renamed("Global.LBound"));
-            hostMembers.Add("LCase".EmptyFunction().Renamed("Global.LCase"));
-            hostMembers.Add("Left".EmptyFunction().Renamed("Global.Left"));
-            hostMembers.Add("Len".EmptyFunction().Renamed("Global.Len"));
-            hostMembers.Add("LoadPicture".EmptyFunction());
-            hostMembers.Add("Log".EmptyFunction());
-            hostMembers.Add("LTrim".EmptyFunction().Renamed("Global.LTrim"));
-            hostMembers.Add("Mid".EmptyFunction().Renamed("Global.Mid"));
-            hostMembers.Add("Minute".EmptyFunction().Renamed("Global.Minute"));
-            hostMembers.Add("Month".EmptyFunction().Renamed("Global.Month"));
-            hostMembers.Add("MonthName".EmptyFunction());
-            hostMembers.Add("MsgBox".EmptyFunction().Renamed("Global.external.MsgBox"));
-            hostMembers.Add("Now".EmptyFunction().Renamed("Global.Now"));
-            hostMembers.Add("Oct".EmptyFunction());
-            hostMembers.Add("Replace".EmptyFunction().Renamed("Global.Replace"));
-            hostMembers.Add("RGB".EmptyFunction().Renamed("Global.RGB"));
-            hostMembers.Add("Right".EmptyFunction().Renamed("Global.Right"));
-            hostMembers.Add("Rnd".EmptyFunction());
-            hostMembers.Add("Round".EmptyFunction().Renamed("Global.Round"));
-            hostMembers.Add("RTrim".EmptyFunction().Renamed("Global.RTrim"));
-            hostMembers.Add("ScriptEngine".EmptyFunction());
-            hostMembers.Add("ScriptEngineBuildVersion".EmptyFunction());
-            hostMembers.Add("ScriptEngineMajorVersion".EmptyFunction());
-            hostMembers.Add("ScriptEngineMinorVersion".EmptyFunction());
-            hostMembers.Add("Second".EmptyFunction().Renamed("Global.Second"));
-            hostMembers.Add("SetLocale".EmptyFunction());
-            hostMembers.Add("Sgn".EmptyFunction());
-            hostMembers.Add("Sin".EmptyFunction());
-            hostMembers.Add("Space".EmptyFunction().Renamed("Global.Space"));
-            hostMembers.Add("Split".EmptyFunction().Renamed("Global.Split"));
-            hostMembers.Add("Sqr".EmptyFunction());
-            hostMembers.Add("StrComp".EmptyFunction().Renamed("Global.StrComp"));
-            hostMembers.Add("String".EmptyFunction().Renamed("Global.String"));
-            hostMembers.Add("StrReverse".EmptyFunction().Renamed("Global.StrReverse"));
-            hostMembers.Add("Tan".EmptyFunction());
-            hostMembers.Add("Time".EmptyFunction());
-            hostMembers.Add("Timer".EmptyFunction());
-            hostMembers.Add("TimeSerial".EmptyFunction());
-            hostMembers.Add("TimeValue".EmptyFunction());
-            hostMembers.Add("Trim".EmptyFunction().Renamed("Global.Trim"));
-            hostMembers.Add("TypeName".EmptyFunction("TypeName has no equivalent translation."));
-            hostMembers.Add("UBound".EmptyFunction().Renamed("Global.UBound"));
-            hostMembers.Add("UCase".EmptyFunction().Renamed("Global.UCase"));
-            hostMembers.Add("VarType".EmptyFunction("VarType has no equivalent translation."));
-            hostMembers.Add("Weekday".EmptyFunction());
-            hostMembers.Add("WeekdayName".EmptyFunction());
-            hostMembers.Add("Year".EmptyFunction().Renamed("Global.Year"));
-            hostMembers.Add("Randomize".EmptyFunction());
-            hostMembers.Add("external".ToVariable().Renamed("Global.external"));
-            hostMembers.Add("vbObjectError".ToConstant().Renamed("Global.vbObjectError"));
-            hostMembers.Add("vbTrue".ToConstant().Renamed("Global.vbTrue"));
-            hostMembers.Add("vbFalse".ToConstant().Renamed("Global.vbFalse"));
+            hostMembers.Add("Abs".ToFunctionSymbol("Global.Abs".Some()));
+            hostMembers.Add("Array".ToFunctionSymbol());
+            hostMembers.Add("Asc".ToFunctionSymbol("Global.Asc".Some()));
+            hostMembers.Add("Atn".ToFunctionSymbol());
+            hostMembers.Add("CBool".ToFunctionSymbol("Global.CBool".Some()));
+            hostMembers.Add("CByte".ToFunctionSymbol());
+            hostMembers.Add("CCur".ToFunctionSymbol());
+            hostMembers.Add("CDate".ToFunctionSymbol());
+            hostMembers.Add("CDbl".ToFunctionSymbol("Global.CDbl".Some()));
+            hostMembers.Add("CInt".ToFunctionSymbol("Global.CInt".Some()));
+            hostMembers.Add("CLng".ToFunctionSymbol("Global.CLng".Some()));
+            hostMembers.Add("Cos".ToFunctionSymbol());
+            hostMembers.Add("CreateObject".ToFunctionSymbol("Global.external.CreateObject".Some()));
+            hostMembers.Add("CSng".ToFunctionSymbol("Global.CSng".Some()));
+            hostMembers.Add("CStr".ToFunctionSymbol("Global.CStr".Some()));
+            hostMembers.Add("Date".ToFunctionSymbol("Global.Date".Some()));
+            hostMembers.Add("DateAdd".ToFunctionSymbol());
+            hostMembers.Add("DateDiff".ToFunctionSymbol());
+            hostMembers.Add("DatePart".ToFunctionSymbol());
+            hostMembers.Add("DateSerial".ToFunctionSymbol());
+            hostMembers.Add("DateValue".ToFunctionSymbol());
+            hostMembers.Add("Day".ToFunctionSymbol("Global.Day".Some()));
+            hostMembers.Add("Eval".ToErrFunctionSymbol("Eval has no equivalent translation."));
+            hostMembers.Add("Execute".ToErrFunctionSymbol("Execute has no equivalent translation."));
+            hostMembers.Add("Exp".ToFunctionSymbol());
+            hostMembers.Add("Filter".ToFunctionSymbol());
+            hostMembers.Add("Fix".ToFunctionSymbol("Global.Fix".Some()));
+            hostMembers.Add("FormatCurrency".ToFunctionSymbol());
+            hostMembers.Add("FormatDateTime".ToFunctionSymbol());
+            hostMembers.Add("FormatNumber".ToFunctionSymbol("Global.FormatNumber".Some()));
+            hostMembers.Add("FormatPercent".ToFunctionSymbol());
+            hostMembers.Add("GetLocale".ToFunctionSymbol());
+            hostMembers.Add("GetObject".ToFunctionSymbol());
+            hostMembers.Add("GetRef".ToFunctionSymbol("Global.GetRef".Some()));
+            hostMembers.Add("Hex".ToFunctionSymbol("Global.Hex".Some()));
+            hostMembers.Add("Hour".ToFunctionSymbol("Global.Hour".Some()));
+            hostMembers.Add("Chr".ToFunctionSymbol("Global.Chr".Some()));
+            hostMembers.Add("InputBox".ToFunctionSymbol());
+            hostMembers.Add("InStr".ToFunctionSymbol("Global.InStr".Some()));
+            hostMembers.Add("InStrRev".ToFunctionSymbol("Global.InStrRev".Some()));
+            hostMembers.Add("Int".ToFunctionSymbol("Global.Int".Some()));
+            hostMembers.Add("IsArray".ToFunctionSymbol("Global.IsArray".Some()));
+            hostMembers.Add("IsDate".ToFunctionSymbol("Global.IsDate".Some()));
+            hostMembers.Add("IsEmpty".ToFunctionSymbol("Global.IsEmpty".Some()));
+            hostMembers.Add("IsNull".ToFunctionSymbol("Global.IsNullOrUndefined".Some()));
+            hostMembers.Add("IsNumeric".ToFunctionSymbol("Global.IsNumeric".Some()));
+            hostMembers.Add("IsObject".ToFunctionSymbol("Global.IsObject".Some()));
+            hostMembers.Add("Join".ToFunctionSymbol("Global.Join".Some()));
+            hostMembers.Add("LBound".ToFunctionSymbol("Global.LBound".Some()));
+            hostMembers.Add("LCase".ToFunctionSymbol("Global.LCase".Some()));
+            hostMembers.Add("Left".ToFunctionSymbol("Global.Left".Some()));
+            hostMembers.Add("Len".ToFunctionSymbol("Global.Len".Some()));
+            hostMembers.Add("LoadPicture".ToFunctionSymbol());
+            hostMembers.Add("Log".ToFunctionSymbol());
+            hostMembers.Add("LTrim".ToFunctionSymbol("Global.LTrim".Some()));
+            hostMembers.Add("Mid".ToFunctionSymbol("Global.Mid".Some()));
+            hostMembers.Add("Minute".ToFunctionSymbol("Global.Minute".Some()));
+            hostMembers.Add("Month".ToFunctionSymbol("Global.Month".Some()));
+            hostMembers.Add("MonthName".ToFunctionSymbol());
+            hostMembers.Add("MsgBox".ToFunctionSymbol("Global.external.MsgBox".Some()));
+            hostMembers.Add("Now".ToFunctionSymbol("Global.Now".Some()));
+            hostMembers.Add("Oct".ToFunctionSymbol());
+            hostMembers.Add("Replace".ToFunctionSymbol("Global.Replace".Some()));
+            hostMembers.Add("RGB".ToFunctionSymbol("Global.RGB".Some()));
+            hostMembers.Add("Right".ToFunctionSymbol("Global.Right".Some()));
+            hostMembers.Add("Rnd".ToFunctionSymbol());
+            hostMembers.Add("Round".ToFunctionSymbol("Global.Round".Some()));
+            hostMembers.Add("RTrim".ToFunctionSymbol("Global.RTrim".Some()));
+            hostMembers.Add("ScriptEngine".ToFunctionSymbol());
+            hostMembers.Add("ScriptEngineBuildVersion".ToFunctionSymbol());
+            hostMembers.Add("ScriptEngineMajorVersion".ToFunctionSymbol());
+            hostMembers.Add("ScriptEngineMinorVersion".ToFunctionSymbol());
+            hostMembers.Add("Second".ToFunctionSymbol("Global.Second".Some()));
+            hostMembers.Add("SetLocale".ToFunctionSymbol());
+            hostMembers.Add("Sgn".ToFunctionSymbol());
+            hostMembers.Add("Sin".ToFunctionSymbol());
+            hostMembers.Add("Space".ToFunctionSymbol("Global.Space".Some()));
+            hostMembers.Add("Split".ToFunctionSymbol("Global.Split".Some()));
+            hostMembers.Add("Sqr".ToFunctionSymbol());
+            hostMembers.Add("StrComp".ToFunctionSymbol("Global.StrComp".Some()));
+            hostMembers.Add("String".ToFunctionSymbol("Global.String".Some()));
+            hostMembers.Add("StrReverse".ToFunctionSymbol("Global.StrReverse".Some()));
+            hostMembers.Add("Tan".ToFunctionSymbol());
+            hostMembers.Add("Time".ToFunctionSymbol());
+            hostMembers.Add("Timer".ToFunctionSymbol());
+            hostMembers.Add("TimeSerial".ToFunctionSymbol());
+            hostMembers.Add("TimeValue".ToFunctionSymbol());
+            hostMembers.Add("Trim".ToFunctionSymbol("Global.Trim".Some()));
+            hostMembers.Add("TypeName".ToErrFunctionSymbol("TypeName has no equivalent translation."));
+            hostMembers.Add("UBound".ToFunctionSymbol("Global.UBound".Some()));
+            hostMembers.Add("UCase".ToFunctionSymbol("Global.UCase".Some()));
+            hostMembers.Add("VarType".ToErrFunctionSymbol("VarType has no equivalent translation."));
+            hostMembers.Add("Weekday".ToFunctionSymbol());
+            hostMembers.Add("WeekdayName".ToFunctionSymbol());
+            hostMembers.Add("Year".ToFunctionSymbol("Global.Year".Some()));
+            hostMembers.Add("Randomize".ToFunctionSymbol());
+            hostMembers.Add("external".ToVariableSymbol("Global.external".Some()));
+            hostMembers.Add("vbObjectError".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbObjectError"));
+            hostMembers.Add("vbTrue".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbTrue"));
+            hostMembers.Add("vbFalse".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbFalse"));
 
-            hostMembers.Add("vbEmpty".ToConstant().Renamed("Global.typeEmpty"));
-            hostMembers.Add("vbNull".ToConstant().Renamed("Global.typeNull"));
-            hostMembers.Add("vbBoolean".ToConstant().Renamed("Global.typeBoolean"));
-            hostMembers.Add("vbByte".ToConstant().Renamed("Global.typeByte"));
-            hostMembers.Add("vbInteger".ToConstant().Renamed("Global.typeInteger"));
-            hostMembers.Add("vbLong".ToConstant().Renamed("Global.typeLong"));
-            hostMembers.Add("vbSingle".ToConstant().Renamed("Global.typeSingle"));
-            hostMembers.Add("vbDouble".ToConstant().Renamed("Global.typeDouble"));
-            hostMembers.Add("vbDate".ToConstant().Renamed("Global.typeDate"));
-            hostMembers.Add("vbString".ToConstant().Renamed("Global.typeString"));
-            hostMembers.Add("vbObject".ToConstant().Renamed("Global.typeObject"));
-            hostMembers.Add("vbArray".ToConstant().Renamed("Global.typeArray"));
+            hostMembers.Add("vbEmpty".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeEmpty"));
+            hostMembers.Add("vbNull".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeNull"));
+            hostMembers.Add("vbBoolean".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeBoolean"));
+            hostMembers.Add("vbByte".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeByte"));
+            hostMembers.Add("vbInteger".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeInteger"));
+            hostMembers.Add("vbLong".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeLong"));
+            hostMembers.Add("vbSingle".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeSingle"));
+            hostMembers.Add("vbDouble".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeDouble"));
+            hostMembers.Add("vbDate".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeDate"));
+            hostMembers.Add("vbString".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeString"));
+            hostMembers.Add("vbObject".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeObject"));
+            hostMembers.Add("vbArray".ToConstantSymbol(LiteralValueTypes.Integer, "Global.typeArray"));
 
-            hostMembers.Add("vbCr".ToConstant().Renamed("Global.Cr"));
-            hostMembers.Add("vbCrLf".ToConstant().Renamed("Global.CrLf"));
-            hostMembers.Add("vbFormFeed".ToConstant().Renamed("Global.FormFeed"));
-            hostMembers.Add("vbLf".ToConstant().Renamed("Global.Lf"));
-            hostMembers.Add("vbNewLine".ToConstant().Renamed("Global.NewLine"));
-            hostMembers.Add("vbNullChar".ToConstant().Renamed("Global.NullChar"));
-            hostMembers.Add("vbNullString".ToConstant().Renamed("Global.NullString"));
-            hostMembers.Add("vbTab".ToConstant().Renamed("Global.Tab"));
-            hostMembers.Add("vbVerticalTab".ToConstant().Renamed("Global.VerticalTab"));
+            hostMembers.Add("vbCr".ToConstantSymbol(LiteralValueTypes.String, "Global.Cr"));
+            hostMembers.Add("vbCrLf".ToConstantSymbol(LiteralValueTypes.String, "Global.CrLf"));
+            hostMembers.Add("vbFormFeed".ToConstantSymbol(LiteralValueTypes.String, "Global.FormFeed"));
+            hostMembers.Add("vbLf".ToConstantSymbol(LiteralValueTypes.String, "Global.Lf"));
+            hostMembers.Add("vbNewLine".ToConstantSymbol(LiteralValueTypes.String, "Global.NewLine"));
+            hostMembers.Add("vbNullChar".ToConstantSymbol(LiteralValueTypes.String, "Global.NullChar"));
+            hostMembers.Add("vbNullString".ToConstantSymbol(LiteralValueTypes.String, "Global.NullString"));
+            hostMembers.Add("vbTab".ToConstantSymbol(LiteralValueTypes.String, "Global.Tab"));
+            hostMembers.Add("vbVerticalTab".ToConstantSymbol(LiteralValueTypes.String, "Global.VerticalTab"));
 
-            hostMembers.Add("vbSunday".ToConstant().Renamed("Global.Sunday"));
-            hostMembers.Add("vbMonday".ToConstant().Renamed("Global.Monday"));
-            hostMembers.Add("vbTuesday".ToConstant().Renamed("Global.Tuesday"));
-            hostMembers.Add("vbWednesday".ToConstant().Renamed("Global.Wednesday"));
-            hostMembers.Add("vbThursday".ToConstant().Renamed("Global.Thursday"));
-            hostMembers.Add("vbFriday".ToConstant().Renamed("Global.Friday"));
-            hostMembers.Add("vbSaturday".ToConstant().Renamed("Global.Saturday"));
+            hostMembers.Add("vbSunday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Sunday"));
+            hostMembers.Add("vbMonday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Monday"));
+            hostMembers.Add("vbTuesday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Tuesday"));
+            hostMembers.Add("vbWednesday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Wednesday"));
+            hostMembers.Add("vbThursday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Thursday"));
+            hostMembers.Add("vbFriday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Friday"));
+            hostMembers.Add("vbSaturday".ToConstantSymbol(LiteralValueTypes.Integer, "Global.Saturday"));
 
-            hostMembers.Add("vbUseSystemDayOfWeek".ToConstant().Renamed("Global.UseSystemDayOfWeek"));
-            hostMembers.Add("vbLongDate".ToConstant().Renamed("Global.fmtLongDate"));
-            hostMembers.Add("vbShortDate".ToConstant().Renamed("Global.fmtShortDate"));
-            hostMembers.Add("vbLongTime".ToConstant().Renamed("Global.fmtLongTime"));
-            hostMembers.Add("vbShortTime".ToConstant().Renamed("Global.fmtShortTime"));
-            hostMembers.Add("vbOKOnly".ToConstant().Renamed("Global.msgOKOnly"));
-            hostMembers.Add("vbOKCancel".ToConstant().Renamed("Global.msgOKCancel"));
-            hostMembers.Add("vbAbortRetryIgnore".ToConstant().Renamed("Global.msgAbortRetryIgnore"));
-            hostMembers.Add("vbYesNoCancel".ToConstant().Renamed("Global.msgYesNoCancel"));
-            hostMembers.Add("vbYesNo".ToConstant().Renamed("Global.msgYesNo"));
-            hostMembers.Add("vbRetryCancel".ToConstant().Renamed("Global.msgRetryCancel"));
-            hostMembers.Add("vbCritical".ToConstant().Renamed("Global.msgCritical"));
-            hostMembers.Add("vbQuestion".ToConstant().Renamed("Global.msgQuestion"));
-            hostMembers.Add("vbExclamation".ToConstant().Renamed("Global.msgExclamation"));
-            hostMembers.Add("vbInformation".ToConstant().Renamed("Global.msgInformation"));
-            hostMembers.Add("vbDefaultButton1".ToConstant().Renamed("Global.msgDefaultButton1"));
-            hostMembers.Add("vbDefaultButton2".ToConstant().Renamed("Global.msgDefaultButton2"));
-            hostMembers.Add("vbDefaultButton3".ToConstant().Renamed("Global.msgDefaultButton3"));
-            hostMembers.Add("vbDefaultButton4".ToConstant().Renamed("Global.msgDefaultButton4"));
-            hostMembers.Add("vbApplicationModal".ToConstant().Renamed("Global.msgApplicationModal"));
-            hostMembers.Add("vbSystemModal".ToConstant().Renamed("Global.msgSystemModal"));
-            hostMembers.Add("vbOK".ToConstant().Renamed("Global.msgOK"));
-            hostMembers.Add("vbCancel".ToConstant().Renamed("Global.msgCancel"));
-            hostMembers.Add("vbAbort".ToConstant().Renamed("Global.msgAbort"));
-            hostMembers.Add("vbRetry".ToConstant().Renamed("Global.msgRetry"));
-            hostMembers.Add("vbIgnore".ToConstant().Renamed("Global.msgIgnore"));
-            hostMembers.Add("vbYes".ToConstant().Renamed("Global.msgYes"));
-            hostMembers.Add("vbNo".ToConstant().Renamed("Global.msgNo"));
-            hostMembers.Add("vbBinaryCompare".ToConstant().Renamed("Global.BinaryCompare"));
-            hostMembers.Add("vbTextCompare".ToConstant().Renamed("Global.TextCompare"));
+            hostMembers.Add("vbUseSystemDayOfWeek".ToConstantSymbol(LiteralValueTypes.Integer, "Global.UseSystemDayOfWeek"));
+            hostMembers.Add("vbLongDate".ToConstantSymbol(LiteralValueTypes.Integer, "Global.fmtLongDate"));
+            hostMembers.Add("vbShortDate".ToConstantSymbol(LiteralValueTypes.Integer, "Global.fmtShortDate"));
+            hostMembers.Add("vbLongTime".ToConstantSymbol(LiteralValueTypes.Integer, "Global.fmtLongTime"));
+            hostMembers.Add("vbShortTime".ToConstantSymbol(LiteralValueTypes.Integer, "Global.fmtShortTime"));
+            hostMembers.Add("vbOKOnly".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgOKOnly"));
+            hostMembers.Add("vbOKCancel".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgOKCancel"));
+            hostMembers.Add("vbAbortRetryIgnore".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgAbortRetryIgnore"));
+            hostMembers.Add("vbYesNoCancel".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgYesNoCancel"));
+            hostMembers.Add("vbYesNo".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgYesNo"));
+            hostMembers.Add("vbRetryCancel".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgRetryCancel"));
+            hostMembers.Add("vbCritical".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgCritical"));
+            hostMembers.Add("vbQuestion".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgQuestion"));
+            hostMembers.Add("vbExclamation".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgExclamation"));
+            hostMembers.Add("vbInformation".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgInformation"));
+            hostMembers.Add("vbDefaultButton1".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgDefaultButton1"));
+            hostMembers.Add("vbDefaultButton2".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgDefaultButton2"));
+            hostMembers.Add("vbDefaultButton3".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgDefaultButton3"));
+            hostMembers.Add("vbDefaultButton4".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgDefaultButton4"));
+            hostMembers.Add("vbApplicationModal".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgApplicationModal"));
+            hostMembers.Add("vbSystemModal".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgSystemModal"));
+            hostMembers.Add("vbOK".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgOK"));
+            hostMembers.Add("vbCancel".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgCancel"));
+            hostMembers.Add("vbAbort".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgAbort"));
+            hostMembers.Add("vbRetry".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgRetry"));
+            hostMembers.Add("vbIgnore".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgIgnore"));
+            hostMembers.Add("vbYes".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgYes"));
+            hostMembers.Add("vbNo".ToConstantSymbol(LiteralValueTypes.Integer, "Global.msgNo"));
+            hostMembers.Add("vbBinaryCompare".ToConstantSymbol(LiteralValueTypes.Integer, "Global.BinaryCompare"));
+            hostMembers.Add("vbTextCompare".ToConstantSymbol(LiteralValueTypes.Integer, "Global.TextCompare"));
 
             return hostMembers;
         }
@@ -204,178 +204,178 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             var domElemMembers = new List<Symbol>();
 
-            domElemMembers.Add("accessKey".EmptyProperty(false));
-            domElemMembers.Add("addEventListener".EmptyFunction());
-            domElemMembers.Add("appendChild".EmptyFunction());
-            domElemMembers.Add("attributes".EmptyProperty(true));
-            domElemMembers.Add("blur".EmptyFunction());
-            domElemMembers.Add("childElementCount".EmptyProperty(true));
-            domElemMembers.Add("childNodes".EmptyProperty(true));
-            domElemMembers.Add("children".EmptyProperty(true));
-            domElemMembers.Add("classList".EmptyProperty(true));
-            domElemMembers.Add("className".EmptyProperty(false));
-            domElemMembers.Add("click".EmptyFunction());
-            domElemMembers.Add("clientHeight".EmptyProperty(true));
-            domElemMembers.Add("clientLeft".EmptyProperty(true));
-            domElemMembers.Add("clientTop".EmptyProperty(true));
-            domElemMembers.Add("clientWidth".EmptyProperty(true));
-            domElemMembers.Add("cloneNode".EmptyFunction());
-            domElemMembers.Add("closest".EmptyFunction());
-            domElemMembers.Add("compareDocumentPosition".EmptyFunction());
-            domElemMembers.Add("contains".EmptyFunction());
-            domElemMembers.Add("contentEditable".EmptyProperty(false));
-            domElemMembers.Add("dir".EmptyProperty(false));
-            domElemMembers.Add("exitFullscreen".EmptyFunction());
-            domElemMembers.Add("firstChild".EmptyProperty(true));
-            domElemMembers.Add("firstElementChild".EmptyProperty(true));
-            domElemMembers.Add("focus".EmptyFunction());
-            domElemMembers.Add("getAttribute".EmptyFunction());
-            domElemMembers.Add("getAttributeNode".EmptyFunction());
-            domElemMembers.Add("getBoundingClientRect".EmptyFunction());
-            domElemMembers.Add("getElementsByClassName".EmptyFunction());
-            domElemMembers.Add("getElementsByTagName".EmptyFunction());
-            domElemMembers.Add("hasAttribute".EmptyFunction());
-            domElemMembers.Add("hasAttributes".EmptyFunction());
-            domElemMembers.Add("hasChildNodes".EmptyFunction());
-            domElemMembers.Add("id".EmptyProperty(false));
-            domElemMembers.Add("innerHTML".EmptyProperty(false));
-            domElemMembers.Add("innerText".EmptyProperty(false));
-            domElemMembers.Add("insertAdjacentElement".EmptyFunction());
-            domElemMembers.Add("insertAdjacentHTML".EmptyFunction());
-            domElemMembers.Add("insertAdjacentText".EmptyFunction());
-            domElemMembers.Add("insertBefore".EmptyFunction());
-            domElemMembers.Add("isContentEditable".EmptyProperty(true));
-            domElemMembers.Add("isDefaultNamespace".EmptyFunction());
-            domElemMembers.Add("isEqualNode".EmptyFunction());
-            domElemMembers.Add("isSameNode".EmptyFunction());
-            domElemMembers.Add("isSupported".EmptyFunction());
-            domElemMembers.Add("lang".EmptyProperty(false));
-            domElemMembers.Add("lastChild".EmptyProperty(true));
-            domElemMembers.Add("lastElementChild".EmptyProperty(true));
-            domElemMembers.Add("matches".EmptyFunction());
-            domElemMembers.Add("namespaceURI".EmptyProperty(true));
-            domElemMembers.Add("nextSibling".EmptyProperty(true));
-            domElemMembers.Add("nextElementSibling".EmptyProperty(true));
-            domElemMembers.Add("nodeName".EmptyProperty(true));
-            domElemMembers.Add("nodeType".EmptyProperty(true));
-            domElemMembers.Add("nodeValue".EmptyProperty(false));
-            domElemMembers.Add("normalize".EmptyFunction());
-            domElemMembers.Add("offsetHeight".EmptyProperty(true));
-            domElemMembers.Add("offsetWidth".EmptyProperty(true));
-            domElemMembers.Add("offsetLeft".EmptyProperty(true));
-            domElemMembers.Add("offsetParent".EmptyProperty(true));
-            domElemMembers.Add("offsetTop".EmptyProperty(true));
-            domElemMembers.Add("outerHTML".EmptyProperty(false));
-            domElemMembers.Add("outerText".EmptyProperty(false));
-            domElemMembers.Add("ownerDocument".EmptyProperty(true));
-            domElemMembers.Add("parentNode".EmptyProperty(true));
-            domElemMembers.Add("parentElement".EmptyProperty(true));
-            domElemMembers.Add("previousSibling".EmptyProperty(true));
-            domElemMembers.Add("previousElementSibling".EmptyProperty(true));
-            domElemMembers.Add("querySelector".EmptyFunction());
-            domElemMembers.Add("querySelectorAll".EmptyFunction());
-            domElemMembers.Add("remove".EmptyFunction());
-            domElemMembers.Add("removeAttribute".EmptyFunction());
-            domElemMembers.Add("removeAttributeNode".EmptyFunction());
-            domElemMembers.Add("removeChild".EmptyFunction());
-            domElemMembers.Add("removeEventListener".EmptyFunction());
-            domElemMembers.Add("replaceChild".EmptyFunction());
-            domElemMembers.Add("requestFullscreen".EmptyFunction());
-            domElemMembers.Add("scrollHeight".EmptyProperty(true));
-            domElemMembers.Add("scrollIntoView".EmptyFunction());
-            domElemMembers.Add("scrollLeft".EmptyProperty(false));
-            domElemMembers.Add("scrollTop".EmptyProperty(false));
-            domElemMembers.Add("scrollWidth".EmptyProperty(true));
-            domElemMembers.Add("setAttribute".EmptyFunction());
-            domElemMembers.Add("setAttributeNode".EmptyFunction());
-            domElemMembers.Add("style".EmptyProperty(false));
-            domElemMembers.Add("runtimestyle".EmptyProperty(false, true, "style"));
-            domElemMembers.Add("tabIndex".EmptyProperty(false));
-            domElemMembers.Add("tagName".EmptyProperty(true));
-            domElemMembers.Add("textContent".EmptyProperty(false));
-            domElemMembers.Add("title".EmptyProperty(false));
-            domElemMembers.Add("toString".EmptyFunction());
+            domElemMembers.Add("accessKey".ToPropertySymbol());
+            domElemMembers.Add("addEventListener".ToFunctionSymbol());
+            domElemMembers.Add("appendChild".ToFunctionSymbol());
+            domElemMembers.Add("attributes".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("blur".ToFunctionSymbol());
+            domElemMembers.Add("childElementCount".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("childNodes".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("children".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("classList".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("className".ToPropertySymbol());
+            domElemMembers.Add("click".ToFunctionSymbol());
+            domElemMembers.Add("clientHeight".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("clientLeft".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("clientTop".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("clientWidth".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("cloneNode".ToFunctionSymbol());
+            domElemMembers.Add("closest".ToFunctionSymbol());
+            domElemMembers.Add("compareDocumentPosition".ToFunctionSymbol());
+            domElemMembers.Add("contains".ToFunctionSymbol());
+            domElemMembers.Add("contentEditable".ToPropertySymbol());
+            domElemMembers.Add("dir".ToPropertySymbol());
+            domElemMembers.Add("exitFullscreen".ToFunctionSymbol());
+            domElemMembers.Add("firstChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("firstElementChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("focus".ToFunctionSymbol());
+            domElemMembers.Add("getAttribute".ToFunctionSymbol());
+            domElemMembers.Add("getAttributeNode".ToFunctionSymbol());
+            domElemMembers.Add("getBoundingClientRect".ToFunctionSymbol());
+            domElemMembers.Add("getElementsByClassName".ToFunctionSymbol());
+            domElemMembers.Add("getElementsByTagName".ToFunctionSymbol());
+            domElemMembers.Add("hasAttribute".ToFunctionSymbol());
+            domElemMembers.Add("hasAttributes".ToFunctionSymbol());
+            domElemMembers.Add("hasChildNodes".ToFunctionSymbol());
+            domElemMembers.Add("id".ToPropertySymbol());
+            domElemMembers.Add("innerHTML".ToPropertySymbol());
+            domElemMembers.Add("innerText".ToPropertySymbol());
+            domElemMembers.Add("insertAdjacentElement".ToFunctionSymbol());
+            domElemMembers.Add("insertAdjacentHTML".ToFunctionSymbol());
+            domElemMembers.Add("insertAdjacentText".ToFunctionSymbol());
+            domElemMembers.Add("insertBefore".ToFunctionSymbol());
+            domElemMembers.Add("isContentEditable".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("isDefaultNamespace".ToFunctionSymbol());
+            domElemMembers.Add("isEqualNode".ToFunctionSymbol());
+            domElemMembers.Add("isSameNode".ToFunctionSymbol());
+            domElemMembers.Add("isSupported".ToFunctionSymbol());
+            domElemMembers.Add("lang".ToPropertySymbol());
+            domElemMembers.Add("lastChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("lastElementChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("matches".ToFunctionSymbol());
+            domElemMembers.Add("namespaceURI".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nextSibling".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nextElementSibling".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nodeName".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nodeType".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nodeValue".ToPropertySymbol());
+            domElemMembers.Add("normalize".ToFunctionSymbol());
+            domElemMembers.Add("offsetHeight".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("offsetWidth".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("offsetLeft".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("offsetParent".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("offsetTop".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("outerHTML".ToPropertySymbol());
+            domElemMembers.Add("outerText".ToPropertySymbol());
+            domElemMembers.Add("ownerDocument".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("parentNode".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("parentElement".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("previousSibling".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("previousElementSibling".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("querySelector".ToFunctionSymbol());
+            domElemMembers.Add("querySelectorAll".ToFunctionSymbol());
+            domElemMembers.Add("remove".ToFunctionSymbol());
+            domElemMembers.Add("removeAttribute".ToFunctionSymbol());
+            domElemMembers.Add("removeAttributeNode".ToFunctionSymbol());
+            domElemMembers.Add("removeChild".ToFunctionSymbol());
+            domElemMembers.Add("removeEventListener".ToFunctionSymbol());
+            domElemMembers.Add("replaceChild".ToFunctionSymbol());
+            domElemMembers.Add("requestFullscreen".ToFunctionSymbol());
+            domElemMembers.Add("scrollHeight".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("scrollIntoView".ToFunctionSymbol());
+            domElemMembers.Add("scrollLeft".ToPropertySymbol());
+            domElemMembers.Add("scrollTop".ToPropertySymbol());
+            domElemMembers.Add("scrollWidth".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("setAttribute".ToFunctionSymbol());
+            domElemMembers.Add("setAttributeNode".ToFunctionSymbol());
+            domElemMembers.Add("style".ToPropertySymbol());
+            domElemMembers.Add("runtimestyle".ToPropertySymbol("style".Some()));
+            domElemMembers.Add("tabIndex".ToPropertySymbol());
+            domElemMembers.Add("tagName".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("textContent".ToPropertySymbol());
+            domElemMembers.Add("title".ToPropertySymbol());
+            domElemMembers.Add("toString".ToFunctionSymbol());
 
             hostMembers.Add(new ClassSymbol("_Element", domElemMembers));
 
             var namedNodeMapMembers = new List<Symbol>();
 
-            namedNodeMapMembers.Add("length".EmptyProperty(true));
-            namedNodeMapMembers.Add("getNamedItem".EmptyFunction());
-            namedNodeMapMembers.Add("getNamedItemNS".EmptyFunction());
-            namedNodeMapMembers.Add("item".EmptyFunction());
-            namedNodeMapMembers.Add("removeNamedItem".EmptyFunction());
-            namedNodeMapMembers.Add("removeNamedItemNS".EmptyFunction());
-            namedNodeMapMembers.Add("setNamedItem".EmptyFunction());
-            namedNodeMapMembers.Add("setNamedItemNS".EmptyFunction());
+            namedNodeMapMembers.Add("length".ToReadOnlyPropertySymbol());
+            namedNodeMapMembers.Add("getNamedItem".ToFunctionSymbol());
+            namedNodeMapMembers.Add("getNamedItemNS".ToFunctionSymbol());
+            namedNodeMapMembers.Add("item".ToFunctionSymbol());
+            namedNodeMapMembers.Add("removeNamedItem".ToFunctionSymbol());
+            namedNodeMapMembers.Add("removeNamedItemNS".ToFunctionSymbol());
+            namedNodeMapMembers.Add("setNamedItem".ToFunctionSymbol());
+            namedNodeMapMembers.Add("setNamedItemNS".ToFunctionSymbol());
 
             hostMembers.Add(new ClassSymbol("_NamedNodeMap", namedNodeMapMembers));
 
             var attributeMembers = new List<Symbol>();
 
-            attributeMembers.Add("name".EmptyProperty(true));
-            attributeMembers.Add("value".EmptyProperty(false));
-            attributeMembers.Add("specified".EmptyProperty(true));
+            attributeMembers.Add("name".ToReadOnlyPropertySymbol());
+            attributeMembers.Add("value".ToPropertySymbol());
+            attributeMembers.Add("specified".ToReadOnlyPropertySymbol());
 
             hostMembers.Add(new ClassSymbol("_Attr", attributeMembers));
 
             var documentMembers = new List<Symbol>();
 
-            documentMembers.Add("activeElement".EmptyProperty(true));  //Returns the currently focused element in the document
-            documentMembers.Add("addEventListener".EmptyFunction());  //Attaches an event handler to the document
-            documentMembers.Add("adoptNode".EmptyFunction());  //Adopts a node from another document
-            documentMembers.Add("anchors".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("applets".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("baseURI".EmptyProperty(true));  //Returns the absolute base URI of a document
-            documentMembers.Add("body".EmptyProperty(false));  //Sets or returns the document's body (the <body> element)
-            documentMembers.Add("charset".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("characterSet".EmptyProperty(true));  //Returns the character encoding for the document
-            documentMembers.Add("close".EmptyFunction());  //Closes the output stream previously opened with document.open()
-            documentMembers.Add("cookie".EmptyProperty(true));  //Returns all name/value pairs of cookies in the document
-            documentMembers.Add("createAttribute".EmptyFunction());  //Creates an attribute node
-            documentMembers.Add("createComment".EmptyFunction());  //Creates a Comment node with the specified text
-            documentMembers.Add("createDocumentFragment".EmptyFunction());  //Creates an empty DocumentFragment node
-            documentMembers.Add("createElement".EmptyFunction());  //Creates an Element node
-            documentMembers.Add("createEvent".EmptyFunction());  //Creates a new event
-            documentMembers.Add("createTextNode".EmptyFunction());  //Creates a Text node
-            documentMembers.Add("defaultView".EmptyProperty(true));  //Returns the window object associated with a document, or null if none is available.
-            documentMembers.Add("designMode".EmptyProperty(false));  //Controls whether the entire document should be editable or not.
-            documentMembers.Add("doctype".EmptyProperty(true));  //Returns the Document Type Declaration associated with the document
-            documentMembers.Add("documentElement".EmptyProperty(true));  //Returns the Document Element of the document (the <html> element)
-            documentMembers.Add("documentMode".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("documentURI".EmptyProperty(false));  //Sets or returns the location of the document
-            documentMembers.Add("domain".EmptyProperty(true));  //Returns the domain name of the server that loaded the document
-            documentMembers.Add("domConfig".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("embeds".EmptyProperty(true));  //Returns a collection of all <embed> elements the document
-            documentMembers.Add("execCommand".EmptyFunction());  //Deprecated
-            documentMembers.Add("forms".EmptyProperty(true));  //Returns a collection of all <form> elements in the document
-            documentMembers.Add("getElementById".EmptyFunction());  //Returns the element that has the ID attribute with the specified value
-            documentMembers.Add("getElementsByClassName".EmptyFunction());  //Returns a HTMLCollection containing all elements with the specified class name
-            documentMembers.Add("getElementsByName".EmptyFunction());  //Deprecated
-            documentMembers.Add("getElementsByTagName".EmptyFunction());  //Returns a HTMLCollection containing all elements with the specified tag name
-            documentMembers.Add("hasFocus".EmptyFunction());  //Returns a Boolean value indicating whether the document has focus
-            documentMembers.Add("head".EmptyProperty(true));  //Returns the <head> element of the document
-            documentMembers.Add("images".EmptyProperty(true));  //Returns a collection of all <img> elements in the document
-            documentMembers.Add("implementation".EmptyProperty(true));  //Returns the DOMImplementation object that handles this document
-            documentMembers.Add("importNode".EmptyFunction());  //Imports a node from another document
-            documentMembers.Add("inputEncoding".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("lastModified".EmptyProperty(true));  //Returns the date and time the document was last modified
-            documentMembers.Add("links".EmptyProperty(true));  //Returns a collection of all <a> and <area> elements in the document that have a href attribute
-            documentMembers.Add("normalize".EmptyFunction());  //Removes empty Text nodes, and joins adjacent nodes
-            documentMembers.Add("normalizeDocument".EmptyFunction());  //Deprecated
-            documentMembers.Add("open".EmptyFunction());  //Opens an HTML output stream to collect output from document.write()
-            documentMembers.Add("querySelector".EmptyFunction());  //Returns the first element that matches a specified CSS selector(s) in the document
-            documentMembers.Add("querySelectorAll".EmptyFunction());  //Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document
-            documentMembers.Add("readyState".EmptyProperty(true));  //Returns the (loading) status of the document
-            documentMembers.Add("referrer".EmptyProperty(true));  //Returns the URL of the document that loaded the current document
-            documentMembers.Add("removeEventListener".EmptyFunction());  //Removes an event handler from the document (that has been attached with the addEventListener() method)
-            documentMembers.Add("renameNode".EmptyFunction());  //Deprecated
-            documentMembers.Add("scripts".EmptyProperty(true));  //Returns a collection of <script> elements in the document
-            documentMembers.Add("strictErrorChecking".EmptyProperty(true));  //Deprecated
-            documentMembers.Add("title".EmptyProperty(false));  //Sets or returns the title of the document
-            documentMembers.Add("URL".EmptyProperty(true));  //Returns the full URL of the HTML document
-            documentMembers.Add("write".EmptyFunction());  //Writes HTML expressions or JavaScript code to a document
-            documentMembers.Add("writeln".EmptyFunction());  //Same as write(), but adds a newline character after each statement
+            documentMembers.Add("activeElement".ToReadOnlyPropertySymbol());  //Returns the currently focused element in the document
+            documentMembers.Add("addEventListener".ToFunctionSymbol());  //Attaches an event handler to the document
+            documentMembers.Add("adoptNode".ToFunctionSymbol());  //Adopts a node from another document
+            documentMembers.Add("anchors".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("applets".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("baseURI".ToReadOnlyPropertySymbol());  //Returns the absolute base URI of a document
+            documentMembers.Add("body".ToPropertySymbol());  //Sets or returns the document's body (the <body> element)
+            documentMembers.Add("charset".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("characterSet".ToReadOnlyPropertySymbol());  //Returns the character encoding for the document
+            documentMembers.Add("close".ToFunctionSymbol());  //Closes the output stream previously opened with document.open()
+            documentMembers.Add("cookie".ToReadOnlyPropertySymbol());  //Returns all name/value pairs of cookies in the document
+            documentMembers.Add("createAttribute".ToFunctionSymbol());  //Creates an attribute node
+            documentMembers.Add("createComment".ToFunctionSymbol());  //Creates a Comment node with the specified text
+            documentMembers.Add("createDocumentFragment".ToFunctionSymbol());  //Creates an empty DocumentFragment node
+            documentMembers.Add("createElement".ToFunctionSymbol());  //Creates an Element node
+            documentMembers.Add("createEvent".ToFunctionSymbol());  //Creates a new event
+            documentMembers.Add("createTextNode".ToFunctionSymbol());  //Creates a Text node
+            documentMembers.Add("defaultView".ToReadOnlyPropertySymbol());  //Returns the window object associated with a document, or null if none is available.
+            documentMembers.Add("designMode".ToPropertySymbol());  //Controls whether the entire document should be editable or not.
+            documentMembers.Add("doctype".ToReadOnlyPropertySymbol());  //Returns the Document Type Declaration associated with the document
+            documentMembers.Add("documentElement".ToReadOnlyPropertySymbol());  //Returns the Document Element of the document (the <html> element)
+            documentMembers.Add("documentMode".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("documentURI".ToPropertySymbol());  //Sets or returns the location of the document
+            documentMembers.Add("domain".ToReadOnlyPropertySymbol());  //Returns the domain name of the server that loaded the document
+            documentMembers.Add("domConfig".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("embeds".ToReadOnlyPropertySymbol());  //Returns a collection of all <embed> elements the document
+            documentMembers.Add("execCommand".ToFunctionSymbol());  //Deprecated
+            documentMembers.Add("forms".ToReadOnlyPropertySymbol());  //Returns a collection of all <form> elements in the document
+            documentMembers.Add("getElementById".ToFunctionSymbol());  //Returns the element that has the ID attribute with the specified value
+            documentMembers.Add("getElementsByClassName".ToFunctionSymbol());  //Returns a HTMLCollection containing all elements with the specified class name
+            documentMembers.Add("getElementsByName".ToFunctionSymbol());  //Deprecated
+            documentMembers.Add("getElementsByTagName".ToFunctionSymbol());  //Returns a HTMLCollection containing all elements with the specified tag name
+            documentMembers.Add("hasFocus".ToFunctionSymbol());  //Returns a Boolean value indicating whether the document has focus
+            documentMembers.Add("head".ToReadOnlyPropertySymbol());  //Returns the <head> element of the document
+            documentMembers.Add("images".ToReadOnlyPropertySymbol());  //Returns a collection of all <img> elements in the document
+            documentMembers.Add("implementation".ToReadOnlyPropertySymbol());  //Returns the DOMImplementation object that handles this document
+            documentMembers.Add("importNode".ToFunctionSymbol());  //Imports a node from another document
+            documentMembers.Add("inputEncoding".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("lastModified".ToReadOnlyPropertySymbol());  //Returns the date and time the document was last modified
+            documentMembers.Add("links".ToReadOnlyPropertySymbol());  //Returns a collection of all <a> and <area> elements in the document that have a href attribute
+            documentMembers.Add("normalize".ToFunctionSymbol());  //Removes empty Text nodes, and joins adjacent nodes
+            documentMembers.Add("normalizeDocument".ToFunctionSymbol());  //Deprecated
+            documentMembers.Add("open".ToFunctionSymbol());  //Opens an HTML output stream to collect output from document.write()
+            documentMembers.Add("querySelector".ToFunctionSymbol());  //Returns the first element that matches a specified CSS selector(s) in the document
+            documentMembers.Add("querySelectorAll".ToFunctionSymbol());  //Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document
+            documentMembers.Add("readyState".ToReadOnlyPropertySymbol());  //Returns the (loading) status of the document
+            documentMembers.Add("referrer".ToReadOnlyPropertySymbol());  //Returns the URL of the document that loaded the current document
+            documentMembers.Add("removeEventListener".ToFunctionSymbol());  //Removes an event handler from the document (that has been attached with the addEventListener() method)
+            documentMembers.Add("renameNode".ToFunctionSymbol());  //Deprecated
+            documentMembers.Add("scripts".ToReadOnlyPropertySymbol());  //Returns a collection of <script> elements in the document
+            documentMembers.Add("strictErrorChecking".ToReadOnlyPropertySymbol());  //Deprecated
+            documentMembers.Add("title".ToPropertySymbol());  //Sets or returns the title of the document
+            documentMembers.Add("URL".ToReadOnlyPropertySymbol());  //Returns the full URL of the HTML document
+            documentMembers.Add("write".ToFunctionSymbol());  //Writes HTML expressions or JavaScript code to a document
+            documentMembers.Add("writeln".ToFunctionSymbol());  //Same as write(), but adds a newline character after each statement
 
             var docClass = new ClassSymbol("_Document", documentMembers);
 
@@ -385,240 +385,240 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             var tableMembers = new List<Symbol>();
 
-            tableMembers.Add("rows".EmptyProperty(true, true));
-            tableMembers.Add("tBodies".EmptyProperty(true, true));
-            tableMembers.Add("caption".EmptyProperty(true, true));
-            tableMembers.Add("tFoot".EmptyProperty(true, true));
-            tableMembers.Add("tHead".EmptyProperty(true, true));
-            tableMembers.Add("createCaption".EmptyFunction());
-            tableMembers.Add("createTFoot".EmptyFunction());
-            tableMembers.Add("createTHead".EmptyFunction());
-            tableMembers.Add("deleteCaption".EmptyFunction());
-            tableMembers.Add("deleteRow".EmptyFunction());
-            tableMembers.Add("deleteTFoot".EmptyFunction());
-            tableMembers.Add("deleteTHead".EmptyFunction());
-            tableMembers.Add("insertRow".EmptyFunction());
+            tableMembers.Add("rows".ToReadOnlyPropertySymbol());
+            tableMembers.Add("tBodies".ToReadOnlyPropertySymbol());
+            tableMembers.Add("caption".ToReadOnlyPropertySymbol());
+            tableMembers.Add("tFoot".ToReadOnlyPropertySymbol());
+            tableMembers.Add("tHead".ToReadOnlyPropertySymbol());
+            tableMembers.Add("createCaption".ToFunctionSymbol());
+            tableMembers.Add("createTFoot".ToFunctionSymbol());
+            tableMembers.Add("createTHead".ToFunctionSymbol());
+            tableMembers.Add("deleteCaption".ToFunctionSymbol());
+            tableMembers.Add("deleteRow".ToFunctionSymbol());
+            tableMembers.Add("deleteTFoot".ToFunctionSymbol());
+            tableMembers.Add("deleteTHead".ToFunctionSymbol());
+            tableMembers.Add("insertRow".ToFunctionSymbol());
 
             hostMembers.Add(new ClassSymbol("_HTMLTableElement", tableMembers));
 
             var styleMembers = new List<Symbol>();
 
-            styleMembers.Add("alignContent".EmptyProperty(false));
-            styleMembers.Add("alignItems".EmptyProperty(false));
-            styleMembers.Add("alignSelf".EmptyProperty(false));
-            styleMembers.Add("animation".EmptyProperty(false));
-            styleMembers.Add("animationDelay".EmptyProperty(false));
-            styleMembers.Add("animationDirection".EmptyProperty(false));
-            styleMembers.Add("animationDuration".EmptyProperty(false));
-            styleMembers.Add("animationFillMode".EmptyProperty(false));
-            styleMembers.Add("animationIterationCount".EmptyProperty(false));
-            styleMembers.Add("animationName".EmptyProperty(false));
-            styleMembers.Add("animationTimingFunction".EmptyProperty(false));
-            styleMembers.Add("animationPlayState".EmptyProperty(false));
-            styleMembers.Add("background".EmptyProperty(false));
-            styleMembers.Add("backgroundAttachment".EmptyProperty(false));
-            styleMembers.Add("backgroundColor".EmptyProperty(false));
-            styleMembers.Add("backgroundImage".EmptyProperty(false));
-            styleMembers.Add("backgroundPosition".EmptyProperty(false));
-            styleMembers.Add("backgroundRepeat".EmptyProperty(false));
-            styleMembers.Add("backgroundClip".EmptyProperty(false));
-            styleMembers.Add("backgroundOrigin".EmptyProperty(false));
-            styleMembers.Add("backgroundSize".EmptyProperty(false));
-            styleMembers.Add("backfaceVisibility".EmptyProperty(false));
-            styleMembers.Add("border".EmptyProperty(false));
-            styleMembers.Add("borderBottom".EmptyProperty(false));
-            styleMembers.Add("borderBottomColor".EmptyProperty(false));
-            styleMembers.Add("borderBottomLeftRadius".EmptyProperty(false));
-            styleMembers.Add("borderBottomRightRadius".EmptyProperty(false));
-            styleMembers.Add("borderBottomStyle".EmptyProperty(false));
-            styleMembers.Add("borderBottomWidth".EmptyProperty(false));
-            styleMembers.Add("borderCollapse".EmptyProperty(false));
-            styleMembers.Add("borderColor".EmptyProperty(false));
-            styleMembers.Add("borderImage".EmptyProperty(false));
-            styleMembers.Add("borderImageOutset".EmptyProperty(false));
-            styleMembers.Add("borderImageRepeat".EmptyProperty(false));
-            styleMembers.Add("borderImageSlice".EmptyProperty(false));
-            styleMembers.Add("borderImageSource".EmptyProperty(false));
-            styleMembers.Add("borderImageWidth".EmptyProperty(false));
-            styleMembers.Add("borderLeft".EmptyProperty(false));
-            styleMembers.Add("borderLeftColor".EmptyProperty(false));
-            styleMembers.Add("borderLeftStyle".EmptyProperty(false));
-            styleMembers.Add("borderLeftWidth".EmptyProperty(false));
-            styleMembers.Add("borderRadius".EmptyProperty(false));
-            styleMembers.Add("borderRight".EmptyProperty(false));
-            styleMembers.Add("borderRightColor".EmptyProperty(false));
-            styleMembers.Add("borderRightStyle".EmptyProperty(false));
-            styleMembers.Add("borderRightWidth".EmptyProperty(false));
-            styleMembers.Add("borderSpacing".EmptyProperty(false));
-            styleMembers.Add("borderStyle".EmptyProperty(false));
-            styleMembers.Add("borderTop".EmptyProperty(false));
-            styleMembers.Add("borderTopColor".EmptyProperty(false));
-            styleMembers.Add("borderTopLeftRadius".EmptyProperty(false));
-            styleMembers.Add("borderTopRightRadius".EmptyProperty(false));
-            styleMembers.Add("borderTopStyle".EmptyProperty(false));
-            styleMembers.Add("borderTopWidth".EmptyProperty(false));
-            styleMembers.Add("borderWidth".EmptyProperty(false));
-            styleMembers.Add("bottom".EmptyProperty(false));
-            styleMembers.Add("boxDecorationBreak".EmptyProperty(false));
-            styleMembers.Add("boxShadow".EmptyProperty(false));
-            styleMembers.Add("boxSizing".EmptyProperty(false));
-            styleMembers.Add("captionSide".EmptyProperty(false));
-            styleMembers.Add("caretColor".EmptyProperty(false));
-            styleMembers.Add("clear".EmptyProperty(false));
-            styleMembers.Add("clip".EmptyProperty(false));
-            styleMembers.Add("color".EmptyProperty(false));
-            styleMembers.Add("columnCount".EmptyProperty(false));
-            styleMembers.Add("columnFill".EmptyProperty(false));
-            styleMembers.Add("columnGap".EmptyProperty(false));
-            styleMembers.Add("columnRule".EmptyProperty(false));
-            styleMembers.Add("columnRuleColor".EmptyProperty(false));
-            styleMembers.Add("columnRuleStyle".EmptyProperty(false));
-            styleMembers.Add("columnRuleWidth".EmptyProperty(false));
-            styleMembers.Add("columns".EmptyProperty(false));
-            styleMembers.Add("columnSpan".EmptyProperty(false));
-            styleMembers.Add("columnWidth".EmptyProperty(false));
-            styleMembers.Add("content".EmptyProperty(false));
-            styleMembers.Add("counterIncrement".EmptyProperty(false));
-            styleMembers.Add("counterReset".EmptyProperty(false));
-            styleMembers.Add("cursor".EmptyProperty(false));
-            styleMembers.Add("direction".EmptyProperty(false));
-            styleMembers.Add("display".EmptyProperty(false));
-            styleMembers.Add("emptyCells".EmptyProperty(false));
-            styleMembers.Add("filter".EmptyProperty(false));
-            styleMembers.Add("flex".EmptyProperty(false));
-            styleMembers.Add("flexBasis".EmptyProperty(false));
-            styleMembers.Add("flexDirection".EmptyProperty(false));
-            styleMembers.Add("flexFlow".EmptyProperty(false));
-            styleMembers.Add("flexGrow".EmptyProperty(false));
-            styleMembers.Add("flexShrink".EmptyProperty(false));
-            styleMembers.Add("flexWrap".EmptyProperty(false));
-            styleMembers.Add("cssFloat".EmptyProperty(false));
-            styleMembers.Add("font".EmptyProperty(false));
-            styleMembers.Add("fontFamily".EmptyProperty(false));
-            styleMembers.Add("fontSize".EmptyProperty(false));
-            styleMembers.Add("fontStyle".EmptyProperty(false));
-            styleMembers.Add("fontVariant".EmptyProperty(false));
-            styleMembers.Add("fontWeight".EmptyProperty(false));
-            styleMembers.Add("fontSizeAdjust".EmptyProperty(false));
-            styleMembers.Add("fontStretch".EmptyProperty(false));
-            styleMembers.Add("hangingPunctuation".EmptyProperty(false));
-            styleMembers.Add("height".EmptyProperty(false));
-            styleMembers.Add("hyphens".EmptyProperty(false));
-            styleMembers.Add("icon".EmptyProperty(false));
-            styleMembers.Add("imageOrientation".EmptyProperty(false));
-            styleMembers.Add("isolation".EmptyProperty(false));
-            styleMembers.Add("justifyContent".EmptyProperty(false));
-            styleMembers.Add("left".EmptyProperty(false));
-            styleMembers.Add("letterSpacing".EmptyProperty(false));
-            styleMembers.Add("lineHeight".EmptyProperty(false));
-            styleMembers.Add("listStyle".EmptyProperty(false));
-            styleMembers.Add("listStyleImage".EmptyProperty(false));
-            styleMembers.Add("listStylePosition".EmptyProperty(false));
-            styleMembers.Add("listStyleType".EmptyProperty(false));
-            styleMembers.Add("margin".EmptyProperty(false));
-            styleMembers.Add("marginBottom".EmptyProperty(false));
-            styleMembers.Add("marginLeft".EmptyProperty(false));
-            styleMembers.Add("marginRight".EmptyProperty(false));
-            styleMembers.Add("marginTop".EmptyProperty(false));
-            styleMembers.Add("maxHeight".EmptyProperty(false));
-            styleMembers.Add("maxWidth".EmptyProperty(false));
-            styleMembers.Add("minHeight".EmptyProperty(false));
-            styleMembers.Add("minWidth".EmptyProperty(false));
-            styleMembers.Add("navDown".EmptyProperty(false));
-            styleMembers.Add("navIndex".EmptyProperty(false));
-            styleMembers.Add("navLeft".EmptyProperty(false));
-            styleMembers.Add("navRight".EmptyProperty(false));
-            styleMembers.Add("navUp".EmptyProperty(false));
-            styleMembers.Add("objectFit".EmptyProperty(false));
-            styleMembers.Add("objectPosition".EmptyProperty(false));
-            styleMembers.Add("opacity".EmptyProperty(false));
-            styleMembers.Add("order".EmptyProperty(false));
-            styleMembers.Add("orphans".EmptyProperty(false));
-            styleMembers.Add("outline".EmptyProperty(false));
-            styleMembers.Add("outlineColor".EmptyProperty(false));
-            styleMembers.Add("outlineOffset".EmptyProperty(false));
-            styleMembers.Add("outlineStyle".EmptyProperty(false));
-            styleMembers.Add("outlineWidth".EmptyProperty(false));
-            styleMembers.Add("overflow".EmptyProperty(false));
-            styleMembers.Add("overflowX".EmptyProperty(false));
-            styleMembers.Add("overflowY".EmptyProperty(false));
-            styleMembers.Add("padding".EmptyProperty(false));
-            styleMembers.Add("paddingBottom".EmptyProperty(false));
-            styleMembers.Add("paddingLeft".EmptyProperty(false));
-            styleMembers.Add("paddingRight".EmptyProperty(false));
-            styleMembers.Add("paddingTop".EmptyProperty(false));
-            styleMembers.Add("pageBreakAfter".EmptyProperty(false));
-            styleMembers.Add("pageBreakBefore".EmptyProperty(false));
-            styleMembers.Add("pageBreakInside".EmptyProperty(false));
-            styleMembers.Add("perspective".EmptyProperty(false));
-            styleMembers.Add("perspectiveOrigin".EmptyProperty(false));
-            styleMembers.Add("position".EmptyProperty(false));
-            styleMembers.Add("quotes".EmptyProperty(false));
-            styleMembers.Add("resize".EmptyProperty(false));
-            styleMembers.Add("right".EmptyProperty(false));
-            styleMembers.Add("scrollBehavior".EmptyProperty(false));
-            styleMembers.Add("tableLayout".EmptyProperty(false));
-            styleMembers.Add("tabSize".EmptyProperty(false));
-            styleMembers.Add("textAlign".EmptyProperty(false));
-            styleMembers.Add("textAlignLast".EmptyProperty(false));
-            styleMembers.Add("textDecoration".EmptyProperty(false));
-            styleMembers.Add("textDecorationColor".EmptyProperty(false));
-            styleMembers.Add("textDecorationLine".EmptyProperty(false));
-            styleMembers.Add("textDecorationStyle".EmptyProperty(false));
-            styleMembers.Add("textIndent".EmptyProperty(false));
-            styleMembers.Add("textJustify".EmptyProperty(false));
-            styleMembers.Add("textOverflow".EmptyProperty(false));
-            styleMembers.Add("textShadow".EmptyProperty(false));
-            styleMembers.Add("textTransform".EmptyProperty(false));
-            styleMembers.Add("top".EmptyProperty(false));
-            styleMembers.Add("transform".EmptyProperty(false));
-            styleMembers.Add("transformOrigin".EmptyProperty(false));
-            styleMembers.Add("transformStyle".EmptyProperty(false));
-            styleMembers.Add("transition".EmptyProperty(false));
-            styleMembers.Add("transitionProperty".EmptyProperty(false));
-            styleMembers.Add("transitionDuration".EmptyProperty(false));
-            styleMembers.Add("transitionTimingFunction".EmptyProperty(false));
-            styleMembers.Add("transitionDelay".EmptyProperty(false));
-            styleMembers.Add("unicodeBidi".EmptyProperty(false));
-            styleMembers.Add("userSelect".EmptyProperty(false));
-            styleMembers.Add("verticalAlign".EmptyProperty(false));
-            styleMembers.Add("visibility".EmptyProperty(false));
-            styleMembers.Add("whiteSpace".EmptyProperty(false));
-            styleMembers.Add("width".EmptyProperty(false));
-            styleMembers.Add("wordBreak".EmptyProperty(false));
-            styleMembers.Add("wordSpacing".EmptyProperty(false));
-            styleMembers.Add("wordWrap".EmptyProperty(false));
-            styleMembers.Add("widows".EmptyProperty(false));
-            styleMembers.Add("zIndex".EmptyProperty(false));
+            styleMembers.Add("alignContent".ToPropertySymbol());
+            styleMembers.Add("alignItems".ToPropertySymbol());
+            styleMembers.Add("alignSelf".ToPropertySymbol());
+            styleMembers.Add("animation".ToPropertySymbol());
+            styleMembers.Add("animationDelay".ToPropertySymbol());
+            styleMembers.Add("animationDirection".ToPropertySymbol());
+            styleMembers.Add("animationDuration".ToPropertySymbol());
+            styleMembers.Add("animationFillMode".ToPropertySymbol());
+            styleMembers.Add("animationIterationCount".ToPropertySymbol());
+            styleMembers.Add("animationName".ToPropertySymbol());
+            styleMembers.Add("animationTimingFunction".ToPropertySymbol());
+            styleMembers.Add("animationPlayState".ToPropertySymbol());
+            styleMembers.Add("background".ToPropertySymbol());
+            styleMembers.Add("backgroundAttachment".ToPropertySymbol());
+            styleMembers.Add("backgroundColor".ToPropertySymbol());
+            styleMembers.Add("backgroundImage".ToPropertySymbol());
+            styleMembers.Add("backgroundPosition".ToPropertySymbol());
+            styleMembers.Add("backgroundRepeat".ToPropertySymbol());
+            styleMembers.Add("backgroundClip".ToPropertySymbol());
+            styleMembers.Add("backgroundOrigin".ToPropertySymbol());
+            styleMembers.Add("backgroundSize".ToPropertySymbol());
+            styleMembers.Add("backfaceVisibility".ToPropertySymbol());
+            styleMembers.Add("border".ToPropertySymbol());
+            styleMembers.Add("borderBottom".ToPropertySymbol());
+            styleMembers.Add("borderBottomColor".ToPropertySymbol());
+            styleMembers.Add("borderBottomLeftRadius".ToPropertySymbol());
+            styleMembers.Add("borderBottomRightRadius".ToPropertySymbol());
+            styleMembers.Add("borderBottomStyle".ToPropertySymbol());
+            styleMembers.Add("borderBottomWidth".ToPropertySymbol());
+            styleMembers.Add("borderCollapse".ToPropertySymbol());
+            styleMembers.Add("borderColor".ToPropertySymbol());
+            styleMembers.Add("borderImage".ToPropertySymbol());
+            styleMembers.Add("borderImageOutset".ToPropertySymbol());
+            styleMembers.Add("borderImageRepeat".ToPropertySymbol());
+            styleMembers.Add("borderImageSlice".ToPropertySymbol());
+            styleMembers.Add("borderImageSource".ToPropertySymbol());
+            styleMembers.Add("borderImageWidth".ToPropertySymbol());
+            styleMembers.Add("borderLeft".ToPropertySymbol());
+            styleMembers.Add("borderLeftColor".ToPropertySymbol());
+            styleMembers.Add("borderLeftStyle".ToPropertySymbol());
+            styleMembers.Add("borderLeftWidth".ToPropertySymbol());
+            styleMembers.Add("borderRadius".ToPropertySymbol());
+            styleMembers.Add("borderRight".ToPropertySymbol());
+            styleMembers.Add("borderRightColor".ToPropertySymbol());
+            styleMembers.Add("borderRightStyle".ToPropertySymbol());
+            styleMembers.Add("borderRightWidth".ToPropertySymbol());
+            styleMembers.Add("borderSpacing".ToPropertySymbol());
+            styleMembers.Add("borderStyle".ToPropertySymbol());
+            styleMembers.Add("borderTop".ToPropertySymbol());
+            styleMembers.Add("borderTopColor".ToPropertySymbol());
+            styleMembers.Add("borderTopLeftRadius".ToPropertySymbol());
+            styleMembers.Add("borderTopRightRadius".ToPropertySymbol());
+            styleMembers.Add("borderTopStyle".ToPropertySymbol());
+            styleMembers.Add("borderTopWidth".ToPropertySymbol());
+            styleMembers.Add("borderWidth".ToPropertySymbol());
+            styleMembers.Add("bottom".ToPropertySymbol());
+            styleMembers.Add("boxDecorationBreak".ToPropertySymbol());
+            styleMembers.Add("boxShadow".ToPropertySymbol());
+            styleMembers.Add("boxSizing".ToPropertySymbol());
+            styleMembers.Add("captionSide".ToPropertySymbol());
+            styleMembers.Add("caretColor".ToPropertySymbol());
+            styleMembers.Add("clear".ToPropertySymbol());
+            styleMembers.Add("clip".ToPropertySymbol());
+            styleMembers.Add("color".ToPropertySymbol());
+            styleMembers.Add("columnCount".ToPropertySymbol());
+            styleMembers.Add("columnFill".ToPropertySymbol());
+            styleMembers.Add("columnGap".ToPropertySymbol());
+            styleMembers.Add("columnRule".ToPropertySymbol());
+            styleMembers.Add("columnRuleColor".ToPropertySymbol());
+            styleMembers.Add("columnRuleStyle".ToPropertySymbol());
+            styleMembers.Add("columnRuleWidth".ToPropertySymbol());
+            styleMembers.Add("columns".ToPropertySymbol());
+            styleMembers.Add("columnSpan".ToPropertySymbol());
+            styleMembers.Add("columnWidth".ToPropertySymbol());
+            styleMembers.Add("content".ToPropertySymbol());
+            styleMembers.Add("counterIncrement".ToPropertySymbol());
+            styleMembers.Add("counterReset".ToPropertySymbol());
+            styleMembers.Add("cursor".ToPropertySymbol("pointer".Some()));
+            styleMembers.Add("direction".ToPropertySymbol());
+            styleMembers.Add("display".ToPropertySymbol());
+            styleMembers.Add("emptyCells".ToPropertySymbol());
+            styleMembers.Add("filter".ToPropertySymbol());
+            styleMembers.Add("flex".ToPropertySymbol());
+            styleMembers.Add("flexBasis".ToPropertySymbol());
+            styleMembers.Add("flexDirection".ToPropertySymbol());
+            styleMembers.Add("flexFlow".ToPropertySymbol());
+            styleMembers.Add("flexGrow".ToPropertySymbol());
+            styleMembers.Add("flexShrink".ToPropertySymbol());
+            styleMembers.Add("flexWrap".ToPropertySymbol());
+            styleMembers.Add("cssFloat".ToPropertySymbol());
+            styleMembers.Add("font".ToPropertySymbol());
+            styleMembers.Add("fontFamily".ToPropertySymbol());
+            styleMembers.Add("fontSize".ToPropertySymbol());
+            styleMembers.Add("fontStyle".ToPropertySymbol());
+            styleMembers.Add("fontVariant".ToPropertySymbol());
+            styleMembers.Add("fontWeight".ToPropertySymbol());
+            styleMembers.Add("fontSizeAdjust".ToPropertySymbol());
+            styleMembers.Add("fontStretch".ToPropertySymbol());
+            styleMembers.Add("hangingPunctuation".ToPropertySymbol());
+            styleMembers.Add("height".ToPropertySymbol());
+            styleMembers.Add("hyphens".ToPropertySymbol());
+            styleMembers.Add("icon".ToPropertySymbol());
+            styleMembers.Add("imageOrientation".ToPropertySymbol());
+            styleMembers.Add("isolation".ToPropertySymbol());
+            styleMembers.Add("justifyContent".ToPropertySymbol());
+            styleMembers.Add("left".ToPropertySymbol());
+            styleMembers.Add("letterSpacing".ToPropertySymbol());
+            styleMembers.Add("lineHeight".ToPropertySymbol());
+            styleMembers.Add("listStyle".ToPropertySymbol());
+            styleMembers.Add("listStyleImage".ToPropertySymbol());
+            styleMembers.Add("listStylePosition".ToPropertySymbol());
+            styleMembers.Add("listStyleType".ToPropertySymbol());
+            styleMembers.Add("margin".ToPropertySymbol());
+            styleMembers.Add("marginBottom".ToPropertySymbol());
+            styleMembers.Add("marginLeft".ToPropertySymbol());
+            styleMembers.Add("marginRight".ToPropertySymbol());
+            styleMembers.Add("marginTop".ToPropertySymbol());
+            styleMembers.Add("maxHeight".ToPropertySymbol());
+            styleMembers.Add("maxWidth".ToPropertySymbol());
+            styleMembers.Add("minHeight".ToPropertySymbol());
+            styleMembers.Add("minWidth".ToPropertySymbol());
+            styleMembers.Add("navDown".ToPropertySymbol());
+            styleMembers.Add("navIndex".ToPropertySymbol());
+            styleMembers.Add("navLeft".ToPropertySymbol());
+            styleMembers.Add("navRight".ToPropertySymbol());
+            styleMembers.Add("navUp".ToPropertySymbol());
+            styleMembers.Add("objectFit".ToPropertySymbol());
+            styleMembers.Add("objectPosition".ToPropertySymbol());
+            styleMembers.Add("opacity".ToPropertySymbol());
+            styleMembers.Add("order".ToPropertySymbol());
+            styleMembers.Add("orphans".ToPropertySymbol());
+            styleMembers.Add("outline".ToPropertySymbol());
+            styleMembers.Add("outlineColor".ToPropertySymbol());
+            styleMembers.Add("outlineOffset".ToPropertySymbol());
+            styleMembers.Add("outlineStyle".ToPropertySymbol());
+            styleMembers.Add("outlineWidth".ToPropertySymbol());
+            styleMembers.Add("overflow".ToPropertySymbol());
+            styleMembers.Add("overflowX".ToPropertySymbol());
+            styleMembers.Add("overflowY".ToPropertySymbol());
+            styleMembers.Add("padding".ToPropertySymbol());
+            styleMembers.Add("paddingBottom".ToPropertySymbol());
+            styleMembers.Add("paddingLeft".ToPropertySymbol());
+            styleMembers.Add("paddingRight".ToPropertySymbol());
+            styleMembers.Add("paddingTop".ToPropertySymbol());
+            styleMembers.Add("pageBreakAfter".ToPropertySymbol());
+            styleMembers.Add("pageBreakBefore".ToPropertySymbol());
+            styleMembers.Add("pageBreakInside".ToPropertySymbol());
+            styleMembers.Add("perspective".ToPropertySymbol());
+            styleMembers.Add("perspectiveOrigin".ToPropertySymbol());
+            styleMembers.Add("position".ToPropertySymbol());
+            styleMembers.Add("quotes".ToPropertySymbol());
+            styleMembers.Add("resize".ToPropertySymbol());
+            styleMembers.Add("right".ToPropertySymbol());
+            styleMembers.Add("scrollBehavior".ToPropertySymbol());
+            styleMembers.Add("tableLayout".ToPropertySymbol());
+            styleMembers.Add("tabSize".ToPropertySymbol());
+            styleMembers.Add("textAlign".ToPropertySymbol());
+            styleMembers.Add("textAlignLast".ToPropertySymbol());
+            styleMembers.Add("textDecoration".ToPropertySymbol());
+            styleMembers.Add("textDecorationColor".ToPropertySymbol());
+            styleMembers.Add("textDecorationLine".ToPropertySymbol());
+            styleMembers.Add("textDecorationStyle".ToPropertySymbol());
+            styleMembers.Add("textIndent".ToPropertySymbol());
+            styleMembers.Add("textJustify".ToPropertySymbol());
+            styleMembers.Add("textOverflow".ToPropertySymbol());
+            styleMembers.Add("textShadow".ToPropertySymbol());
+            styleMembers.Add("textTransform".ToPropertySymbol());
+            styleMembers.Add("top".ToPropertySymbol());
+            styleMembers.Add("transform".ToPropertySymbol());
+            styleMembers.Add("transformOrigin".ToPropertySymbol());
+            styleMembers.Add("transformStyle".ToPropertySymbol());
+            styleMembers.Add("transition".ToPropertySymbol());
+            styleMembers.Add("transitionProperty".ToPropertySymbol());
+            styleMembers.Add("transitionDuration".ToPropertySymbol());
+            styleMembers.Add("transitionTimingFunction".ToPropertySymbol());
+            styleMembers.Add("transitionDelay".ToPropertySymbol());
+            styleMembers.Add("unicodeBidi".ToPropertySymbol());
+            styleMembers.Add("userSelect".ToPropertySymbol());
+            styleMembers.Add("verticalAlign".ToPropertySymbol());
+            styleMembers.Add("visibility".ToPropertySymbol());
+            styleMembers.Add("whiteSpace".ToPropertySymbol());
+            styleMembers.Add("width".ToPropertySymbol());
+            styleMembers.Add("wordBreak".ToPropertySymbol());
+            styleMembers.Add("wordSpacing".ToPropertySymbol());
+            styleMembers.Add("wordWrap".ToPropertySymbol());
+            styleMembers.Add("widows".ToPropertySymbol());
+            styleMembers.Add("zIndex".ToPropertySymbol());
 
             // obsolete members
-            styleMembers.Add("pixelheight".EmptyProperty(false, true, "height"));
-            styleMembers.Add("pixelwidth".EmptyProperty(false, true, "width"));
+            styleMembers.Add("pixelheight".ToPropertySymbol("height".Some()));
+            styleMembers.Add("pixelwidth".ToPropertySymbol("width".Some()));
 
             hostMembers.Add(new ClassSymbol("_HTMLStyleElement", Option.None, Option.None, styleMembers, Option.None));
 
 
             var imageMembers = new List<Symbol>();
 
-            imageMembers.Add("align".EmptyProperty(false));
-            imageMembers.Add("alt".EmptyProperty(false));
-            imageMembers.Add("border".EmptyProperty(false));
+            imageMembers.Add("align".ToPropertySymbol());
+            imageMembers.Add("alt".ToPropertySymbol());
+            imageMembers.Add("border".ToPropertySymbol());
 
-            imageMembers.Add("complete".EmptyFunction());
+            imageMembers.Add("complete".ToFunctionSymbol());
 
-            imageMembers.Add("crossOrigin".EmptyProperty(false));
-            imageMembers.Add("height".EmptyProperty(false));
-            imageMembers.Add("hspace".EmptyProperty(false));
-            imageMembers.Add("isMap".EmptyProperty(false));
-            imageMembers.Add("longDesc".EmptyProperty(false));
-            imageMembers.Add("lowsrc".EmptyProperty(false));
-            imageMembers.Add("name".EmptyProperty(false));
-            imageMembers.Add("naturalHeight".EmptyProperty(true));
-            imageMembers.Add("naturalWidth".EmptyProperty(true));
-            imageMembers.Add("src".EmptyProperty(false));
-            imageMembers.Add("useMap".EmptyProperty(false));
-            imageMembers.Add("vspace".EmptyProperty(false));
-            imageMembers.Add("width".EmptyProperty(false));
+            imageMembers.Add("crossOrigin".ToPropertySymbol());
+            imageMembers.Add("height".ToPropertySymbol());
+            imageMembers.Add("hspace".ToPropertySymbol());
+            imageMembers.Add("isMap".ToPropertySymbol());
+            imageMembers.Add("longDesc".ToPropertySymbol());
+            imageMembers.Add("lowsrc".ToPropertySymbol());
+            imageMembers.Add("name".ToPropertySymbol());
+            imageMembers.Add("naturalHeight".ToReadOnlyPropertySymbol());
+            imageMembers.Add("naturalWidth".ToReadOnlyPropertySymbol());
+            imageMembers.Add("src".ToPropertySymbol());
+            imageMembers.Add("useMap".ToPropertySymbol());
+            imageMembers.Add("vspace".ToPropertySymbol());
+            imageMembers.Add("width".ToPropertySymbol());
 
             hostMembers.Add(new ClassSymbol("_HTMLImageElement", Option.None, Option.None, imageMembers, Option.None));
 
@@ -627,24 +627,35 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         private static Symbol[] _NoMembers = new Symbol[] { };
 
-        public static ConstantSymbol ToConstant(this String @this, Boolean isPublic = true)
-            => new ConstantSymbol(@this, Option.None, Option.None, isPublic, Option.None);
-        public static PropertyGetSymbol EmptyPropertyGet(this String @this, Boolean isPublic = true)
-            => new PropertyGetSymbol(@this, isPublic, Option.None, _NoMembers);
-        public static PropertySetSymbol EmptyPropertySet(this String @this, Boolean isPublic = true)
-            => new PropertySetSymbol(@this, isPublic, Option.None, false, _NoMembers);
-        public static FunctionSymbol EmptyFunction(this String @this, String? errMessage = null, Boolean isPublic = true)
-            => new FunctionSymbol(@this, Option.None, errMessage.AsOption(), isPublic, Option.None, _NoMembers);
-        public static PropertySymbol EmptyProperty(this String @this, Boolean readOnly, Boolean isPublic = true, String? newName = null)
+        public static ConstantSymbol ToConstantSymbol(this String @this, LiteralValueTypes type, String? newName = null)
+            => new ConstantSymbol(@this, newName.AsOption(), Option.None, true, type);
+
+        public static FunctionSymbol ToFunctionSymbol(this String @this, params String[] tags)
+            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, _NoMembers, tags);
+
+        public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, params String[] tags)
+            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, _NoMembers, tags);
+
+        public static FunctionSymbol ToErrFunctionSymbol(this String @this, String errorMessage)
+            => new FunctionSymbol(@this, Option.None, errorMessage.Some(), true, Option.None, _NoMembers);
+
+        public static PropertySymbol ToPropertySymbol(this String @this, params String[] tags)
             => new PropertySymbol(@this,
-                                  newName == null ? @this.EmptyPropertyGet(isPublic).Some<FunctionSymbol>()
-                                                  : newName.EmptyPropertyGet(isPublic).Some<FunctionSymbol>(),
-                                  readOnly
-                                  ? Option.None
-                                  : newName == null ? @this.EmptyPropertySet(isPublic).Some<FunctionSymbol>()
-                                                    : newName.EmptyPropertySet(isPublic).Some<FunctionSymbol>());
-        public static VariableSymbol ToVariable(this String @this, Boolean isPublic = true, ClassSymbol? @class = null, String? errMessage = null)
-            => new VariableSymbol(@this, Option.None, errMessage.AsOption(), isPublic, @class == null ? Option.None : @class.Name.Some());
+                                  (new PropertyGetSymbol(@this, true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(),
+                                  (new PropertySetSymbol(@this, true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
+
+        public static PropertySymbol ToPropertySymbol(this String @this, Option<String> newName, params String[] tags)
+            => new PropertySymbol(@this,
+                                  (new PropertyGetSymbol(newName.Or(@this), true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(),
+                                  (new PropertySetSymbol(newName.Or(@this), true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
+
+        public static PropertySymbol ToReadOnlyPropertySymbol(this String @this, params String[] tags)
+            => new PropertySymbol(@this, (new PropertyGetSymbol(@this, true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(), Option.None);
+        public static PropertySymbol ToWriteOnlyPropertySymbol(this String @this, params String[] tags)
+            => new PropertySymbol(@this, Option.None, (new PropertySetSymbol(@this, true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
+
+        public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, ClassSymbol? @class = null, String? errMessage = null)
+            => new VariableSymbol(@this, newName, errMessage.AsOption(), true, @class == null ? Option.None : @class.Name.Some());
 
         public static IEnumerable<Symbol> Members(params Symbol[] members)
             => members;
