@@ -12,10 +12,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Boolean IsPublic { get; private set; }
 
-        protected MemberSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName)
-            : base(name, newName, errMessage, typeName)
+        private protected MemberSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IReadOnlySet<String> tags)
+            : base(name, newName, errMessage, typeName, tags)
         {
-            this.IsPublic  = isPublic;
+            this.IsPublic = isPublic;
+        }
+
+        protected MemberSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, params String[] tags)
+            : this(name, newName, errMessage, isPublic, typeName, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
+        {
         }
     }
 

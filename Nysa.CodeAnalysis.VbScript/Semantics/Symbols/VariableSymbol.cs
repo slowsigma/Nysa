@@ -8,18 +8,23 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record VariableSymbol : MemberSymbol
+    public sealed record VariableSymbol : MemberSymbol
     {
-        public VariableSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName)
-            : base(name, newName, errMessage, isPublic, typeName)
+        private VariableSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IReadOnlySet<String> tags)
+            : base(name, newName, errMessage, isPublic, typeName, tags)
+        {
+        }
+
+        public VariableSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, params String[] tags)
+            : this(name, newName, errMessage, isPublic, typeName, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
         {
         }
 
         public VariableSymbol Renamed(String newName)
-            => new VariableSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.TypeName);
+            => new VariableSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.TypeName, this.Tags);
 
         public override VariableSymbol WithType(String typeName)
-            => new VariableSymbol(this.Name, this.NewName, this.ErrMessage, this.IsPublic, typeName.Some());
+            => new VariableSymbol(this.Name, this.NewName, this.ErrMessage, this.IsPublic, typeName.Some(), this.Tags);
     }
 
 }

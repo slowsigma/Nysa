@@ -44,7 +44,6 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("CInt".ToFunctionSymbol("Global.CInt".Some()));
             hostMembers.Add("CLng".ToFunctionSymbol("Global.CLng".Some()));
             hostMembers.Add("Cos".ToFunctionSymbol());
-            hostMembers.Add("CreateObject".ToFunctionSymbol("Global.external.CreateObject".Some()));
             hostMembers.Add("CSng".ToFunctionSymbol("Global.CSng".Some()));
             hostMembers.Add("CStr".ToFunctionSymbol("Global.CStr".Some()));
             hostMembers.Add("Date".ToFunctionSymbol("Global.Date".Some()));
@@ -91,7 +90,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("Minute".ToFunctionSymbol("Global.Minute".Some()));
             hostMembers.Add("Month".ToFunctionSymbol("Global.Month".Some()));
             hostMembers.Add("MonthName".ToFunctionSymbol());
-            hostMembers.Add("MsgBox".ToFunctionSymbol("Global.external.MsgBox".Some()));
+            //hostMembers.Add("MsgBox".ToFunctionSymbol("Global.MsgBox".Some()));   // going to map this to an IUnityDocument
             hostMembers.Add("Now".ToFunctionSymbol("Global.Now".Some()));
             hostMembers.Add("Oct".ToFunctionSymbol());
             hostMembers.Add("Replace".ToFunctionSymbol("Global.Replace".Some()));
@@ -128,7 +127,6 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             hostMembers.Add("WeekdayName".ToFunctionSymbol());
             hostMembers.Add("Year".ToFunctionSymbol("Global.Year".Some()));
             hostMembers.Add("Randomize".ToFunctionSymbol());
-            hostMembers.Add("external".ToVariableSymbol("Global.external".Some()));
             hostMembers.Add("vbObjectError".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbObjectError"));
             hostMembers.Add("vbTrue".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbTrue"));
             hostMembers.Add("vbFalse".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbFalse"));
@@ -206,12 +204,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             domElemMembers.Add("accessKey".ToPropertySymbol());
             domElemMembers.Add("addEventListener".ToFunctionSymbol());
-            domElemMembers.Add("appendChild".ToFunctionSymbol());
-            domElemMembers.Add("attributes".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("appendChild".ToFunctionSymbol("page"));
+            domElemMembers.Add("attributes".ToReadOnlyPropertySymbol("page"));
             domElemMembers.Add("blur".ToFunctionSymbol());
             domElemMembers.Add("childElementCount".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("childNodes".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("children".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("childNodes".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("children".ToReadOnlyPropertySymbol("page"));
             domElemMembers.Add("classList".ToReadOnlyPropertySymbol());
             domElemMembers.Add("className".ToPropertySymbol());
             domElemMembers.Add("click".ToFunctionSymbol());
@@ -219,21 +217,21 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("clientLeft".ToReadOnlyPropertySymbol());
             domElemMembers.Add("clientTop".ToReadOnlyPropertySymbol());
             domElemMembers.Add("clientWidth".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("cloneNode".ToFunctionSymbol());
-            domElemMembers.Add("closest".ToFunctionSymbol());
+            domElemMembers.Add("cloneNode".ToFunctionSymbol("page"));
+            domElemMembers.Add("closest".ToFunctionSymbol("page"));
             domElemMembers.Add("compareDocumentPosition".ToFunctionSymbol());
             domElemMembers.Add("contains".ToFunctionSymbol());
             domElemMembers.Add("contentEditable".ToPropertySymbol());
             domElemMembers.Add("dir".ToPropertySymbol());
             domElemMembers.Add("exitFullscreen".ToFunctionSymbol());
-            domElemMembers.Add("firstChild".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("firstElementChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("firstChild".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("firstElementChild".ToReadOnlyPropertySymbol("page"));
             domElemMembers.Add("focus".ToFunctionSymbol());
             domElemMembers.Add("getAttribute".ToFunctionSymbol());
-            domElemMembers.Add("getAttributeNode".ToFunctionSymbol());
-            domElemMembers.Add("getBoundingClientRect".ToFunctionSymbol());
-            domElemMembers.Add("getElementsByClassName".ToFunctionSymbol());
-            domElemMembers.Add("getElementsByTagName".ToFunctionSymbol());
+            domElemMembers.Add("getAttributeNode".ToFunctionSymbol("page"));
+            domElemMembers.Add("getBoundingClientRect".ToFunctionSymbol("page"));
+            domElemMembers.Add("getElementsByClassName".ToFunctionSymbol("page"));
+            domElemMembers.Add("getElementsByTagName".ToFunctionSymbol("page"));
             domElemMembers.Add("hasAttribute".ToFunctionSymbol());
             domElemMembers.Add("hasAttributes".ToFunctionSymbol());
             domElemMembers.Add("hasChildNodes".ToFunctionSymbol());
@@ -243,19 +241,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("insertAdjacentElement".ToFunctionSymbol());
             domElemMembers.Add("insertAdjacentHTML".ToFunctionSymbol());
             domElemMembers.Add("insertAdjacentText".ToFunctionSymbol());
-            domElemMembers.Add("insertBefore".ToFunctionSymbol());
+            domElemMembers.Add("insertBefore".ToFunctionSymbol("page"));
             domElemMembers.Add("isContentEditable".ToReadOnlyPropertySymbol());
             domElemMembers.Add("isDefaultNamespace".ToFunctionSymbol());
             domElemMembers.Add("isEqualNode".ToFunctionSymbol());
             domElemMembers.Add("isSameNode".ToFunctionSymbol());
             domElemMembers.Add("isSupported".ToFunctionSymbol());
             domElemMembers.Add("lang".ToPropertySymbol());
-            domElemMembers.Add("lastChild".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("lastElementChild".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("lastChild".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("lastElementChild".ToReadOnlyPropertySymbol("page"));
             domElemMembers.Add("matches".ToFunctionSymbol());
             domElemMembers.Add("namespaceURI".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("nextSibling".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("nextElementSibling".ToReadOnlyPropertySymbol());
+            domElemMembers.Add("nextSibling".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("nextElementSibling".ToReadOnlyPropertySymbol("page"));
             domElemMembers.Add("nodeName".ToReadOnlyPropertySymbol());
             domElemMembers.Add("nodeType".ToReadOnlyPropertySymbol());
             domElemMembers.Add("nodeValue".ToPropertySymbol());
@@ -267,19 +265,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("offsetTop".ToReadOnlyPropertySymbol());
             domElemMembers.Add("outerHTML".ToPropertySymbol());
             domElemMembers.Add("outerText".ToPropertySymbol());
-            domElemMembers.Add("ownerDocument".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("parentNode".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("parentElement".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("previousSibling".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("previousElementSibling".ToReadOnlyPropertySymbol());
-            domElemMembers.Add("querySelector".ToFunctionSymbol());
-            domElemMembers.Add("querySelectorAll".ToFunctionSymbol());
+            domElemMembers.Add("ownerDocument".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("parentNode".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("parentElement".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("previousSibling".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("previousElementSibling".ToReadOnlyPropertySymbol("page"));
+            domElemMembers.Add("querySelector".ToFunctionSymbol("page"));
+            domElemMembers.Add("querySelectorAll".ToFunctionSymbol("page"));
             domElemMembers.Add("remove".ToFunctionSymbol());
             domElemMembers.Add("removeAttribute".ToFunctionSymbol());
-            domElemMembers.Add("removeAttributeNode".ToFunctionSymbol());
-            domElemMembers.Add("removeChild".ToFunctionSymbol());
+            domElemMembers.Add("removeAttributeNode".ToFunctionSymbol("page"));
+            domElemMembers.Add("removeChild".ToFunctionSymbol("page"));
             domElemMembers.Add("removeEventListener".ToFunctionSymbol());
-            domElemMembers.Add("replaceChild".ToFunctionSymbol());
+            domElemMembers.Add("replaceChild".ToFunctionSymbol("page"));
             domElemMembers.Add("requestFullscreen".ToFunctionSymbol());
             domElemMembers.Add("scrollHeight".ToReadOnlyPropertySymbol());
             domElemMembers.Add("scrollIntoView".ToFunctionSymbol());
@@ -288,8 +286,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("scrollWidth".ToReadOnlyPropertySymbol());
             domElemMembers.Add("setAttribute".ToFunctionSymbol());
             domElemMembers.Add("setAttributeNode".ToFunctionSymbol());
-            domElemMembers.Add("style".ToPropertySymbol());
-            domElemMembers.Add("runtimestyle".ToPropertySymbol("style".Some()));
+            domElemMembers.Add("style".ToPropertySymbol("page"));
+            domElemMembers.Add("runtimestyle".ToPropertySymbol("style".Some(), "page"));
             domElemMembers.Add("tabIndex".ToPropertySymbol());
             domElemMembers.Add("tagName".ToReadOnlyPropertySymbol());
             domElemMembers.Add("textContent".ToPropertySymbol());
@@ -301,15 +299,23 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             var namedNodeMapMembers = new List<Symbol>();
 
             namedNodeMapMembers.Add("length".ToReadOnlyPropertySymbol());
-            namedNodeMapMembers.Add("getNamedItem".ToFunctionSymbol());
+            namedNodeMapMembers.Add("getNamedItem".ToFunctionSymbol("page"));
             namedNodeMapMembers.Add("getNamedItemNS".ToFunctionSymbol());
-            namedNodeMapMembers.Add("item".ToFunctionSymbol());
-            namedNodeMapMembers.Add("removeNamedItem".ToFunctionSymbol());
+            namedNodeMapMembers.Add("item".ToFunctionSymbol("page"));
+            namedNodeMapMembers.Add("removeNamedItem".ToFunctionSymbol("page"));
             namedNodeMapMembers.Add("removeNamedItemNS".ToFunctionSymbol());
             namedNodeMapMembers.Add("setNamedItem".ToFunctionSymbol());
             namedNodeMapMembers.Add("setNamedItemNS".ToFunctionSymbol());
 
             hostMembers.Add(new ClassSymbol("_NamedNodeMap", namedNodeMapMembers));
+
+            var collectionMembers = new List<Symbol>();
+
+            collectionMembers.Add("length".ToReadOnlyPropertySymbol());
+            collectionMembers.Add("item".ToFunctionSymbol("page"));
+            collectionMembers.Add("namedItem".ToFunctionSymbol("page"));
+
+            hostMembers.Add(new ClassSymbol("_Collection", collectionMembers));
 
             var attributeMembers = new List<Symbol>();
 
@@ -321,56 +327,56 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             var documentMembers = new List<Symbol>();
 
-            documentMembers.Add("activeElement".ToReadOnlyPropertySymbol());  //Returns the currently focused element in the document
+            documentMembers.Add("activeElement".ToReadOnlyPropertySymbol("page"));  //Returns the currently focused element in the document
             documentMembers.Add("addEventListener".ToFunctionSymbol());  //Attaches an event handler to the document
             documentMembers.Add("adoptNode".ToFunctionSymbol());  //Adopts a node from another document
             documentMembers.Add("anchors".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("applets".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("baseURI".ToReadOnlyPropertySymbol());  //Returns the absolute base URI of a document
-            documentMembers.Add("body".ToPropertySymbol());  //Sets or returns the document's body (the <body> element)
+            documentMembers.Add("body".ToPropertySymbol("page"));  //Sets or returns the document's body (the <body> element)
             documentMembers.Add("charset".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("characterSet".ToReadOnlyPropertySymbol());  //Returns the character encoding for the document
             documentMembers.Add("close".ToFunctionSymbol());  //Closes the output stream previously opened with document.open()
             documentMembers.Add("cookie".ToReadOnlyPropertySymbol());  //Returns all name/value pairs of cookies in the document
-            documentMembers.Add("createAttribute".ToFunctionSymbol());  //Creates an attribute node
-            documentMembers.Add("createComment".ToFunctionSymbol());  //Creates a Comment node with the specified text
-            documentMembers.Add("createDocumentFragment".ToFunctionSymbol());  //Creates an empty DocumentFragment node
-            documentMembers.Add("createElement".ToFunctionSymbol());  //Creates an Element node
-            documentMembers.Add("createEvent".ToFunctionSymbol());  //Creates a new event
-            documentMembers.Add("createTextNode".ToFunctionSymbol());  //Creates a Text node
-            documentMembers.Add("defaultView".ToReadOnlyPropertySymbol());  //Returns the window object associated with a document, or null if none is available.
+            documentMembers.Add("createAttribute".ToFunctionSymbol("page"));  //Creates an attribute node
+            documentMembers.Add("createComment".ToFunctionSymbol("page"));  //Creates a Comment node with the specified text
+            documentMembers.Add("createDocumentFragment".ToFunctionSymbol("page"));  //Creates an empty DocumentFragment node
+            documentMembers.Add("createElement".ToFunctionSymbol("page"));  //Creates an Element node
+            documentMembers.Add("createEvent".ToFunctionSymbol("page"));  //Creates a new event
+            documentMembers.Add("createTextNode".ToFunctionSymbol("page"));  //Creates a Text node
+            documentMembers.Add("defaultView".ToReadOnlyPropertySymbol("page"));  //Returns the window object associated with a document, or null if none is available.
             documentMembers.Add("designMode".ToPropertySymbol());  //Controls whether the entire document should be editable or not.
             documentMembers.Add("doctype".ToReadOnlyPropertySymbol());  //Returns the Document Type Declaration associated with the document
-            documentMembers.Add("documentElement".ToReadOnlyPropertySymbol());  //Returns the Document Element of the document (the <html> element)
+            documentMembers.Add("documentElement".ToReadOnlyPropertySymbol("page"));  //Returns the Document Element of the document (the <html> element)
             documentMembers.Add("documentMode".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("documentURI".ToPropertySymbol());  //Sets or returns the location of the document
             documentMembers.Add("domain".ToReadOnlyPropertySymbol());  //Returns the domain name of the server that loaded the document
             documentMembers.Add("domConfig".ToReadOnlyPropertySymbol());  //Deprecated
-            documentMembers.Add("embeds".ToReadOnlyPropertySymbol());  //Returns a collection of all <embed> elements the document
+            documentMembers.Add("embeds".ToReadOnlyPropertySymbol("page"));  //Returns a collection of all <embed> elements the document
             documentMembers.Add("execCommand".ToFunctionSymbol());  //Deprecated
-            documentMembers.Add("forms".ToReadOnlyPropertySymbol());  //Returns a collection of all <form> elements in the document
-            documentMembers.Add("getElementById".ToFunctionSymbol());  //Returns the element that has the ID attribute with the specified value
-            documentMembers.Add("getElementsByClassName".ToFunctionSymbol());  //Returns a HTMLCollection containing all elements with the specified class name
-            documentMembers.Add("getElementsByName".ToFunctionSymbol());  //Deprecated
-            documentMembers.Add("getElementsByTagName".ToFunctionSymbol());  //Returns a HTMLCollection containing all elements with the specified tag name
+            documentMembers.Add("forms".ToReadOnlyPropertySymbol("page"));  //Returns a collection of all <form> elements in the document
+            documentMembers.Add("getElementById".ToFunctionSymbol("page"));  //Returns the element that has the ID attribute with the specified value
+            documentMembers.Add("getElementsByClassName".ToFunctionSymbol("page"));  //Returns a HTMLCollection containing all elements with the specified class name
+            documentMembers.Add("getElementsByName".ToFunctionSymbol("page"));  //Deprecated
+            documentMembers.Add("getElementsByTagName".ToFunctionSymbol("page"));  //Returns a HTMLCollection containing all elements with the specified tag name
             documentMembers.Add("hasFocus".ToFunctionSymbol());  //Returns a Boolean value indicating whether the document has focus
-            documentMembers.Add("head".ToReadOnlyPropertySymbol());  //Returns the <head> element of the document
-            documentMembers.Add("images".ToReadOnlyPropertySymbol());  //Returns a collection of all <img> elements in the document
-            documentMembers.Add("implementation".ToReadOnlyPropertySymbol());  //Returns the DOMImplementation object that handles this document
+            documentMembers.Add("head".ToReadOnlyPropertySymbol("page"));  //Returns the <head> element of the document
+            documentMembers.Add("images".ToReadOnlyPropertySymbol("page"));  //Returns a collection of all <img> elements in the document
+            documentMembers.Add("implementation".ToReadOnlyPropertySymbol("page"));  //Returns the DOMImplementation object that handles this document
             documentMembers.Add("importNode".ToFunctionSymbol());  //Imports a node from another document
             documentMembers.Add("inputEncoding".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("lastModified".ToReadOnlyPropertySymbol());  //Returns the date and time the document was last modified
-            documentMembers.Add("links".ToReadOnlyPropertySymbol());  //Returns a collection of all <a> and <area> elements in the document that have a href attribute
+            documentMembers.Add("links".ToReadOnlyPropertySymbol("page"));  //Returns a collection of all <a> and <area> elements in the document that have a href attribute
             documentMembers.Add("normalize".ToFunctionSymbol());  //Removes empty Text nodes, and joins adjacent nodes
             documentMembers.Add("normalizeDocument".ToFunctionSymbol());  //Deprecated
             documentMembers.Add("open".ToFunctionSymbol());  //Opens an HTML output stream to collect output from document.write()
-            documentMembers.Add("querySelector".ToFunctionSymbol());  //Returns the first element that matches a specified CSS selector(s) in the document
-            documentMembers.Add("querySelectorAll".ToFunctionSymbol());  //Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document
+            documentMembers.Add("querySelector".ToFunctionSymbol("page"));  //Returns the first element that matches a specified CSS selector(s) in the document
+            documentMembers.Add("querySelectorAll".ToFunctionSymbol("page"));  //Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document
             documentMembers.Add("readyState".ToReadOnlyPropertySymbol());  //Returns the (loading) status of the document
             documentMembers.Add("referrer".ToReadOnlyPropertySymbol());  //Returns the URL of the document that loaded the current document
             documentMembers.Add("removeEventListener".ToFunctionSymbol());  //Removes an event handler from the document (that has been attached with the addEventListener() method)
             documentMembers.Add("renameNode".ToFunctionSymbol());  //Deprecated
-            documentMembers.Add("scripts".ToReadOnlyPropertySymbol());  //Returns a collection of <script> elements in the document
+            documentMembers.Add("scripts".ToReadOnlyPropertySymbol("page"));  //Returns a collection of <script> elements in the document
             documentMembers.Add("strictErrorChecking".ToReadOnlyPropertySymbol());  //Deprecated
             documentMembers.Add("title".ToPropertySymbol());  //Sets or returns the title of the document
             documentMembers.Add("URL".ToReadOnlyPropertySymbol());  //Returns the full URL of the HTML document
@@ -385,19 +391,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             var tableMembers = new List<Symbol>();
 
-            tableMembers.Add("rows".ToReadOnlyPropertySymbol());
-            tableMembers.Add("tBodies".ToReadOnlyPropertySymbol());
+            tableMembers.Add("rows".ToReadOnlyPropertySymbol("page"));
+            tableMembers.Add("tBodies".ToReadOnlyPropertySymbol("page"));
             tableMembers.Add("caption".ToReadOnlyPropertySymbol());
-            tableMembers.Add("tFoot".ToReadOnlyPropertySymbol());
-            tableMembers.Add("tHead".ToReadOnlyPropertySymbol());
+            tableMembers.Add("tFoot".ToReadOnlyPropertySymbol("page"));
+            tableMembers.Add("tHead".ToReadOnlyPropertySymbol("page"));
             tableMembers.Add("createCaption".ToFunctionSymbol());
-            tableMembers.Add("createTFoot".ToFunctionSymbol());
-            tableMembers.Add("createTHead".ToFunctionSymbol());
+            tableMembers.Add("createTFoot".ToFunctionSymbol("page"));
+            tableMembers.Add("createTHead".ToFunctionSymbol("page"));
             tableMembers.Add("deleteCaption".ToFunctionSymbol());
             tableMembers.Add("deleteRow".ToFunctionSymbol());
             tableMembers.Add("deleteTFoot".ToFunctionSymbol());
             tableMembers.Add("deleteTHead".ToFunctionSymbol());
-            tableMembers.Add("insertRow".ToFunctionSymbol());
+            tableMembers.Add("insertRow".ToFunctionSymbol("page"));
 
             hostMembers.Add(new ClassSymbol("_HTMLTableElement", tableMembers));
 
@@ -656,6 +662,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, ClassSymbol? @class = null, String? errMessage = null)
             => new VariableSymbol(@this, newName, errMessage.AsOption(), true, @class == null ? Option.None : @class.Name.Some());
+
+        public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, params String[] tags)
+            => new VariableSymbol(@this, newName, Option.None, true, Option.None, tags);
 
         public static IEnumerable<Symbol> Members(params Symbol[] members)
             => members;
