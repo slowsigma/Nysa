@@ -28,6 +28,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this._AssignedTags  = new Dictionary<String, HashSet<String>>(StringComparer.OrdinalIgnoreCase);
         }
 
+        public Option<T> GetMember<T>(String name)
+            where T : Symbol
+            => this.Value.Member<T>(name);
+
+        public IEnumerable<T> GetMembers<T>()
+            where T : Symbol
+            => this.Members.Where(m => m is T).Select(v => (T)v);
+
         public Option<SymbolLayer> MemberLayer(String symbolName)
             =>    this.Index.ContainsKey(symbolName)
                && this.Index[symbolName] is ISymbolScope scope
