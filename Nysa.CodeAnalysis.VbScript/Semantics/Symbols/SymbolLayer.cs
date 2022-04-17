@@ -28,6 +28,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this._AssignedTags  = new Dictionary<String, HashSet<String>>(StringComparer.OrdinalIgnoreCase);
         }
 
+        public Option<T> As<T>()
+            where T : ISymbolScope
+            => this.Value is T asT ? asT.Some() : Option<T>.None;
+
         public Option<T> GetMember<T>(String name)
             where T : Symbol
             => this.Value.Member<T>(name);
