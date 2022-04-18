@@ -7,7 +7,7 @@ using System.Xml;
 namespace Nysa.CodeAnalysis.VbScript
 {
     
-    public class XslParse : Parse
+    public record XslParse : Parse
     {
         public XslContent                       Content     { get; private set; }
         public XmlDocument                      Document    { get; private set; }

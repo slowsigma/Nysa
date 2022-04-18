@@ -10,7 +10,7 @@ using SyntaxNode = Dorata.Text.Parsing.Node;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class XslVbScriptParse : VbScriptParse
+    public record XslVbScriptParse : VbScriptParse
     {
         public Option<String>   Prefix      { get; private set; }
         public XmlElement       Element     { get; private set; }
@@ -20,7 +20,7 @@ namespace Nysa.CodeAnalysis.VbScript
         // otherwise TextOrPlaceholder contains original XText or XElement of <xsl.text/>
         public IReadOnlyList<(XmlNode TextOrPlaceholder, XmlElement? XslValueOf)> Contents { get; private set; }
 
-        public XslVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, Option<String> prefix, XmlElement element, XmlAttribute? attribute, IEnumerable<(XmlNode textOrPlaceholder, XmlElement? xslValueOf)>? contents)
+        public XslVbScriptParse(VbScriptSection content, Suspect<SyntaxNode> syntaxRoot, Option<String> prefix, XmlElement element, XmlAttribute? attribute, IEnumerable<(XmlNode textOrPlaceholder, XmlElement? xslValueOf)>? contents)
             : base(content, syntaxRoot)
         {
             this.Prefix     = prefix;

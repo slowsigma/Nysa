@@ -11,12 +11,12 @@ using HtmlAgilityPack;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class HtmlVbScriptParse : VbScriptParse
+    public record HtmlVbScriptParse : VbScriptParse
     {
         public HtmlNode         Node        { get; private set; }
         public HtmlAttribute?   Attribute   { get; private set; }
 
-        public HtmlVbScriptParse(VbScriptContent content, Suspect<SyntaxNode> syntaxRoot, HtmlNode node, HtmlAttribute? attribute = null)
+        public HtmlVbScriptParse(VbScriptSection content, Suspect<SyntaxNode> syntaxRoot, HtmlNode node, HtmlAttribute? attribute = null)
             : base(content, syntaxRoot)
         {
             this.Node       = node;

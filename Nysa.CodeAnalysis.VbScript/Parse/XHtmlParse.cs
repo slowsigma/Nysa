@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class XHtmlParse : Parse
+    public record XHtmlParse : Parse
     {
         public HtmlContent                                          Content     { get; private set; }
         public XmlDocument                                          Document    { get; private set; }

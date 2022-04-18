@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class HtmlParse : Parse
+    public record HtmlParse : Parse
     {
         public HtmlContent                                      Content     { get; private set; }
         public HtmlDocument                                     Document    { get; private set; }
