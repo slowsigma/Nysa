@@ -52,6 +52,36 @@ namespace Nysa.CodeAnalysis.VbScript
                : content is XslContent       xsl      ? xsl.Parse(eventAttributes).Map(s => (Parse)s)
                :                                        throw new ArgumentException("Parse does not accept content of this type.");
 
+        public static Suspect<XmlParse> Parse(this XmlContent content, Func<XmlDocument, IEnumerable<(XmlElement Element, XmlAttribute? Attribute, String Script)>> selector)
+        {
+            List<XmlVbScriptParse> FromDocument(XmlDocument document)
+            {
+                var parses = new List<XmlVbScriptParse>();
+
+                foreach (var (element, attribute, script) in selector(document))
+                {
+                    if (!String.IsNullOrWhiteSpace(script))
+                    {
+                        var section = new VbScriptSection(element.Path(), script);
+                        var vbParse = section.Parse();
+
+                        parses.Add(new XmlVbScriptParse(section, vbParse.SyntaxRoot, element, attribute));
+                    }
+                }
+
+                return parses;
+            }
+
+            return Return.Try(() =>
+                               {
+                                   var doc = new XmlDocument();
+                                   doc.PreserveWhitespace = true;
+                                   doc.LoadXml(content.Value);
+
+                                   return FromDocument(doc).Make(t => new XmlParse(content, doc, t));
+                               });
+        }
+
         private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
         {
             (List<(String Source, XmlElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XmlDocument document)

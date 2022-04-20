@@ -28,17 +28,24 @@ namespace Nysa.CodeAnalysis.VbScript
         private static String Normalized(this String filePath)
             => filePath.Trim().Replace("\\", "/");
 
-        public static Suspect<Content> ToContent(this FileInfo file)
-            =>   !file.Exists                         ? (new FileNotFoundException()).Failed<Content>()
-               : file.Extension.DataEndsWith(".xsl")  ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-               : file.Extension.DataEndsWith(".xslt") ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-               : file.Extension.DataEndsWith(".htm")  ? file.Read().Make(t => (new HtmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-               : file.Extension.DataEndsWith(".html") ? file.Read().Make(t => (new HtmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-               : file.Extension.DataEndsWith(".vbs")  ? file.Read().Make(t => (new VbScriptContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-               :                                        (new InvalidOperationException()).Failed<Content>();
+        private static String GetExtension(this FileInfo file, IReadOnlyDictionary<String, String>? extMappings)
+            => (extMappings != null && extMappings.ContainsKey(file.Extension))
+               ? extMappings[file.Extension]
+               : file.Extension;
 
-        public static Suspect<Content> ToContent(this String filePath)
-            => (new FileInfo(filePath)).ToContent();
+        public static Suspect<Content> ToContent(this FileInfo file, IReadOnlyDictionary<String, String>? extMappings = null)
+            =>   !file.Exists                         ? (new FileNotFoundException()).Failed<Content>()
+               : file.GetExtension(extMappings)
+                     .Make(e =>   e.DataEquals(".xsl")  ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : e.DataEquals(".xslt") ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : e.DataEquals(".htm")  ? file.Read().Make(t => (new HtmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : e.DataEquals(".html") ? file.Read().Make(t => (new HtmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : e.DataEquals(".vbs")  ? file.Read().Make(t => (new VbScriptContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : e.DataEquals(".xml")  ? file.Read().Make(t => (new XmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                : (new InvalidOperationException()).Failed<Content>());
+
+        public static Suspect<Content> ToContent(this String filePath, IReadOnlyDictionary<String, String>? extMappings = null)
+            => (new FileInfo(filePath)).ToContent(extMappings);
     }
 
 }
