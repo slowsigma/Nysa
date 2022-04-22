@@ -46,7 +46,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 ? g.A.Confirmed()
                                 : (Failed<ParseNode>)g.B.ToParseError());
 
-        public static Suspect<Parse> Parse(this Content content, HashSet<String>? eventAttributes = null)
+        public static Suspect<Parse> Parse(this Content content, IReadOnlySet<String>? eventAttributes = null)
             =>   content is HtmlContent      html     ? html.Parse(eventAttributes).Map(s => (Parse)s)
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
                : content is XslContent       xsl      ? xsl.Parse(eventAttributes).Map(s => (Parse)s)
@@ -82,7 +82,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
-        private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
+        private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, IReadOnlySet<String>? eventAttributes)
         {
             (List<(String Source, XmlElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XmlDocument document)
             {
@@ -152,7 +152,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
-        private static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, HashSet<String>? eventAttributes)
+        private static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, IReadOnlySet<String>? eventAttributes)
         {
             (List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
             {
@@ -221,12 +221,12 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Parse()
                     .Make(p => new VbScriptParse(@this, p));
 
-        public static Suspect<Parse> Parse(this HtmlContent @this, HashSet<String>? eventAttributes = null)
+        public static Suspect<Parse> Parse(this HtmlContent @this, IReadOnlySet<String>? eventAttributes = null)
             => @this.ParseXml(eventAttributes)
                     .Match(xp => xp.Confirmed<Parse>(),
                            e => @this.ParseHtml(eventAttributes).Bind(hp => hp.Confirmed<Parse>()));
 
-        public static Suspect<XslParse> Parse(this XslContent xslContent, HashSet<String>? eventAttributes = null)
+        public static Suspect<XslParse> Parse(this XslContent xslContent, IReadOnlySet<String>? eventAttributes = null)
         {
             IEnumerable<XslVbScriptParse> FromDocument(XmlDocument document)
             {
