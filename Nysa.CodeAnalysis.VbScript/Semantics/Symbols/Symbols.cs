@@ -79,7 +79,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             symbols.Add("Minute".ToFunctionSymbol("Global.Minute".Some()));
             symbols.Add("Month".ToFunctionSymbol("Global.Month".Some()));
             symbols.Add("MonthName".ToFunctionSymbol());
-            //hostMembers.Add("MsgBox".ToFunctionSymbol("Global.MsgBox".Some()));   // not mapping here
+            //symbols.Add("MsgBox".ToFunctionSymbol("Global.MsgBox".Some()));   // not mapping here
+            //symbols.Add("CreateObject".ToFunctionSymbol("Global.CreateObject".Some(), SymbolCategories.com)); // not mapping here
             symbols.Add("Now".ToFunctionSymbol("Global.Now".Some()));
             symbols.Add("Oct".ToFunctionSymbol());
             symbols.Add("Replace".ToFunctionSymbol("Global.Replace".Some()));
