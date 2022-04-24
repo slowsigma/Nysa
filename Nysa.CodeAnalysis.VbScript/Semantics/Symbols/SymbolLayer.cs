@@ -19,13 +19,13 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IReadOnlySet<String>         Tags     => this.Value.Tags;
         public IReadOnlySet<String>         AssignedTags(String name) => this._AssignedTags.ContainsKey(name) ? this._AssignedTags[name] : _NoTags;
 
-        private Dictionary<String, HashSet<String>> _AssignedTags;
+        private Dictionary<String, IReadOnlySet<String>> _AssignedTags;
 
         public SymbolLayer(Option<SymbolLayer> up, ISymbolScope value)
         {
             this.Up             = up;
             this.Value          = value;
-            this._AssignedTags  = new Dictionary<String, HashSet<String>>(StringComparer.OrdinalIgnoreCase);
+            this._AssignedTags  = new Dictionary<String, IReadOnlySet<String>>(StringComparer.OrdinalIgnoreCase);
         }
 
         public Option<T> As<T>()
@@ -49,12 +49,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public SymbolLayer MemberLayer(ISymbolScope member)
             => new SymbolLayer(this.Some(), member);
 
-        public Unit AssignTag(String name, String tag)
+        public Unit AssignTag(String name, IReadOnlySet<String> tags)
         {
             if (!this._AssignedTags.ContainsKey(name))
-                this._AssignedTags.Add(name, new HashSet<String>(StringComparer.OrdinalIgnoreCase));
-
-            this._AssignedTags[name].Add(tag);
+                this._AssignedTags.Add(name, tags);
+            else
+                this._AssignedTags[name] = tags;
 
             return Unit.Value;
         }
