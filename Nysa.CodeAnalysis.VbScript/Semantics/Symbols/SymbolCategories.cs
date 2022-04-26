@@ -14,6 +14,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static readonly String com       = "com";
         public static readonly String page      = "page";
         public static readonly String parent    = "parent";
+        public static readonly String @class    = "class";      // script class
         public static readonly String style     = "style";      // a sub-category of page
     }
 
