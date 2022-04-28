@@ -12,14 +12,14 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Option<String> TypeName { get; private set; }
 
-        private protected TypedSymbol(String name, Option<String> newName, Option<String> errMessage, Option<String> typeName, IReadOnlySet<String> tags)
-            : base(name, newName, errMessage, tags)
+        private protected TypedSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, IReadOnlySet<String> tags)
+            : base(name, newName, message, tags)
         {
             this.TypeName = typeName;
         }
 
-        protected TypedSymbol(String name, Option<String> newName, Option<String> errMessage, Option<String> typeName, String[]? tags = null)
-            : this(name, newName, errMessage, typeName, new HashSet<String>(tags ?? new String[] { }, StringComparer.OrdinalIgnoreCase))
+        protected TypedSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, String[]? tags = null)
+            : this(name, newName, message, typeName, new HashSet<String>(tags ?? new String[] { }, StringComparer.OrdinalIgnoreCase))
         {
         }
 

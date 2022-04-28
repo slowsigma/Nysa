@@ -16,22 +16,19 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         /// Used primarily to flag global functions having no
         /// equivalent translation as needing manual attention.
         /// </summary>
-        public Option<String>       ErrMessage  { get; private set; }
+        public Option<String>       Message     { get; private set; }
         public IReadOnlySet<String> Tags        { get;  private set; }
 
-        private protected HardSymbol(String name, Option<String> newName, Option<String> errMessage, IReadOnlySet<String> tags)
+        private protected HardSymbol(String name, Option<String> newName, Option<String> message, IReadOnlySet<String> tags)
             : base(name)
         {
-            if (newName is Some<String> && errMessage is Some<String>)
-                throw new Exception("Symbols that generate an error cannot be renamed.");
-
-            this.NewName    = newName;
-            this.ErrMessage = errMessage;
-            this.Tags       = tags;
+            this.NewName = newName;
+            this.Message = message;
+            this.Tags    = tags;
         }
 
-        protected HardSymbol(String name, Option<String> newName, Option<String> errMessage, String[]? tags)
-            : this(name, newName, errMessage, new HashSet<String>(tags ?? new String[] { }, StringComparer.OrdinalIgnoreCase))
+        protected HardSymbol(String name, Option<String> newName, Option<String> message, String[]? tags)
+            : this(name, newName, message, new HashSet<String>(tags ?? new String[] { }, StringComparer.OrdinalIgnoreCase))
         {
         }
 

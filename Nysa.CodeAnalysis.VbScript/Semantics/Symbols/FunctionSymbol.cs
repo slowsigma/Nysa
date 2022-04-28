@@ -14,8 +14,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IReadOnlyList<Symbol>       Members  { get; private set; }
         public IDictionary<String, Symbol> Index    { get; private set; }
 
-        private protected FunctionSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
-            : base(name, newName, errMessage, isPublic, typeName, tags)
+        private protected FunctionSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
+            : base(name, newName, message, isPublic, typeName, tags)
         {
             var parts = Symbols.Distinct(members);
 
@@ -23,8 +23,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             this.Index    = parts.Index;
         }
 
-        public FunctionSymbol(String name, Option<String> newName, Option<String> errMessage, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, params String[] tags)
-            : this(name, newName, errMessage, isPublic, typeName, members, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
+        public FunctionSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, params String[] tags)
+            : this(name, newName, message, isPublic, typeName, members, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
         {
         }
 
@@ -32,7 +32,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             => new FunctionSymbol(this.Name, newName.Some(), Option.None, this.IsPublic, this.TypeName, this.Members, this.Tags);
 
         public override FunctionSymbol WithType(String typeName)
-            => new FunctionSymbol(this.Name, this.NewName, this.ErrMessage, this.IsPublic, typeName.Some(), this.Members, this.Tags);
+            => new FunctionSymbol(this.Name, this.NewName, this.Message, this.IsPublic, typeName.Some(), this.Members, this.Tags);
     }
 
 }

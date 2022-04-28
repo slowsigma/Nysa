@@ -12,8 +12,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Boolean IsByRef { get; private set; }
 
-        private ArgumentSymbol(String name, Option<String> newName, Option<String> errMessage, Option<String> typeName, Boolean isByRef = true)
-            : base(name, newName, errMessage, typeName)
+        private ArgumentSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, Boolean isByRef = true)
+            : base(name, newName, message, typeName)
         {
             this.IsByRef = isByRef;
         }
@@ -29,10 +29,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         }
 
         public ArgumentSymbol Renamed(String newName)
-            => new ArgumentSymbol(this.Name, newName.Some(), this.ErrMessage, this.TypeName, this.IsByRef);
+            => new ArgumentSymbol(this.Name, newName.Some(), this.Message, this.TypeName, this.IsByRef);
 
         public override ArgumentSymbol WithType(String typeName)
-            => new ArgumentSymbol(this.Name, this.NewName, this.ErrMessage, typeName.Some(), this.IsByRef);
+            => new ArgumentSymbol(this.Name, this.NewName, this.Message, typeName.Some(), this.IsByRef);
     }
 
 }

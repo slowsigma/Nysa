@@ -676,14 +676,20 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             => new PropertySymbol(@this,
                                   (new PropertyGetSymbol(newName.Or(@this), true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(),
                                   (new PropertySetSymbol(newName.Or(@this), true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
+        public static PropertySymbol ToPropertySymbol(this String @this, Option<String> newName, Option<String> message, params String[] tags)
+            => new PropertySymbol(@this,
+                                  (new PropertyGetSymbol(newName.Or(@this), message, true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(),
+                                  (new PropertySetSymbol(newName.Or(@this), message, true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
 
         public static PropertySymbol ToReadOnlyPropertySymbol(this String @this, params String[] tags)
             => new PropertySymbol(@this, (new PropertyGetSymbol(@this, true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(), Option.None);
+        public static PropertySymbol ToReadOnlyPropertySymbol(this String @this, Option<String> message, params String[] tags)
+            => new PropertySymbol(@this, (new PropertyGetSymbol(@this, message, true, Option.None, _NoMembers, tags)).Some<FunctionSymbol>(), Option.None);
         public static PropertySymbol ToWriteOnlyPropertySymbol(this String @this, params String[] tags)
             => new PropertySymbol(@this, Option.None, (new PropertySetSymbol(@this, true, Option.None, false, _NoMembers, tags)).Some<FunctionSymbol>());
 
-        public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, ClassSymbol? @class = null, String? errMessage = null)
-            => new VariableSymbol(@this, newName, errMessage.AsOption(), true, @class == null ? Option.None : @class.Name.Some());
+        public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, ClassSymbol? @class = null, String? message = null)
+            => new VariableSymbol(@this, newName, message.AsOption(), true, @class == null ? Option.None : @class.Name.Some());
 
         public static VariableSymbol ToVariableSymbol(this String @this, Option<String> newName, params String[] tags)
             => new VariableSymbol(@this, newName, Option.None, true, Option.None, tags);

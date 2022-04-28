@@ -10,8 +10,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public record RedimSymbol : MemberSymbol
     {
-        public RedimSymbol(String name, Option<String> newName, Option<String> errMessage, Option<String> typeName)
-            : base(name, newName, errMessage, true, typeName)
+        public RedimSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName)
+            : base(name, newName, message, true, typeName)
         {
         }
 
@@ -19,7 +19,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             => new RedimSymbol(this.Name, newName.Some(), Option.None, this.TypeName);
 
         public override RedimSymbol WithType(String typeName)
-            => new RedimSymbol(this.Name, this.NewName, this.ErrMessage, typeName.Some());
+            => new RedimSymbol(this.Name, this.NewName, this.Message, typeName.Some());
     }
 
 }
