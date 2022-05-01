@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net6.0-windows/Nysa.CodeAnalysis.Visualizer.dll",
             "args": [
-                "/path", "C:\\Git\\cj-odyssey_mainline\\Webs\\CaseManagement\\AttorneyManager\\Summary"
+                "/path", "C:\\Git\\cj-odyssey_mainline\\Webs\\CaseManagement"
             ],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
