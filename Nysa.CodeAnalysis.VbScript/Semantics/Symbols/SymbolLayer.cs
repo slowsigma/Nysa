@@ -49,7 +49,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public SymbolLayer MemberLayer(ISymbolScope member)
             => new SymbolLayer(this.Some(), member);
 
-        public Unit AssignTag(String name, IReadOnlySet<String> tags)
+        public Unit SetAssignedTags(String name, IReadOnlySet<String> tags)
         {
             if (!this._AssignedTags.ContainsKey(name))
                 this._AssignedTags.Add(name, tags);
