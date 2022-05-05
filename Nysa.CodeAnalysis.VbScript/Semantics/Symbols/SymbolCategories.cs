@@ -16,6 +16,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static readonly String parent    = "parent";
         public static readonly String @class    = "class";      // script class
         public static readonly String style     = "style";      // a sub-category of page
+        public static readonly String async     = "async";      // used on functions that are async
     }
 
 }

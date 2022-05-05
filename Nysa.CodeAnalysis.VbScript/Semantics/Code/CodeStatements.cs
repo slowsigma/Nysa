@@ -76,6 +76,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                  assignStmt.Left.GatherPathExpressions(collect);
                                                  assignStmt.Right.GatherPathExpressions(collect);
                                              }),
+                CallStatement callStmt => callStmt.AccessExpression.GatherPathExpressions(collect),
                 DoLoopTestStatement loopTestStmt => loopTestStmt.Condition.GatherPathExpressions(collect),
                 DoTestLoopStatement testLoopStmt => testLoopStmt.Condition.GatherPathExpressions(collect),
                 ElseIfBlock elseIf => elseIf.Predicate.GatherPathExpressions(collect),
@@ -88,6 +89,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                 stepExpr.Value.GatherPathExpressions(collect);
                                         }),
                 IfStatement ifStmt => ifStmt.Predicate.GatherPathExpressions(collect),
+                InlineCallStatement inlineCallStmt => inlineCallStmt.AccessExpression.GatherPathExpressions(collect),
                 RedimStatement redim => redim.Variables.SelectMany(v => v.RankExpressions).Affect(e => { e.GatherPathExpressions(collect); }),
                 SelectCaseWhen caseWhen => caseWhen.When.Affect(e => { e.GatherPathExpressions(collect); }),
                 SelectStatement selectStmt => selectStmt.Value.GatherPathExpressions(collect),
