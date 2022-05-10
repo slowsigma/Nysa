@@ -12,27 +12,27 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Boolean IsByRef { get; private set; }
 
-        private ArgumentSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, Boolean isByRef = true)
-            : base(name, newName, message, typeName)
+        private ArgumentSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, Boolean isByRef, IReadOnlySet<String> tags)
+            : base(name, newName, message, typeName, tags)
         {
             this.IsByRef = isByRef;
         }
 
-        public ArgumentSymbol(String name, Option<String> newName, Option<String> typeName, Boolean isByRef = true)
-            : this(name, newName, Option.None, typeName, isByRef)
+        public ArgumentSymbol(String name, Option<String> newName, Option<String> typeName, Boolean isByRef = true, params String[] tags)
+            : this(name, newName, Option.None, typeName, isByRef, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
         {
         }
 
-        public ArgumentSymbol(String name, Boolean isByRef = true)
-            : this(name, Option.None, Option.None, Option.None, isByRef)
+        public ArgumentSymbol(String name, Boolean isByRef = true, params String[] tags)
+            : this(name, Option.None, Option.None, Option.None, isByRef, new HashSet<String>(tags, StringComparer.OrdinalIgnoreCase))
         {
         }
 
         public ArgumentSymbol Renamed(String newName)
-            => new ArgumentSymbol(this.Name, newName.Some(), this.Message, this.TypeName, this.IsByRef);
+            => new ArgumentSymbol(this.Name, newName.Some(), this.Message, this.TypeName, this.IsByRef, this.Tags);
 
         public override ArgumentSymbol WithType(String typeName)
-            => new ArgumentSymbol(this.Name, this.NewName, this.Message, typeName.Some(), this.IsByRef);
+            => new ArgumentSymbol(this.Name, this.NewName, this.Message, typeName.Some(), this.IsByRef, this.Tags);
     }
 
 }
