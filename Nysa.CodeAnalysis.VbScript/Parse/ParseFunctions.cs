@@ -6,14 +6,15 @@ using System.Text;
 using System.Web;
 using System.Xml;
 
-using Nysa.Logics;
-using Nysa.Text;
-
 using Dorata.Text.Parsing;
 using LexToken  = Dorata.Text.Lexing.Token;
 using ParseNode = Dorata.Text.Parsing.Node;
 
 using HtmlAgilityPack;
+
+using Nysa.Logics;
+using Nysa.Text;
+using Nysa.CodeAnalysis.VbScript.Semantics;
 
 namespace Nysa.CodeAnalysis.VbScript
 {
@@ -65,7 +66,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var section = new VbScriptSection(element.Path(), script);
                         var vbParse = section.Parse();
 
-                        parses.Add(new XmlVbScriptParse(section, vbParse.SyntaxRoot, element, attribute));
+                        parses.Add(new XmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), element, attribute));
                     }
                 }
 
@@ -113,7 +114,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var section = new VbScriptSection(script.Path(), script.InnerText);
                                 var vbParse = section.Parse();
 
-                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, script));
+                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), script));
                             }
                         }
                     }
@@ -133,7 +134,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var section   = new VbScriptSection(element.Path(attribute), vbString);
                                 var vbParse   = section.Parse();
 
-                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, element, attribute));
+                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), element, attribute));
                             }
                         }
                     }
@@ -180,7 +181,7 @@ namespace Nysa.CodeAnalysis.VbScript
                             var section = new VbScriptSection(script.XPath, script.InnerText);
                             var vbParse = section.Parse();
 
-                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, script));
+                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), script));
                         }
                     }
                 }
@@ -200,7 +201,7 @@ namespace Nysa.CodeAnalysis.VbScript
                             var section   = new VbScriptSection(attribute.XPath, vbString);
                             var vbParse   = section.Parse();
 
-                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, node, attribute));
+                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), node, attribute));
                         }
                     }
                 }
@@ -219,7 +220,7 @@ namespace Nysa.CodeAnalysis.VbScript
         public static VbScriptParse Parse(this VbScriptContent @this)
             => @this.Value
                     .Parse()
-                    .Make(p => new VbScriptParse(@this, p));
+                    .Make(p => new VbScriptParse(@this, p, p.ToProgram()));
 
         public static Suspect<Parse> Parse(this HtmlContent @this, IReadOnlySet<String>? eventAttributes = null)
             => @this.ParseXml(eventAttributes)
@@ -244,7 +245,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var parse   = section.Parse();
 
                         if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                            yield return new XslVbScriptParse(section, parse.SyntaxRoot, pref.Map(a => a.Value), script, null, null);
+                            yield return new XslVbScriptParse(section, parse.SyntaxRoot, parse.SyntaxRoot.ToProgram(), pref.Map(a => a.Value), script, null, null);
                     }
 
                     if (eventAttributes != null)
@@ -310,7 +311,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                             var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                             var section  = new VbScriptSection(element.Path(), vbString);
                                             var vbParse  = section.Parse();
-                                            yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, Option.None, element, null, conts);
+                                            yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, null, conts);
                                         }
                                     }
                                 }
@@ -326,7 +327,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     var section   = new VbScriptSection(element.Path(attribute), vbString);
                                     var vbParse   = section.Parse();
 
-                                    yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, Option.None, element, attribute, null);
+                                    yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, attribute, null);
                                 }
                             }
                         }

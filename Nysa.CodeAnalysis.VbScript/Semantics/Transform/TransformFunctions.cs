@@ -87,13 +87,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                          () => members);         //  no - just return all child members in order
         }
 
-        public static Suspect<Program> ToProgram(this VbScriptParse vbScriptParse)
-            => vbScriptParse.SyntaxRoot
-                            .Map(r => new TransformContext(r))
-                            .Map(c => c.Select(nid => nid.NodeTransform()))
-                            .Bind(t => t.Length == 1 && t[0] is SemanticItem item && item.Value is Program program
-                                       ? program.Confirmed()
-                                       : (new Exception("Program Error: Could not translate valid parse into semantic model.")).Failed<Program>());
+        internal static Suspect<Program> ToProgram(this Suspect<SyntaxNode> root)
+            => root.Map(r => new TransformContext(r))
+                   .Map(c => c.Select(nid => nid.NodeTransform()))
+                   .Bind(t => t.Length == 1 && t[0] is SemanticItem item && item.Value is Program program
+                              ? program.Confirmed()
+                              : (new Exception("Program Error: Could not translate valid parse into semantic model.")).Failed<Program>());
 
     }
 

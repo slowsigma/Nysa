@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-using Nysa.Logics;
-
 using SyntaxNode = Dorata.Text.Parsing.Node;
+
+using Nysa.Logics;
+using Nysa.CodeAnalysis.VbScript.Semantics;
 
 namespace Nysa.CodeAnalysis.VbScript
 {
@@ -20,8 +21,8 @@ namespace Nysa.CodeAnalysis.VbScript
         // otherwise TextOrPlaceholder contains original XText or XElement of <xsl.text/>
         public IReadOnlyList<(XmlNode TextOrPlaceholder, XmlElement? XslValueOf)> Contents { get; private set; }
 
-        public XslVbScriptParse(VbScriptSection content, Suspect<SyntaxNode> syntaxRoot, Option<String> prefix, XmlElement element, XmlAttribute? attribute, IEnumerable<(XmlNode textOrPlaceholder, XmlElement? xslValueOf)>? contents)
-            : base(content, syntaxRoot)
+        public XslVbScriptParse(VbScriptSection content, Suspect<SyntaxNode> syntaxRoot, Suspect<Program> semanticRoot, Option<String> prefix, XmlElement element, XmlAttribute? attribute, IEnumerable<(XmlNode textOrPlaceholder, XmlElement? xslValueOf)>? contents)
+            : base(content, syntaxRoot, semanticRoot)
         {
             this.Prefix     = prefix;
             this.Element    = element;
