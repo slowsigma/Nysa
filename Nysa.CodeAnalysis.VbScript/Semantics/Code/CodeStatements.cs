@@ -127,6 +127,22 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             return list;
         }
 
+        public static List<T> GetAll<T>(this IReadOnlyList<Statement> @this, Func<T, Boolean> where)
+            where T : Statement
+        {
+            var list = new List<T>();
+
+            foreach (var stmt in @this)
+            {
+                if (stmt is T asT && where(asT))
+                    list.Add(asT);
+
+                stmt.GatherStatements(s => { if (s is T sAsT && where(sAsT)) { list.Add(sAsT); } return Unit.Value; });
+            }
+
+            return list;
+        }
+
         public static List<PathExpression> GetPathExprs(this MethodDeclaration @this)
         {
             var list = new List<PathExpression>();
