@@ -68,6 +68,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 _ => Unit.Value
             };
 
+        // Note: This method only gets the path expressions from a single statement. It does not
+        //       attempt to find sub-statement expressions. Use the GatherStatements prior to
+        //       calling this function in order to ensure sub-statements are searched.
         private static Unit GatherPathExpressions(this Statement @this, Func<PathExpression, Unit> collect)
             => @this switch
             {
@@ -144,6 +147,17 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         }
 
         public static List<PathExpression> GetPathExprs(this MethodDeclaration @this)
+        {
+            var list = new List<PathExpression>();
+            var stmts = @this.GetAll<Statement>(s => true);
+
+            stmts.Select(s => s)
+                 .Affect(v => { v.GatherPathExpressions(p => { list.Add(p); return Unit.Value; }); });
+
+            return list;
+        }
+
+        public static List<PathExpression> GetPathExprs(this Program @this)
         {
             var list = new List<PathExpression>();
             var stmts = @this.GetAll<Statement>(s => true);
