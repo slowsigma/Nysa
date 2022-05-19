@@ -34,7 +34,7 @@ namespace Nysa.CodeAnalysis.VbScript
                : file.Extension;
 
         public static Suspect<Content> ToContent(this FileInfo file, IReadOnlyDictionary<String, String>? extMappings = null)
-            =>   !file.Exists                         ? (new FileNotFoundException()).Failed<Content>()
+            =>   !file.Exists                           ? (new FileNotFoundException()).Failed<Content>()
                : file.GetExtension(extMappings)
                      .Make(e =>   e.DataEquals(".xsl")  ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
                                 : e.DataEquals(".xslt") ? file.Read().Make(t => (new XslContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())

@@ -47,10 +47,14 @@ namespace Nysa.CodeAnalysis.VbScript
                                 ? g.A.Confirmed()
                                 : (Failed<ParseNode>)g.B.ToParseError());
 
+        private static HtmlContent AsHtmlContent(this XmlContent @this)
+            => new HtmlContent(@this.Source, @this.Hash, @this.Value);
+
         public static Suspect<Parse> Parse(this Content content, IReadOnlySet<String>? eventAttributes = null)
             =>   content is HtmlContent      html     ? html.Parse(eventAttributes).Map(s => (Parse)s)
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
                : content is XslContent       xsl      ? xsl.Parse(eventAttributes).Map(s => (Parse)s)
+               : content is XmlContent       xml      ? xml.AsHtmlContent().Parse(eventAttributes).Map(s => (Parse)s)
                :                                        throw new ArgumentException("Parse does not accept content of this type.");
 
         public static Suspect<XmlParse> Parse(this XmlContent content, Func<XmlDocument, IEnumerable<(XmlElement Element, XmlAttribute? Attribute, String Script)>> selector)
