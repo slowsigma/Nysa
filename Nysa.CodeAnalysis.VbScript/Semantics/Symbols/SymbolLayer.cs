@@ -25,7 +25,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         {
             this.Up             = up;
             this.Value          = value;
-            this._AssignedTags  = new Dictionary<String, IReadOnlySet<String>>(StringComparer.OrdinalIgnoreCase);
+            this._AssignedTags  = up is Some<SymbolLayer> someUp
+                                  ? new Dictionary<String, IReadOnlySet<String>>(someUp.Value._AssignedTags, StringComparer.OrdinalIgnoreCase)
+                                  : new Dictionary<String, IReadOnlySet<String>>(StringComparer.OrdinalIgnoreCase);
         }
 
         public Option<T> As<T>()
