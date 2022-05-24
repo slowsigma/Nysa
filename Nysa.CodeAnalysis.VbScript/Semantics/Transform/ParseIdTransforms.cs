@@ -504,6 +504,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         private static SyntaxToken WithoutEndDot(this SyntaxToken endsWithDot, ParseId newId)
             => endsWithDot.Span.Make(o => new SyntaxToken(new Span(o.Source, o.Position, o.Length - 1), newId));
 
+        private static PathExpression CheckInlineCallArgs(this PathExpression @this, SyntaxNode basis)
+        {
+            // if a precedence expression is the only argument in an inline call, then it's value can be lifted into the arguments collection
+            if (@this.Count == 2 && @this[1] is PathArguments pargs && pargs.Count == 1 && pargs[0] is PrecedenceExpression precExpr)
+                return new PathExpression(basis, Return.Enumerable(@this[0], new PathArguments(((Some<SyntaxToken>)precExpr.Token).Value, true, Return.Enumerable(precExpr.Value))));
+            else
+                return @this;
+        }
+
         private static Get<IEnumerable<SyntaxToken>> DotSplit(this Get<SyntaxToken> dottenToken)
             => (i, r) =>
             {
@@ -659,7 +668,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             { Id.Rule.CallStmt,          With.Parts(Skip.ToExpected<AccessExpression>())
                                              .Make((ns, a) => new CallStatement(ns, a)) },
             { Id.Rule.SubCallStmt,       SubCallStmtNormalize.Then(With.Parts(GetSubCallExprItems)
-                                                                       .Make((ns, i) => new InlineCallStatement(ns, new PathExpression(ns, i)))) },
+                                                                       .Make((ns, i) => new InlineCallStatement(ns, CheckInlineCallArgs(new PathExpression(ns, i), ns)))) },
             { Id.Rule.AssignStmt,        With.Parts(Maybe.TokenOf(Id.Symbol.Set),
                                                     Skip.ToExpected<AccessExpression>(),
                                                     Skip.ToExpected<Expression>())
