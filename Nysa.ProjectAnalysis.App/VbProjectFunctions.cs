@@ -7,7 +7,7 @@ using Nysa.Text;
 public static class VbProjectFunctions
 {
 
-    public static Suspect<IReadOnlyList<(String Name, String Value)>> ReadNameValues(this String @this)
+    private static Suspect<IReadOnlyList<(String Name, String Value)>> ReadNameValues(this String @this)
         => Return.Try<IReadOnlyList<(String Name, String Value)>>(() =>
             File.ReadAllLines(@this)
                 .Where(t => t.Contains('='))
@@ -16,7 +16,7 @@ public static class VbProjectFunctions
                 .Select(p => (Name: p[0], Value: p[1]))
                 .ToList());
 
-    public static Option<VbProject> ToProject(this IReadOnlyList<(String Name, String Value)> @this, String rootPath, String projectPath, String projectId)
+    private static Suspect<VbProject> ToProject(this IReadOnlyList<(String Name, String Value)> @this, String rootPath, String projectPath, String projectId)
     {
         var exeName = @this.FirstOrNone(p => p.Name.DataEquals("exename32")).Map(f => f.Value);
         var outPath = @this.FirstOrNone(p => p.Name.DataEquals("path32")).Map(f => f.Value).Map(o => Path.IsPathFullyQualified(o) ? o : Path.GetFullPath(o, projectPath));
@@ -25,10 +25,9 @@ public static class VbProjectFunctions
                            .SomeOnly()
                            .ToList();
 
-        if (exeName is Some<String> someExe && outPath is Some<String> someOut)
-            return (new VbProject(projectId, refs, new Output(Path.GetRelativePath(rootPath, Path.Combine(someOut.Value, someExe.Value))))).Some();
-        else
-            return Option.None;
+        return (exeName is Some<String> someExe && outPath is Some<String> someOut)
+               ? (new VbProject(projectId, refs, new Output(Path.GetRelativePath(rootPath, Path.Combine(someOut.Value, someExe.Value))))).Confirmed()
+               : Return.Failed<VbProject>($"Cannot determine output binary: '{projectPath}'.");
     }
 
     private static Option<Reference> ToReference(this String @this, String rootPath, String projectPath)
@@ -48,5 +47,15 @@ public static class VbProjectFunctions
             return Option.None;
     }
 
+    public static Suspect<VbProject> ReadProject(this String @this, String rootPath)
+    {
+        var projectId   = Path.GetRelativePath(rootPath, @this);
+        var projectPath = Path.GetDirectoryName(@this);
+        var nameValues  = @this.ReadNameValues();
+
+        return (projectPath != null)
+               ? nameValues.Bind(l => l.ToProject(rootPath, projectPath, projectId))
+               : Return.Failed<VbProject>($"Project must be in a subfolder: '{@this}'.");
+    }
 
 }

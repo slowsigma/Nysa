@@ -8,7 +8,7 @@ namespace Nysa.Data.TSqlClient
     public static class TSqlConnectExtensions
     {
 
-        public static String ConnectionString(this TSqlConnect @this)
+        public static String ConnectionString(this TSqlConnect @this, Boolean trustServerCert = false)
         {
             var build = new SqlConnectionStringBuilder();
             build.DataSource = @this.Source;
@@ -31,6 +31,9 @@ namespace Nysa.Data.TSqlClient
 
             if (@this.InitialCatalog != null)
                 build.InitialCatalog = @this.InitialCatalog;
+
+            if (trustServerCert)
+                build.TrustServerCertificate = true;
 
             return build.ToString();
         }

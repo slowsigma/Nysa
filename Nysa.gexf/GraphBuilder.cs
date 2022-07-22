@@ -10,8 +10,9 @@ public class GraphBuilder
     private Dictionary<Int32, Edge>             _Edges;
     private Dictionary<Int32, HashSet<Int32>>   _SourcesToTargets;
 
-    public GraphBuilder()
+    public GraphBuilder(EdgeTypes type)
     {
+        this._Type              = type;
         this._NextNodeId        = 0;
         this._NextEdgeId        = 0;
         this._Nodes             = new Dictionary<Int32, Node>();

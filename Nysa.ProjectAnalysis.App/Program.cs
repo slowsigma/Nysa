@@ -24,14 +24,7 @@ foreach (var file in Directory.EnumerateFiles(basePath, "*.*", SearchOption.AllD
 
     if (Path.GetExtension(file).DataEquals(".vbp"))
     {
-        var projectPath = Path.GetDirectoryName(file);
-        var lines       = file.ReadNameValues();
-
-        if (projectPath != null)
-        {
-            var vbProj = lines.Map(l => l.ToProject(basePath, projectPath, Path.GetRelativePath(basePath, file)));
-        }
-        
+        var vbProject = file.ReadProject(basePath);
     }
 }
 

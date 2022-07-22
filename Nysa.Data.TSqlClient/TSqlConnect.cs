@@ -39,7 +39,9 @@ namespace Nysa.Data.TSqlClient
         public TSqlConnect WithInitialCatalog(String databaseName)
             => new TSqlConnect(this.Source, this.Credentials, this.ApplicationName, this.Intent, databaseName);
 
-        public override String ToString() => this.ConnectionString();
+        public String ToString(Boolean trustServerCert = false) => this.ConnectionString(trustServerCert);
+        
+        public override String ToString() => this.ToString(false);
     }
 
 }
