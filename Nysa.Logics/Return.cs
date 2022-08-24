@@ -67,6 +67,12 @@ namespace Nysa.Logics
             catch (Exception except) { return except.Failed<T>(); }
         }
 
+        public static Suspect<T> Try<T>(this Func<Suspect<T>> @this)
+        {
+            try { return @this(); }
+            catch (Exception except) { return except.Failed<T>(); }
+        }
+
         public static Suspect<Unit> Try(this Action @this)
             => (new Func<Unit>(() => { @this(); return Unit.Value; })).Try();
 
