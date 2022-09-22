@@ -1,4 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Authors>Philip Fucich</Authors>
+    <Company>slowsigma</Company>
+    <Nullable>enable</Nullable>
+    <PackageId>Nysa.Data.TSqlClient</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
@@ -8,9 +18,5 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
 
 </Project>

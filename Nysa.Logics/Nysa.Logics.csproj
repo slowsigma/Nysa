@@ -2,11 +2,13 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
-    <PackageId>Nysa.Logics</PackageId>
     <Version>1.0.1</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <Nullable>enable</Nullable>
+    <PackageId>Nysa.Logics</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
