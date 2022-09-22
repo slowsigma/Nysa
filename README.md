@@ -11,7 +11,7 @@ This is a class library containing: tries, disjoint sets, and heaps.
 This is a class library to make getting data from SQL Server more functional and fluent.
 
 ## Nysa.Logics
-This is the primary functional programming library. It contains the following elevated types:
+This is the primary functional programming library. It contains the following types:
 1. `Option<T>` for values of `T` that could be `Some<T>` or `None<T>`.
 2. `Suspect<T>` for values of `T` that could be `Confirmed<T>` or `Failed<T>`.
 
