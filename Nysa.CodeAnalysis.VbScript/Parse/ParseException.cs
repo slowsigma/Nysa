@@ -3,7 +3,7 @@ using System;
 namespace Nysa.CodeAnalysis.VbScript
 {
 
-    public class ParseException : Exception
+    public sealed class ParseException : Exception
     {
         public String ParserMessage     { get; private set; }
         public Int32  LineNumber        { get; private set; }
@@ -20,6 +20,10 @@ namespace Nysa.CodeAnalysis.VbScript
             this.ErrorLine      = errorLine;
             this.ErrorRules     = errorRules;
         }
+
+        public override string ToString()
+            => $"{this.ParserMessage}; Line: {this.LineNumber}; Column: {this.ColumnNumber}";
+        
     }
 
 }

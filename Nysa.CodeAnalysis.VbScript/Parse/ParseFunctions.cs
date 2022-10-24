@@ -21,6 +21,8 @@ namespace Nysa.CodeAnalysis.VbScript
 
     public static class ParseFunctions
     {
+        public static readonly String XSL_VALUE_PLACEHOLDER_PREFIX = "xsl_value_placeholder_";
+
         private static readonly String _vbscript_colon = "vbscript:";
         private static readonly String _xsl_namespace_uri = "http://www.w3.org/1999/XSL/Transform";
 
@@ -89,7 +91,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
         private static Suspect<XHtmlParse> ParseXml(this HtmlContent htmlContent, IReadOnlySet<String>? eventAttributes)
         {
-            (List<(String Source, XmlElement Element)> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XmlDocument document)
+            (IEnumerable<XHtmlIncludeItem> Includes, List<XHtmlVbScriptParse> VbParses) FromDocument(XmlDocument document)
             {
                 var includes    = new Dictionary<String, XmlElement>(StringComparer.OrdinalIgnoreCase);
                 var parses      = new List<XHtmlVbScriptParse>();
@@ -144,7 +146,7 @@ namespace Nysa.CodeAnalysis.VbScript
                     }
                 }
 
-                return (includes.Select(kv => (Source: kv.Key, Element: kv.Value)).ToList(), parses);
+                return (includes.Select(kv => new XHtmlIncludeItem(kv.Key, kv.Value)), parses);
             }
 
             return Return.Try(() =>
@@ -159,7 +161,7 @@ namespace Nysa.CodeAnalysis.VbScript
 
         private static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, IReadOnlySet<String>? eventAttributes)
         {
-            (List<(String Soure, HtmlNode Node)> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
+            (IEnumerable<HtmlIncludeItem> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
             {
                 var includes = new Dictionary<String, HtmlNode>(StringComparer.OrdinalIgnoreCase);
                 var parses   = new List<HtmlVbScriptParse>();
@@ -210,7 +212,7 @@ namespace Nysa.CodeAnalysis.VbScript
                     }
                 }
 
-                return (includes.Select(kv => (Source: kv.Key, Node: kv.Value)).ToList(), parses);
+                return (includes.Select(kv => new HtmlIncludeItem(kv.Key, Node: kv.Value)), parses);
             }
 
             return Return.Try(() =>
@@ -233,8 +235,10 @@ namespace Nysa.CodeAnalysis.VbScript
 
         public static Suspect<XslParse> Parse(this XslContent xslContent, IReadOnlySet<String>? eventAttributes = null)
         {
-            IEnumerable<XslVbScriptParse> FromDocument(XmlDocument document)
+            (IEnumerable<XslIncludeItem> Includes, IEnumerable<XslVbScriptParse> Parses) FromDocument(XmlDocument document)
             {
+                var includes    = new Dictionary<String, XmlElement>(StringComparer.OrdinalIgnoreCase);
+                var parses      = new List<XslVbScriptParse>();
                 var descendants = document.SelectNodes("//*");
 
                 if (descendants != null)
@@ -249,7 +253,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var parse   = section.Parse();
 
                         if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                            yield return new XslVbScriptParse(section, parse.SyntaxRoot, parse.SyntaxRoot.ToProgram(), pref.Map(a => a.Value), script, null, null);
+                            parses.Add(new XslVbScriptParse(section, parse.SyntaxRoot, parse.SyntaxRoot.ToProgram(), pref.Map(a => a.Value), script, null, null));
                     }
 
                     if (eventAttributes != null)
@@ -294,7 +298,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                         }
                                         else if (node is XmlElement xslValueOf && xslValueOf.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslValueOf.LocalName.DataEquals("value-of"))
                                         {
-                                            var subName = $"xsl_value_placeholder_{++plhNo}";
+                                            var subName = $"{XSL_VALUE_PLACEHOLDER_PREFIX}{++plhNo}";
                                             build.Append(subName);
                                             
                                             conts.Add((document.CreateTextNode(subName), xslValueOf));
@@ -315,9 +319,22 @@ namespace Nysa.CodeAnalysis.VbScript
                                             var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
                                             var section  = new VbScriptSection(element.Path(), vbString);
                                             var vbParse  = section.Parse();
-                                            yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, null, conts);
+                                            parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, null, conts));
                                         }
                                     }
+                                }
+                            }
+                            else if (   element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("include")
+                                     || element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("import"))
+                            {
+                                var href = element.GetAttribute("href");
+
+                                if (!String.IsNullOrWhiteSpace(href))
+                                {
+                                    var hrefValue = HttpUtility.UrlDecode(href);
+
+                                    if (!includes.ContainsKey(hrefValue))
+                                        includes.Add(hrefValue, element);
                                 }
                             }
                             else
@@ -331,12 +348,14 @@ namespace Nysa.CodeAnalysis.VbScript
                                     var section   = new VbScriptSection(element.Path(attribute), vbString);
                                     var vbParse   = section.Parse();
 
-                                    yield return new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, attribute, null);
+                                    parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, attribute, null));
                                 }
                             }
                         }
                     }
                 }
+
+                return (includes.Select(kv => new XslIncludeItem(kv.Key, kv.Value)), parses);
             }
 
             return Return.Try(() =>
@@ -345,7 +364,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     doc.PreserveWhitespace = true;
                                     doc.LoadXml(xslContent.Value);
 
-                                    return FromDocument(doc).Make(p => new XslParse(xslContent, doc, p));
+                                    return FromDocument(doc).Make(t => new XslParse(xslContent, doc, t.Includes, t.Parses));
                                 });
         }
 

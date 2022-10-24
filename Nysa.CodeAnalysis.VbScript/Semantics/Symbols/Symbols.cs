@@ -265,6 +265,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             domElemMembers.Add("isEqualNode".ToFunctionSymbol());
             domElemMembers.Add("isSameNode".ToFunctionSymbol());
             domElemMembers.Add("isSupported".ToFunctionSymbol());
+            domElemMembers.Add("isTextEdit".ToReadOnlyPropertySymbol("The isTextEdit property is obsolete.".Some()));
             domElemMembers.Add("lang".ToPropertySymbol());
             domElemMembers.Add("lastChild".ToReadOnlyPropertySymbol(SymbolCategories.page));
             domElemMembers.Add("lastElementChild".ToReadOnlyPropertySymbol(SymbolCategories.page));

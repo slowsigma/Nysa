@@ -11,12 +11,12 @@ namespace Nysa.CodeAnalysis.VbScript
 
     public record XHtmlParse : Parse
     {
-        public HtmlContent                                          Content     { get; private set; }
-        public XmlDocument                                          Document    { get; private set; }
-        public IReadOnlyList<(String Source, XmlElement Element)>   VbsIncludes { get; private set; }
-        public IReadOnlyList<XHtmlVbScriptParse>                    VbsParses   { get; private set; }
+        public HtmlContent                          Content     { get; private set; }
+        public XmlDocument                          Document    { get; private set; }
+        public IReadOnlyList<XHtmlIncludeItem>      VbsIncludes { get; private set; }
+        public IReadOnlyList<XHtmlVbScriptParse>    VbsParses   { get; private set; }
 
-        public XHtmlParse(HtmlContent content, XmlDocument document, IEnumerable<(String Source, XmlElement)> vbsIncludes, IEnumerable<XHtmlVbScriptParse> vbsParses)
+        public XHtmlParse(HtmlContent content, XmlDocument document, IEnumerable<XHtmlIncludeItem> vbsIncludes, IEnumerable<XHtmlVbScriptParse> vbsParses)
         {
             this.Content        = content;
             this.Document       = document;
