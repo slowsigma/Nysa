@@ -69,14 +69,14 @@ namespace Nysa.Text.Lexing
 
         public static SeekNode Seek(this Node subject) => new SeekNode(subject);
 
-        public static readonly AssertNode AtStart = new AssertNode(c => c.Start.IsStart);
-        public static readonly AssertNode AtEnd   = new AssertNode(c => c.End.IsEnd);
+        public static readonly AssertNode AtStart = new AssertNode(c => c.Start.IsSourceStart());
+        public static readonly AssertNode AtEnd   = new AssertNode(c => c.End.IsSourceEnd());
 
         public static IEnumerable<LexHit> Repeat(this SeekNode seek, String source, Boolean includeSkips = false)
         {
-            var curr = source.Start();
+            var curr = Start.Span(source);
             var find = seek.Find(curr);
-            var diff = find.Map(h => h.Span.Position - curr.End.Value, m => 0);
+            var diff = find.Match(h => h.Span.Position - curr.End.Value, m => 0);
 
             while (find is LexHit findHit)
             {
@@ -86,7 +86,7 @@ namespace Nysa.Text.Lexing
                 yield return findHit;
 
                 curr = findHit.Span;
-                find = seek.Find(curr.End);
+                find = seek.Find(Start.SpanAfter(curr));
             }
         }
 

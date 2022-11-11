@@ -29,8 +29,7 @@ namespace Nysa.Text.Lexing
         public Boolean Equals(Token other) => this.Span == other.Span && this.Id == other.Id;
         public override Boolean Equals(object? obj) => obj is Token tkn ? this.Equals(tkn) : false;
         public override Int32 GetHashCode() => this.Span.HashWithOther(this.Id);
-        public override String ToString() => this.Span.Value;
-
+        public override String ToString() => this.Span.ToString();
     }
 
 }

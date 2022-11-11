@@ -38,8 +38,9 @@ namespace Nysa.Text.Lexing
             public override LexFind Find(TextSpan current)
                 => this.Primary
                        .Find(current)
-                       .Map(hp => this.Then.Find(hp.Span)
-                                           .Map(ht => ht, mt => LexFind.Miss(mt.Size + (hp.Span.Length - current.Length))),
+                       .Match(hp => this.Then.Find(hp.Span)
+                                           .Match(ht => (LexFind)ht,
+                                                  mt => (LexFind)Lex.Miss(mt.Size + (hp.Span.Length - current.Length))),
                                mp => mp);
 
             public override string ToString()
@@ -51,19 +52,19 @@ namespace Nysa.Text.Lexing
             private Func<TextSpan, Boolean> _Predicate;
             public AssertNode(Func<TextSpan, Boolean> predicate) { this._Predicate = predicate; }
             public override LexFind Find(TextSpan current)
-                => this._Predicate(current) ? LexFind.Hit(current) : new LexMiss(0);
+                => this._Predicate(current) ? Lex.Hit(current) : new LexMiss(0);
         }
 
         public class StartNode : AssertNode
         {
-            public StartNode() : base(c => c.Start.IsStart) { }
+            public StartNode() : base(c => c.Start.IsSourceStart()) { }
             public override string ToString()
                 => $"{nameof(StartNode)}";
         }
 
         public class EndNode : AssertNode
         {
-            public EndNode() : base(c => c.End.IsEnd) { }
+            public EndNode() : base(c => c.End.IsSourceEnd()) { }
             public override string ToString()
                 => $"{nameof(EndNode)}";
         }
@@ -82,7 +83,7 @@ namespace Nysa.Text.Lexing
             public Boolean  IgnoreCase  { get; private set; }
 
             public OneNode(Char value, Boolean ignoreCase)
-                : base(c => c.End.Next().Map(n => OneEquals(value, n, ignoreCase) ? LexFind.Hit(c.Appended(1)) : LexFind.Miss(1)).Or(LexFind.Miss(1)))
+                : base(c => c.End.Char().Map(n => OneEquals(value, n, ignoreCase) ? (LexFind)Lex.Hit(c.Appended(1)) : (LexFind)Lex.Miss(1)).Or(Lex.Miss(1)))
             {
                 this.Value      = value;
                 this.IgnoreCase = ignoreCase;
@@ -103,16 +104,34 @@ namespace Nysa.Text.Lexing
             public Boolean  IgnoreCase  { get; private set; }
 
             public SequenceNode(String value, Boolean ignoreCase)
-                : base(c => SequenceEquals(value, c.End.Next(value.Length), ignoreCase) ? LexFind.Hit(c.Appended(value.Length)) : LexFind.Miss(value.Length))
+                : base(c => SequenceEquals(c.End, value, ignoreCase) ? Lex.Hit(c.Appended(value.Length)) : Lex.Miss(value.Length))
             {
+                if (String.IsNullOrWhiteSpace(value))
+                    throw new Exception("Sequence cannot be empty or null.");
+
                 this.Value      = value;
                 this.IgnoreCase = ignoreCase;
             }
 
-            private static Boolean SequenceEquals(String sequence, String other, Boolean ignoreCase)
-                => ignoreCase
-                   ? sequence.ToUpperInvariant().Equals(other.ToUpperInvariant())
-                   : sequence.Equals(other);
+            private static Boolean SequenceEquals(TextPosition position, String lookFor, Boolean ignoreCase)
+            {
+                var lfp = 0;
+
+                while (position.Char() is Some<Char> someChar && lfp < lookFor.Length)
+                {
+                    if (   (lookFor[lfp] != someChar.Value)
+                        && !(   ignoreCase
+                             && Char.ToUpperInvariant(someChar.Value).Equals(Char.ToUpperInvariant(lookFor[lfp]))))
+                    {
+                        return false;
+                    }
+
+                    lfp++;
+                    position = position + 1;
+                }
+
+                return (lfp == lookFor.Length); // did we find the whole sequence?
+            }
 
             public override String ToString()
                 => $"{nameof(SequenceNode)} {this.Value}";
@@ -138,11 +157,11 @@ namespace Nysa.Text.Lexing
 
             public override LexFind Find(TextSpan current)
                 => current.End
-                          .Next()
+                          .Char()
                           .Map(n => this._Alternatives.Contains(this.IgnoreCase ? Char.ToUpperInvariant(n) : n)
-                                    ? LexFind.Hit(current.Appended(1))
-                                    : LexFind.Miss(1))
-                          .Or(LexFind.Miss(1));
+                                    ? (LexFind)Lex.Hit(current.Appended(1))
+                                    : (LexFind)Lex.Miss(1))
+                          .Or(Lex.Miss(1));
 
             public override String ToString()
                 => $"{nameof(AnyOneNode)} {this.Alternatives}";
@@ -153,8 +172,8 @@ namespace Nysa.Text.Lexing
             public Node Condition { get; private set; }
             public NotNode(Node condition) { this.Condition = condition; }
             public override LexFind Find(TextSpan current)
-             => this.Condition.Find(current).Map(h => LexFind.Miss(h.Span.Length - current.Length),
-                                                 m => LexFind.Hit(current.Appended(m.Size), Identifier.None));
+             => this.Condition.Find(current).Match(h => (LexFind)Lex.Miss(h.Span.Length - current.Length),
+                                                   m => (LexFind)Lex.Hit(current.Appended(m.Size), Identifier.None));
         }
 
         public class OrNode : Node
@@ -163,7 +182,7 @@ namespace Nysa.Text.Lexing
             public Node Second { get; private set; }
             public OrNode(Node first, Node second) { this.First = first; this.Second = second; }
             public override LexFind Find(TextSpan current)
-                => this.First.Find(current).Map(h => h, m => this.Second.Find(current));
+                => this.First.Find(current).Match(h => h, m => this.Second.Find(current));
         }
 
         public class AndNode : Node
@@ -184,18 +203,18 @@ namespace Nysa.Text.Lexing
 
                 if (hitOne != null && hitTwo != null) //success
                 {
-                    var largestHit = LexFind.Largest(hitOne, hitTwo);
+                    var largestHit = Lex.Largest(hitOne, hitTwo);
                     // identifiedHit is not guaranteed to have value
-                    var identifiedHit = LexFind.Identified(hitOne, hitTwo);
+                    var identifiedHit = Lex.Identified(hitOne, hitTwo);
 
-                    return LexFind.Hit(largestHit.Span, identifiedHit.Id);
+                    return Lex.Hit(largestHit.Span, identifiedHit.Id);
                 }
                 else if (hitOne != null && missTwo != null)
-                    return LexFind.Smallest((new LexMiss(hitOne.Span.Length - current.Length)), missTwo);
+                    return Lex.Smallest((new LexMiss(hitOne.Span.Length - current.Length)), missTwo);
                 else if (missOne != null && hitTwo != null)
-                    return LexFind.Smallest(missOne, (new LexMiss(hitTwo.Span.Length - current.Length)));
+                    return Lex.Smallest(missOne, (new LexMiss(hitTwo.Span.Length - current.Length)));
                 else if (missOne != null && missTwo != null)
-                    return LexFind.Smallest(missOne, missTwo);
+                    return Lex.Smallest(missOne, missTwo);
                 else
                     throw new Exception("Program error.");
             }
@@ -210,7 +229,7 @@ namespace Nysa.Text.Lexing
                 var conditionTry = condition.Find(current);
                 var totalMiss    = 0;
 
-                while (conditionTry is LexMiss conditionMiss && !current.End.IsEnd)
+                while (conditionTry is LexMiss conditionMiss && !current.End.IsSourceEnd())
                 {
                     current   =  current.Appended(conditionMiss.Size);
                     totalMiss += conditionMiss.Size;
@@ -218,7 +237,8 @@ namespace Nysa.Text.Lexing
                     conditionTry = condition.Find(current);
                 }
 
-                return conditionTry.Map(h => LexFind.Hit(current, Identifier.None), m => LexFind.Miss(totalMiss + m.Size));
+                return conditionTry.Match(h => (LexFind)Lex.Hit(current, Identifier.None),
+                                          m => (LexFind)Lex.Miss(totalMiss + m.Size));
             }
         }
 
@@ -229,12 +249,12 @@ namespace Nysa.Text.Lexing
             {
                 Identifier id = Identifier.None;
 
-                while (!current.End.IsEnd)
+                while (!current.End.IsSourceEnd())
                 {
                     var find = condition.Find(current);
 
                     if (find is LexMiss)
-                        return LexFind.Hit(current, id);
+                        return Lex.Hit(current, id);
                     else if (find is LexHit findHit)
                     {
                         current = findHit.Span;
@@ -244,7 +264,7 @@ namespace Nysa.Text.Lexing
                         throw new Exception("Unexpected type.");
                 }
 
-                return LexFind.Hit(current, id);
+                return Lex.Hit(current, id);
             }
         }
 
@@ -253,7 +273,7 @@ namespace Nysa.Text.Lexing
             public Node Condition { get; private set; }
             public MaybeNode(Node condition) { this.Condition = condition; }
             public override LexFind Find(TextSpan current)
-                => this.Condition.Find(current).Map(h => h, m => LexFind.Hit(current, Identifier.None));
+                => this.Condition.Find(current).Match(h => h, m => Lex.Hit(current, Identifier.None));
         }
 
         public class LongestNode : Node
@@ -273,12 +293,12 @@ namespace Nysa.Text.Lexing
 
                     isHit |= find is LexHit;
                     
-                    find.Affect(h => hit  = hit.Span.Value.Length < h.Span.Value.Length ? h : hit,
-                                m => miss = m.Size                < miss.Size           ? m : miss );
+                    find.Affect(h => hit  = hit.Span.Length < h.Span.Length ? h : hit,
+                                m => miss = m.Size          < miss.Size     ? m : miss );
                 }
 
                 return isHit ? hit
-                             : (miss.Size == Int32.MaxValue ? LexFind.Miss(0) : miss);
+                             : (miss.Size == Int32.MaxValue ? Lex.Miss(0) : miss);
             }
         }
 
@@ -289,7 +309,7 @@ namespace Nysa.Text.Lexing
             private static LexFind SpanPush(LexHit hit, Node push, Node pop)
             {
                 var popTry      = pop.Find(hit.Span);  // pop gets a chance to declare a hit
-                var @continue   = !hit.Span.End.IsEnd; // even if we're at the end of the data
+                var @continue   = !hit.Span.End.IsSourceEnd(); // even if we're at the end of the data
 
                 while (popTry is LexMiss && @continue)
                 {
@@ -305,7 +325,7 @@ namespace Nysa.Text.Lexing
                         hit = new LexHit(hit.Span.Appended(1), Identifier.None);
 
                     popTry      = pop.Find(hit.Span);
-                    @continue   = !hit.Span.End.IsEnd;
+                    @continue   = !hit.Span.End.IsSourceEnd();
                 }
 
                 return popTry;
@@ -317,7 +337,7 @@ namespace Nysa.Text.Lexing
 
                 return (start is LexHit startHit) 
                        ? SpanPush(startHit, push, pop)
-                       : LexFind.Miss(1);
+                       : Lex.Miss(1);
             }
 
         }
@@ -330,7 +350,7 @@ namespace Nysa.Text.Lexing
             {
                 var check = this.Subject.Find(current);
 
-                while (check is LexMiss && !current.End.IsEnd)
+                while (check is LexMiss && !current.End.IsSourceEnd())
                 {
                     current = current.End + 1;
                     check   = this.Subject.Find(current);

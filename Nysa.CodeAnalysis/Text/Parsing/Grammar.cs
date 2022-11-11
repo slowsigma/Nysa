@@ -17,11 +17,12 @@ namespace Nysa.Text.Parsing
         private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
-            => (_RuleCheck.Find(symbol.Start()) is LexMiss && _CategoryCheck.Find(symbol.Start()) is LexMiss);
+            => (   _RuleCheck.Find(Start.Span(symbol)) is LexMiss
+                && _CategoryCheck.Find(Start.Span(symbol)) is LexMiss);
         public static Boolean IsRuleSymbol(String symbol)
-            => _RuleCheck.Find(symbol.Start()) is LexHit;
+            => _RuleCheck.Find(Start.Span(symbol)) is LexHit;
         public static Boolean IsCategorySymbol(String symbol)
-            => _CategoryCheck.Find(symbol.Start()) is LexHit;
+            => _CategoryCheck.Find(Start.Span(symbol)) is LexHit;
 
         // We use a specific empty instance a list of rules to signify terminal symbols.
         private static readonly List<Rule>  TERMINAL       = new List<Rule>();
