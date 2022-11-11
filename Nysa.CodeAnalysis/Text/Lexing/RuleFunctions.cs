@@ -185,4 +185,17 @@ public static class RuleFunctions
                            m => m);
     }
 
+    public static LexFind FindSeek(Rule subject, TextSpan current)
+    {
+        var check = subject.Function(current);
+
+        while (check is LexMiss && !current.End.IsSourceEnd())
+        {
+            current = current.End + 1;
+            check   = subject.Function(current);
+        }
+
+        return check;
+    }
+
 }

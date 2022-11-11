@@ -42,7 +42,7 @@ namespace Nysa.Text.Lexing
 
         public static AnyOneNode AnyOne(this String alternatives, Boolean? ignoreCase = null)
         {
-            var nodes = alternatives.Select(c => c.One()).ToArray();
+            var nodes = alternatives.Select(c => Take.One(c)).ToArray();
 
             return (nodes.Length > 1)
                    ? (new AnyOneNode(nodes, ignoreCase.GetValueOrDefault(Take.IgnoreCase)))

@@ -10,11 +10,7 @@ namespace Nysa.Text.Lexing;
 
 public abstract record Rule(Func<TextSpan, LexFind> Function);
 
-public abstract record AssertRule(Func<TextSpan, Boolean> Predicate) : Rule(c => Predicate(c) ? Lex.Hit(c) : Lex.Miss(0));
-
-public sealed record StartRule() : AssertRule(current => current.Start.IsSourceStart());
-
-public sealed record EndRule() : AssertRule(current => current.End.IsSourceEnd());
+public record AssertRule(Func<TextSpan, Boolean> Predicate) : Rule(c => Predicate(c) ? Lex.Hit(c) : Lex.Miss(0));
 
 public record IdRule(Identifier Id) : Rule(c => Lex.Hit(c, Id));
 
@@ -72,3 +68,7 @@ public record StackRule(
     Rule Push,
     Rule Pop
 ) : Rule(c => RuleFunctions.FindStack(Push, Pop, c));
+
+public record SeekRule(
+    Rule Subject
+) : Rule(c => RuleFunctions.FindSeek(Subject, c));
