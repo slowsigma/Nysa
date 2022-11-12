@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
     <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
     <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
+    <ProjectReference Include="..\..\Dorata\Dorata.VBScript\Dorata.VBScript.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

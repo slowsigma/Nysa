@@ -57,13 +57,13 @@ namespace Nysa.Text.Lexing
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final =   final != null ? final.Or(this.Id.Value.Id())
-                                    :                 this.Id.Value.Id();
+                            final =   final != null ? final.Or(Take.Id(this.Id.Value))
+                                    :                 Take.Id(this.Id.Value);
                         }
 
                         return final != null
-                               ? this.Value.One().Then(final)
-                               : this.Value.One();
+                               ? Take.One(this.Value).Then(final)
+                               : Take.One(this.Value);
                     }
                 }
 
@@ -97,13 +97,13 @@ namespace Nysa.Text.Lexing
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final =   final != null ? final.Or(this.Id.Value.Id())
-                                    :                 this.Id.Value.Id();
+                            final =   final != null ? final.Or(Take.Id(this.Id.Value))
+                                    :                 Take.Id(this.Id.Value);
                         }
 
                         return final != null
-                               ? sequence.Sequence(this.IgnoreCase).Then(final)
-                               : sequence.Sequence(this.IgnoreCase);
+                               ? Take.Sequence(sequence, this.IgnoreCase).Then(final)
+                               : Take.Sequence(sequence, this.IgnoreCase);
                     }
                 }
 

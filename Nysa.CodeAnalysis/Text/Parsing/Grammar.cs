@@ -13,8 +13,8 @@ namespace Nysa.Text.Parsing
     public partial class Grammar
     {
         // static members
-        private static readonly Take.Node _RuleCheck        = Take.AtStart.Then('<'.One()).Then(Take.Until('>'.One())).Where(s => s.Length > 2);
-        private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
+        private static readonly Take.Node _RuleCheck        = Take.AtStart.Then(Take.One('<')).Then(Take.Until(Take.One('>'))).Where(s => s.Length > 2);
+        private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then(Take.One('{')).Then(Take.Until(Take.One('}'))).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
             => (   _RuleCheck.Find(Start.Span(symbol)) is LexMiss
