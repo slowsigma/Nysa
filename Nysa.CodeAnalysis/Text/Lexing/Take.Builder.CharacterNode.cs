@@ -42,11 +42,23 @@ namespace Nysa.Text.Lexing
                         var anyOne  = nexts.Select(n => n as Take.OneNode)
                                            .Aggregate(String.Empty, (s, o) => o == null ? s : String.Concat(s, o.Value))
                                            .Make(any => any.Length > 1 ? any.AnyOne(this.IgnoreCase) : null);
+
                         // longest will be valid if we have more than one valid nexts
                         var others  = nexts.Where(n => !(n is Take.OneNode)).ToList();
                         var longest = (anyOne == null)
                                       ? others.Count > 1 ? Take.Longest(others) : null
                                       : others.Count > 0 ? Take.Longest(others, anyOne) : null;
+
+// ORIGINAL
+//                      var longest = anyOne != null
+//                                    ? Take.Longest(nexts.Where(n => !(n is Take.OneNode))
+//                                                        .Select(n => (Option<Take.Node>)n),
+//                                                   anyOne.Value)
+//                                          .Select(n => (Take.Node)n)
+//                                    : Take.Longest(nexts.Select(n => (Option<Take.Node>)n)).Select(n => (Take.Node)n);
+
+
+
 
                         var final   =   longest != null    ? longest                // longest will incorporate (anyOne and nexts if valid)
                                       : anyOne  != null    ? anyOne                 // nothing in nexts so take anyOne if valid
@@ -97,8 +109,9 @@ namespace Nysa.Text.Lexing
                         if (this.Id != null)
                         {
                             // nexts take precedence over this.Id
-                            final =   final != null ? final.Or(this.Id.Value.Id())
-                                    :                 this.Id.Value.Id();
+                            final = final != null
+                                    ? final.Or(this.Id.Value.Id())
+                                    : this.Id.Value.Id();
                         }
 
                         return final != null

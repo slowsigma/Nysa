@@ -13,16 +13,11 @@ namespace Nysa.Text.Parsing
     public partial class Chart
     {
 
-        public struct Entry : IEquatable<Entry>
+        public record struct Entry
         {
-            // static members
-            public static Boolean operator ==(Entry lhs, Entry rhs) => lhs.Equals(rhs);
-            public static Boolean operator !=(Entry lhs, Entry rhs) => !lhs.Equals(rhs);
-
-            // instance members
-            public Grammar.Rule Rule { get; private set; }
-            public Int32 Number { get; private set; }
-            public Int32 Next { get; private set; }
+            public Grammar.Rule Rule { get; init; }
+            public Int32 Number { get; init; }
+            public Int32 Next { get; init; }
 
             public Entry(Grammar.Rule rule, Int32 number, Int32 next)
             {
@@ -36,10 +31,6 @@ namespace Nysa.Text.Parsing
 
             public Entry AsNextEntry() => new Entry(this.Rule, this.Number, this.Next + 1);
             public Entry AsInverted(Position fromPosition) => new Entry(this.Rule, fromPosition.Index - this.Number, this.Next);
-
-            public override bool Equals(object? obj) => obj is Entry entry ? this.Equals(entry) : false;
-            public bool Equals(Entry other) => (this.Rule == other.Rule) && (this.Number == other.Number) && (this.Next == other.Next);
-            public override int GetHashCode() => this.Rule.HashWithOther(this.Number, this.Next);
 
             private IEnumerable<String> RuleState()
             {
@@ -59,7 +50,7 @@ namespace Nysa.Text.Parsing
                 return String.Concat(this.Rule.Symbol, " [", this.Number, "] ::= ", String.Join(" ", this.RuleState().ToArray()));
             }
 
-        } // struct Entry
+        }
 
     }
 

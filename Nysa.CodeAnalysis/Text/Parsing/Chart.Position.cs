@@ -13,15 +13,11 @@ namespace Nysa.Text.Parsing
     public partial class Chart
     {
 
-        public struct Position : IEquatable<Position>, IEnumerable<Entry>
+        public record struct Position : IEnumerable<Entry>
         {
-            // static members
-            public static Boolean operator ==(Position lhs, Position rhs) => lhs.Equals(rhs);
-            public static Boolean operator !=(Position lhs, Position rhs) => !lhs.Equals(rhs);
+            public Chart  Chart { get; init; }
+            public Int32  Index { get; init; }
 
-            // instance members
-            public Chart  Chart { get; private set; }
-            public Int32  Index { get; private set; }
             public Position(Chart chart, Int32 index)
             {
                 this.Chart = chart;
@@ -103,9 +99,6 @@ namespace Nysa.Text.Parsing
                 return entryIndex;
             }
 
-            public Boolean Equals(Position other) => (this.Chart == other.Chart) && (this.Index == other.Index);
-            public override Boolean Equals(Object? other) => other is Position pos && this.Equals(pos);
-            public override Int32 GetHashCode() => this.Chart.HashWithOther(this.Index);
             public override String ToString() => this.Index.ToString();
 
         }
