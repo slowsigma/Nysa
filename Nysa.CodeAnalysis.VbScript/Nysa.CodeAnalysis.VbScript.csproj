@@ -1,27 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <Reference Include="Dorata.Common">
-      <HintPath>DorataLibs\Dorata.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Dorata.VbScript">
-      <HintPath>DorataLibs\Dorata.VbScript.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeCommonLibraries</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="IncludeCommonLibraries">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)Dorata.Common.dll" TargetPath="" />
+      <BuildOutputInPackage Include="$(OutputPath)Dorata.VbScript.dll" TargetPath="" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
-    <ProjectReference Include="..\Nysa.Text\Nysa.Text.csproj" />
+    <Reference Include="Dorata.Common">
+      <HintPath>lib\Dorata.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Dorata.VbScript">
+      <HintPath>lib\Dorata.VbScript.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <Version>1.0.1</Version>
+    <Authors>Philip Fucich</Authors>
+    <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>Nysa.CodeAnalysis.VbScript</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
