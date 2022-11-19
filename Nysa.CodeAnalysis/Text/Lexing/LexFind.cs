@@ -7,8 +7,8 @@ namespace Nysa.Text.Lexing;
 public abstract record LexFind();
 
 public record LexHit(
-    TextSpan   Span,
-    Identifier Id
+    TextSpan        Span,
+    TokenIdentifier Id
 ) : LexFind();
 
 public record LexMiss(

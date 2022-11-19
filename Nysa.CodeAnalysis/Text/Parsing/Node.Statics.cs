@@ -40,7 +40,7 @@ namespace Nysa.Text.Parsing
                 var checkPosition = chart[checkAcross.Position.Index + checkFind.Number];
 
                 return chart.Grammar.IsTerminal(checkSymbolId)
-                        ? input[checkPosition.Index].Id == checkSymbolId
+                        ? input[checkPosition.Index].Id.IsEqual(checkSymbolId)
                         : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
             }
 
@@ -60,7 +60,7 @@ namespace Nysa.Text.Parsing
                 var checkPosition = chart[checkDown.Position.Index + checkFind.Number];
 
                 return chart.Grammar.IsTerminal(checkSymbolId)
-                        ? input[checkPosition.Index].Id == checkSymbolId
+                        ? input[checkPosition.Index].Id.IsEqual(checkSymbolId)
                         : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
             }
 
@@ -125,7 +125,7 @@ namespace Nysa.Text.Parsing
                         var token        = input[across.Position.Index];
                         var nextPosition = chart[across.Position.Index + 1];
 
-                        if (token.Id == id)
+                        if (token.Id.IsEqual(id))
                         {
                             var previous = across.Previous.Match(p  => p.NextAcrossToken(nextPosition, token),
                                                                  () => AcrossItem.StartWithToken(across.Entry, nextPosition, token));
@@ -225,7 +225,7 @@ namespace Nysa.Text.Parsing
                         var token        = input[down.Position.Index];
                         var nextPosition = chart[down.Position.Index + 1];
 
-                        if (token.Id == id)
+                        if (token.Id.IsEqual(id))
                         {
                             CallAcross(BuildStates.RETURN, down.Entry, nextPosition, 1, down.Entry.Number - 1, AcrossItem.StartWithToken(down.Entry, nextPosition, token));
                         }

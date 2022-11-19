@@ -11,10 +11,6 @@ using Nysa.Text.Lexing;
 using Nysa.CodeAnalysis.VbScript;
 namespace Nysa.CodeAnalysis.Testing;
 
-using Dorata.Text.Lexing;
-//using Dorata.Text.Parsing;
-using DorataVBScript = Dorata.Text.Parsing.VBScript;
-
 public static class Tests
 {
     private static String[] _DefaultEventAttributeNames = new String[]
@@ -123,41 +119,6 @@ public static class Tests
         }
     }
 
-    public static void LexingTestDorata(String scriptsFolder)
-    {
-        var tklFile = Path.Combine(scriptsFolder, "FullTokenList-DorataLexer.txt");
-        
-        if (File.Exists(tklFile))
-            File.Delete(tklFile);
-
-        using (var stream = File.OpenWrite(tklFile))
-        using (var writer = new StreamWriter(stream))
-        {
-            foreach (var file in Directory.EnumerateFiles(scriptsFolder, "*.vbs", SearchOption.TopDirectoryOnly))
-            {
-                var source = File.ReadAllText(file);
-
-                var hits = DorataVBScript.Seek.Repeat(source).Where(h => h.Id != Dorata.Text.Identifier.Trivia).ToArray();
-
-                writer.WriteLine(file);
-
-                foreach (var hit in hits)
-                {
-                    var value = hit.Span.Value;
-
-                    if (String.IsNullOrWhiteSpace(value))
-                        writer.WriteLine($"Id: {DorataVBScript.Grammar.Symbol(hit.Id)} - white-space");
-                    else
-                        writer.WriteLine($"Id: {DorataVBScript.Grammar.Symbol(hit.Id)} - {value}");
-                }
-            }
-
-            writer.Flush();
-            writer.Close();
-        }
-    }
-
-
 
     public static void LexingTest(String scriptsFolder)
     {
@@ -178,7 +139,7 @@ public static class Tests
             {
                 var source = File.ReadAllText(file);
 
-                var hits = VBScriptX.Seek.Repeat(source).Where(h => h.Id != Nysa.Text.Identifier.Trivia).ToArray();
+                var hits = VBScriptX.Seek.Repeat(source).Where(h => !  h.Id.IsEqual(Nysa.Text.Identifier.Trivia)).ToArray();
 
                 writer.WriteLine(file);
 
@@ -186,10 +147,12 @@ public static class Tests
                 {
                     var value = hit.Span.ToString();
 
+                    var symbolText = String.Join(", ", hit.Id.Values().Select(v => VBScriptX.Grammar.Symbol(v)));
+
                     if (String.IsNullOrWhiteSpace(value))
-                        writer.WriteLine($"Id: {VBScriptX.Grammar.Symbol(hit.Id)} - white-space");
+                        writer.WriteLine($"Id: {symbolText} - white-space");
                     else
-                        writer.WriteLine($"Id: {VBScriptX.Grammar.Symbol(hit.Id)} - {value}");
+                        writer.WriteLine($"Id: {symbolText} - {value}");
                 }
             }
 

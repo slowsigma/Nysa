@@ -9,7 +9,7 @@ public static class Lex
     public static readonly LexMiss EMTPY_MISS = new LexMiss(0);
     public static readonly LexMiss SINGLE_MISS = new LexMiss(1);
 
-    public static LexHit  Hit(TextSpan span, Identifier? id = null) => new LexHit(span, id ?? Identifier.None);
+    public static LexHit  Hit(TextSpan span, TokenIdentifier? id = null) => new LexHit(span, id ?? Identifier.None.ToTokenIdentifier());
     public static LexMiss Miss(Int32 size) => new LexMiss(size);
 
     public static LexMiss Largest(Option<LexMiss> first, Option<LexMiss> second)
@@ -22,7 +22,7 @@ public static class Lex
     
 
     public static LexHit Identified(LexHit first, LexHit second)
-        => (first.Id != Identifier.None) ? first : second;
+        => !first.Id.IsEqual(Identifier.None) ? first : second;
 
     public static T Match<T>(this LexFind @this, Func<LexHit, T> fA, Func<LexMiss, T> fB)
         =>   @this is LexHit  hit  ? fA(hit)

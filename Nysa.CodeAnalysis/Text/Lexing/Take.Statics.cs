@@ -81,7 +81,7 @@ namespace Nysa.Text.Lexing
             while (find is LexHit findHit)
             {
                 if (diff > 0 && includeSkips)
-                    yield return new LexHit(new TextSpan(source, curr.End.Value, diff), Identifier.None);
+                    yield return new LexHit(new TextSpan(source, curr.End.Value, diff), Identifier.None.ToTokenIdentifier());
 
                 yield return findHit;
 

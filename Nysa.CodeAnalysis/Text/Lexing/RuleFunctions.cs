@@ -11,7 +11,7 @@ namespace Nysa.Text.Lexing;
 public static class RuleFunctions
 {
     public static LexFind Find(this IdRule @this, TextSpan current)
-        => Lex.Hit(current, @this.Id);
+        => Lex.Hit(current, @this.Id.ToTokenIdentifier());
 
     private static Boolean IsEqual(this Char @this, Char other, Boolean ignoreCase)
         =>    @this.Equals(other)
@@ -109,7 +109,7 @@ public static class RuleFunctions
 
     public static LexFind FindWhile(Rule condition, TextSpan current)
     {
-        var id = Identifier.None;
+        var id = Identifier.None.ToTokenIdentifier();
 
         while (!current.End.IsSourceEnd())
         {
@@ -138,14 +138,23 @@ public static class RuleFunctions
         var hit     = Lex.Hit(current);
         var isHit   = false;
 
+        TokenIdentifier CalcId(TokenIdentifier first, TokenIdentifier second)
+        {
+            return   first.IsEqual(Identifier.None)  ? second
+                   : second.IsEqual(Identifier.None) ? first
+                   :                                   first.MergedWith(second);
+        }
+
         foreach (var rule in alternatives)
         {
             var find = rule.Function(current);
 
             isHit |= find is LexHit;
 
-            find.Affect(h => { hit  = hit.Span.Length < h.Span.Length ? h : hit; },
-                        m => { miss = m.Size          < miss.Size     ? m : miss; });
+            find.Affect(h => { hit  =   hit.Span.Length <  h.Span.Length ? h
+                                      : hit.Span.Length == h.Span.Length ? Lex.Hit(hit.Span, CalcId(hit.Id, h.Id))
+                                      :                                    hit; },
+                        m => { miss = m.Size < miss.Size ? m : miss; });
         }
 
         return isHit

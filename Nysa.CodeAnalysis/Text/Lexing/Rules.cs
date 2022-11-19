@@ -12,7 +12,7 @@ public abstract record Rule(Func<TextSpan, LexFind> Function);
 
 public record AssertRule(Func<TextSpan, Boolean> Predicate) : Rule(c => Predicate(c) ? Lex.Hit(c) : Lex.Miss(0));
 
-public record IdRule(Identifier Id) : Rule(c => Lex.Hit(c, Id));
+public record IdRule(Identifier Id) : Rule(c => Lex.Hit(c, Id.ToTokenIdentifier()));
 
 public record OneRule(
     Char Value,

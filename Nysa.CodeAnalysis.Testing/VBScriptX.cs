@@ -659,17 +659,17 @@ public static partial class VBScriptX
 
         var newLine = Grammar.Id("{new-line}");
 
-        if (tokens[errPoint.Index].Id == newLine)
+        if (tokens[errPoint.Index].Id.IsEqual(newLine))
         {
-            while (lineStart > 0 && tokens[lineStart - 1].Id != newLine)
+            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
                 lineStart--;
         }
         else
         {
-            while (lineStart > 0 && tokens[lineStart - 1].Id != newLine)
+            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
                 lineStart--;
 
-            while (lineStop < tokens.Length && tokens[lineStop].Id != newLine)
+            while (lineStop < tokens.Length && !tokens[lineStop].Id.IsEqual(newLine))
                 lineStop++;
         }
 
@@ -678,7 +678,7 @@ public static partial class VBScriptX
 
         while (current > -1)
         {
-            if (tokens[current].Id == newLine)
+            if (tokens[current].Id.IsEqual(newLine))
                 lineCount++;
 
             current--;
@@ -715,8 +715,8 @@ public static partial class VBScriptX
         if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
             source = String.Concat(source, "\r\n");
 
-        var hits = VBScriptX.Seek.Repeat(source).Where(h => h.Id != Identifier.Trivia).ToArray();
-        var tokens = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScriptX.Grammar.Id(VBScriptX.END_OF_INPUT)) }).ToArray();
+        var hits     = VBScriptX.Seek.Repeat(source).Where(h => !h.Id.IsEqual(Identifier.Trivia)).ToArray();
+        var tokens   = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScriptX.Grammar.Id(VBScriptX.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
         var recChart = Chart.Create(VBScriptX.Grammar, tokens);
 
         if (recChart[recChart.Length - 1].Any(entry => entry.Rule.Symbol == "<Program>" && entry.Number == 0))

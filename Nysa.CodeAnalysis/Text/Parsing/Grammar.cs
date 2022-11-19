@@ -41,7 +41,7 @@ namespace Nysa.Text.Parsing
 
             this._SymbolIdentifier = new Dictionary<String, Identifier>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var keyIndex in builder.Symbols().Select((s, i) => (Symbol: s, Id: Identifier.FromInteger(i + 1))))
+            foreach (var keyIndex in builder.Symbols().Select((s, i) => (Symbol: s, Id: Identifier.FromNumber(i + 1))))
                 this._SymbolIdentifier.Add(keyIndex.Symbol, keyIndex.Id);
 
             var definitions = builder.Rules()
@@ -85,6 +85,7 @@ namespace Nysa.Text.Parsing
 
         public String Symbol(Identifier id) => (id != Identifier.None && this._Rules.ContainsKey(id)) ? this._Rules[id].Name : "invalid-symbol-id";
         public Boolean IsValid(Identifier id) => (id != Identifier.None && this._Rules.ContainsKey(id));
+        public Boolean IsValid(TokenIdentifier id) => id.Values().All(i => this.IsValid(i));
         public Boolean IsValid(String symbol) => this.IsValid(this.Id(symbol));
         public Boolean IsTerminal(Identifier id) => this.IsValid(id) && this._Rules[id].IsTerminal;
 

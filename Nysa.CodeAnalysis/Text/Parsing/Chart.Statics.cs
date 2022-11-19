@@ -35,7 +35,7 @@ namespace Nysa.Text.Parsing
 
                     else if (grammar.IsTerminal(symbolId)) // test for terminal
                     {
-                        if (symbolId == input[p].Id)
+                        if (input[p].Id.IsEqual(symbolId))
                             chart[p + 1].AddRaw(entry.AsNextEntry());
                     }
                     else // use rules to anticipate input and completion

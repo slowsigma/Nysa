@@ -656,8 +656,8 @@ namespace Nysa.Text.Parsing
             if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
                 source = String.Concat(source, "\r\n");
 
-            var hits        = VBScript.Seek.Repeat(source).Where(h => h.Id != Identifier.Trivia).ToArray();
-            var tokens      = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScript.Grammar.Id(VBScript.END_OF_INPUT)) }).ToArray();
+            var hits        = VBScript.Seek.Repeat(source).Where(h => !h.Id.IsEqual(Identifier.Trivia)).ToArray();
+            var tokens      = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScript.Grammar.Id(VBScript.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
             var recChart    = Chart.Create(VBScript.Grammar, tokens);
 
             if (recChart[recChart.Length - 1].Any(entry => entry.Rule.Symbol == "<Program>" && entry.Number == 0))
