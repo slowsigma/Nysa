@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

@@ -28,15 +28,15 @@ namespace Nysa.Text.Parsing
             this.AsToken = token;
         }
 
-        public T Select<T>(Func<Node, T> fNode, Func<Token, T> fToken)
+        public T Match<T>(Func<Node, T> fNode, Func<Token, T> fToken)
             => this.AsNode != null ? fNode(this.AsNode) : this.AsToken != null ? fToken(this.AsToken.Value) : throw new Exception("Program error.");
 
         public Boolean Equals(NodeOrToken other)
-            => this.Select(a => other.AsNode != null && a.Equals(other.AsNode), b => other.AsToken != null && b.Equals(other.AsToken.Value));
+            => this.Match(a => other.AsNode != null && a.Equals(other.AsNode), b => other.AsToken != null && b.Equals(other.AsToken.Value));
         public Boolean Equals(Node? other)
-            => this.Select(a => a == other, b => false);
+            => this.Match(a => a == other, b => false);
         public Boolean Equals(Token other)
-            => this.Select(a => false, b => b.Equals(other));
+            => this.Match(a => false, b => b.Equals(other));
 
         public override Boolean Equals(object? obj)
             =>   obj is NodeOrToken nort ? this.Equals(nort)
@@ -45,7 +45,7 @@ namespace Nysa.Text.Parsing
                : false;
 
         public override Int32 GetHashCode()
-            => this.Select(a => a.GetHashCode(), b => b.GetHashCode());
+            => this.Match(a => a.GetHashCode(), b => b.GetHashCode());
 
         public override String? ToString() => base.ToString();
     }

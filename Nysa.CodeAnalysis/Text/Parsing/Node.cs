@@ -21,9 +21,9 @@ namespace Nysa.Text.Parsing
         public IReadOnlyList<NodeOrToken> Members { get => this._Members; }
 
         public Option<TextSpan> First()
-            => this.Members.Count == 0 ? Option<TextSpan>.None : this.Members.Select(m => m.Select(a => a.First(), b => b.Span.Some())).First();
+            => this.Members.Count == 0 ? Option<TextSpan>.None : this.Members.Select(m => m.Match(a => a.First(), b => b.Span.Some())).First();
         public Option<TextSpan> Last()
-            => this.Members.Count == 0 ? Option<TextSpan>.None : this.Members.Reverse().Select(m => m.Select(a => a.Last(), b => b.Span.Some())).First();
+            => this.Members.Count == 0 ? Option<TextSpan>.None : this.Members.Reverse().Select(m => m.Match(a => a.Last(), b => b.Span.Some())).First();
 
         public Node(Identifier id, String symbol) : this(id, symbol, None<NodeOrToken>.Enumerable()) { }
 

@@ -1,0 +1,22 @@
+﻿<Window x:Class="Nysa.CodeAnalysis.Show.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nysa.CodeAnalysis.Show"
+        mc:Ignorable="d"
+        Title="Nysa CodeAnalysis Show" Height="350" Width="525">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Name="ShowParseButton" Content="Show Parse" Click="ShowParseButton_Click"/>
+        <Button Grid.Row="1" Name="TryParseScripts" Content="Parse Scripts" Click="TryParseScripts_Click"/>
+        <Button Grid.Row="2" Name="TryParseHtml" Content="Parse Htmls" Click="TryParseHtml_Click"/>
+    </Grid>
+</Window>
