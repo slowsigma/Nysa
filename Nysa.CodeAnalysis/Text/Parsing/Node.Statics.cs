@@ -14,7 +14,7 @@ namespace Nysa.Text.Parsing
     public partial class Node
     {
 
-        private static Option<AcrossItem> Build(FinalChart chart, Token[] input, FinalChart.Entry initialEntry, FinalChart.Position initialPosition)
+        private static Option<AcrossItem> Build(FinalChart chart, Token[] input, ChartEntry initialEntry, ChartPosition initialPosition)
         {
             var stack  = new Stack<BuildCall>();
             var across = new AcrossCall(BuildStates.ACROSS_CALL, BuildStates.FINAL, initialEntry, initialPosition, 0, initialEntry.Number);
@@ -23,7 +23,7 @@ namespace Nysa.Text.Parsing
 
             var downCache = new Dictionary<DownKey, Option<AcrossItem>>();
 
-            Boolean isValidAcross(AcrossCall checkAcross, FinalChart.Entry checkFind)
+            Boolean isValidAcross(AcrossCall checkAcross, ChartEntry checkFind)
             {
                 if (checkAcross.SearchId   != checkFind.Rule.Id ||
                     checkAcross.LengthLeft <  checkFind.Number)
@@ -44,7 +44,7 @@ namespace Nysa.Text.Parsing
                         : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
             }
 
-            Boolean isValidDown(DownCall checkDown, FinalChart.Entry checkFind)
+            Boolean isValidDown(DownCall checkDown, ChartEntry checkFind)
             {
                 if (checkDown.SearchId     != checkFind.Rule.Id ||
                     checkDown.Entry.Number <  checkFind.Number  ||
@@ -64,7 +64,7 @@ namespace Nysa.Text.Parsing
                         : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
             }
 
-            void CallAcross(BuildStates @return, FinalChart.Entry entry, FinalChart.Position position, Int32 currentRule, Int32 lengthLeft, AcrossItem? previous = null)
+            void CallAcross(BuildStates @return, ChartEntry entry, ChartPosition position, Int32 currentRule, Int32 lengthLeft, AcrossItem? previous = null)
             {
                 stack.Push(build);
 
@@ -72,7 +72,7 @@ namespace Nysa.Text.Parsing
                 build  = across;
             }
 
-            void CallDown(BuildStates @return, FinalChart.Entry callEntry, FinalChart.Position callPosition, DownItem? above = null)
+            void CallDown(BuildStates @return, ChartEntry callEntry, ChartPosition callPosition, DownItem? above = null)
             {
                 stack.Push(build);
 

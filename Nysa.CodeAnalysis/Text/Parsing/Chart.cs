@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Chart : IEnumerable<Chart.Position>
+    public partial class Chart : IEnumerable<ChartPosition>
     {
         // instance members
         public Grammar Grammar { get; private set; }
 
-        private List<Entry>[]   _Data;
-        private Position        _NullPosition;
+        internal List<ChartEntry>[]   _Data;
+        private ChartPosition        _NullPosition;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private Dictionary<Int32, List<(Int32 Position, Int32 Entry)>> _TracePoints;
@@ -29,16 +29,16 @@ namespace Nysa.Text.Parsing
         internal Chart(Grammar grammar, Int32 size)
         {
             this.Grammar        = grammar;
-            this._Data          = new List<Entry>[size];
-            this._NullPosition  = new Position(null, 0);
+            this._Data          = new List<ChartEntry>[size];
+            this._NullPosition  = new ChartPosition(null, 0);
 
             this._TracePoints       = new Dictionary<Int32, List<(Int32 Position, Int32 Entry)>>();
             this._TraceContributors = new Dictionary<Int32, List<Int32>>();
         }
 
-        public Position this[Int32 index]
+        public ChartPosition this[Int32 index]
         {
-            get => (index >= 0) && (index < this._Data.Length) ? new Position(this, index) : this._NullPosition;
+            get => (index >= 0) && (index < this._Data.Length) ? new ChartPosition(this, index) : this._NullPosition;
         }
 
         public void AddTracePoint(Int32 traceId, Int32 position, Int32 entry)
@@ -60,9 +60,9 @@ namespace Nysa.Text.Parsing
             this._TraceContributors[traceId].Add(contributorTraceId);
         }
 
-        public IEnumerator<Position> GetEnumerator()
+        public IEnumerator<ChartPosition> GetEnumerator()
         {
-            foreach (var p in this._Data.Select((l, i) => new Position(this, i)))
+            foreach (var p in this._Data.Select((l, i) => new ChartPosition(this, i)))
                 yield return p;
         }
 

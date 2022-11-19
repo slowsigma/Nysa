@@ -18,11 +18,11 @@ namespace Nysa.Text.Parsing
         private abstract class AcrossItem
         {
             // static members
-            public static AcrossItem StartWithNode(FinalChart.Entry entry, FinalChart.Position nextPosition, AcrossItem member)
+            public static AcrossItem StartWithNode(ChartEntry entry, ChartPosition nextPosition, AcrossItem member)
                 => new NodeAcrossItem(entry, nextPosition, Option<AcrossItem>.None, member);
-            public static AcrossItem StartWithEmpty(FinalChart.Entry entry, FinalChart.Position nextPosition)
+            public static AcrossItem StartWithEmpty(ChartEntry entry, ChartPosition nextPosition)
                 => new EmptyAcrossItem(entry, nextPosition, Option<AcrossItem>.None);
-            public static AcrossItem StartWithToken(FinalChart.Entry entry, FinalChart.Position nextPosition, Token token)
+            public static AcrossItem StartWithToken(ChartEntry entry, ChartPosition nextPosition, Token token)
                 => new TokenAcrossItem(entry, nextPosition, Option<AcrossItem>.None, token);
 
             private sealed class NodeAcrossItem : AcrossItem
@@ -30,7 +30,7 @@ namespace Nysa.Text.Parsing
                 // instance members
                 public AcrossItem   Member  { get; private set; }
 
-                public NodeAcrossItem(FinalChart.Entry entry, FinalChart.Position nextPosition, Option<AcrossItem> previous, AcrossItem member)
+                public NodeAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous, AcrossItem member)
                     : base(entry, nextPosition, previous)
                 {
                     this.Member = member;
@@ -49,7 +49,7 @@ namespace Nysa.Text.Parsing
 
             private sealed class EmptyAcrossItem : AcrossItem
             {
-                public EmptyAcrossItem(FinalChart.Entry entry, FinalChart.Position nextPosition, Option<AcrossItem> previous)
+                public EmptyAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous)
                     : base(entry, nextPosition, previous)
                 {
                 }
@@ -71,7 +71,7 @@ namespace Nysa.Text.Parsing
                 // instance members
                 public Token Token { get; private set; }
 
-                public TokenAcrossItem(FinalChart.Entry entry, FinalChart.Position nextPosition, Option<AcrossItem> previous, Token token)
+                public TokenAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous, Token token)
                     : base(entry, nextPosition, previous)
                 {
                     this.Token = token;
@@ -89,22 +89,22 @@ namespace Nysa.Text.Parsing
             }
 
             // instance members
-            public FinalChart.Entry         Entry           { get; private set; }
-            public FinalChart.Position      NextPosition    { get; private set; }
-            public Option<AcrossItem>       Previous        { get; private set; }
+            public ChartEntry           Entry           { get; private set; }
+            public ChartPosition        NextPosition    { get; private set; }
+            public Option<AcrossItem>   Previous        { get; private set; }
 
-            protected AcrossItem(FinalChart.Entry entry, FinalChart.Position nextPosition, Option<AcrossItem> previous)
+            protected AcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous)
             {
                 this.Entry          = entry;
                 this.NextPosition   = nextPosition;
                 this.Previous       = previous;
             }
 
-            public AcrossItem NextAcrossNode(FinalChart.Position nextPosition, AcrossItem member)
+            public AcrossItem NextAcrossNode(ChartPosition nextPosition, AcrossItem member)
                 => new NodeAcrossItem(this.Entry, nextPosition, this.Some(), member);
-            public AcrossItem NextAcrossEmpty(FinalChart.Entry empty)
+            public AcrossItem NextAcrossEmpty(ChartEntry empty)
                 => new EmptyAcrossItem(this.Entry, this.NextPosition, this.Some());
-            public AcrossItem NextAcrossToken(FinalChart.Position nextPosition, Token token)
+            public AcrossItem NextAcrossToken(ChartPosition nextPosition, Token token)
                 => new TokenAcrossItem(this.Entry, nextPosition, this.Some(), token);
 
             protected abstract NodeOrToken? ToMember();

@@ -22,10 +22,10 @@ namespace Nysa.Text.Parsing
             public static Boolean operator!=(DownKey lhs, DownKey rhs) => !lhs.Equals(rhs);
 
             // instance members
-            public FinalChart.Entry     Entry       { get; private set; }
-            public FinalChart.Position  Position    { get; private set; }
+            public ChartEntry     Entry       { get; private set; }
+            public ChartPosition  Position    { get; private set; }
 
-            public DownKey(FinalChart.Entry entry, FinalChart.Position position)
+            public DownKey(ChartEntry entry, ChartPosition position)
             {
                 this.Entry      = entry;
                 this.Position   = position;

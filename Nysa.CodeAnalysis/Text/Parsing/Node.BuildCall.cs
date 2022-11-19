@@ -17,15 +17,15 @@ namespace Nysa.Text.Parsing
         {
             public BuildStates          CallState   { get; private set; }
             public BuildStates          ReturnState { get; private set; }
-            public FinalChart.Entry     Entry       { get; private set; }
-            public FinalChart.Position  Position    { get; private set; }
+            public ChartEntry           Entry       { get; private set; }
+            public ChartPosition        Position    { get; private set; }
 
             public Identifier           SearchId    { get; set; }
-            public FinalChart.Entry     Match       { get; set; }
+            public ChartEntry           Match       { get; set; }
             public Int32                MatchIndex  { get; set; }
             public Option<AcrossItem>   Result      { get; set; }
 
-            protected BuildCall(BuildStates call, BuildStates @return, FinalChart.Entry entry, FinalChart.Position position)
+            protected BuildCall(BuildStates call, BuildStates @return, ChartEntry entry, ChartPosition position)
             {
                 this.CallState   = call;
                 this.ReturnState = @return;

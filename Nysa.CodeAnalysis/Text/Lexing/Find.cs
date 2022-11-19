@@ -50,7 +50,7 @@ public static class Find
                   : alternatives.ToArray().ToHashSet();
 
         return (set.Count > 1)
-               ? new SetRule(set, ignoreCase.GetValueOrDefault(Take.IgnoreCase))
+               ? new SetRule(set, ignoreCase.GetValueOrDefault(Find.IgnoreCase))
                : throw new Exception("SetRule requires two or more values.");
     }
 
@@ -58,8 +58,8 @@ public static class Find
     public static ThenRule Then(this Rule first, Identifier id) => new ThenRule(first, new IdRule(id));
 
     public static OrRule Or(this Rule primary, Rule secondary) => new OrRule(primary, secondary);
-    public static OneRule OneX(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Take.IgnoreCase));
-    public static SequenceRule SequenceX(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Take.IgnoreCase));
+    public static OneRule OneX(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
+    public static SequenceRule SequenceX(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
     public static IdRule IdX(this Identifier id) => new IdRule(id);
     public static AndRule And(this Rule primary, Rule secondary) => new AndRule(primary, secondary);
     public static NotRule Not(this Rule condition) => new NotRule(condition);

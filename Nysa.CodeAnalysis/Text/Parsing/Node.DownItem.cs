@@ -18,17 +18,17 @@ namespace Nysa.Text.Parsing
         {
             // instance members
             public Option<DownItem>  Previous { get; private set; }
-            public FinalChart.Entry  Current  { get; private set; }
+            public ChartEntry  Current  { get; private set; }
 
-            private DownItem(Option<DownItem> previous, FinalChart.Entry current)
+            private DownItem(Option<DownItem> previous, ChartEntry current)
             {
                 this.Previous = previous;
                 this.Current  = current;
             }
 
-            public DownItem(FinalChart.Entry current) : this(Option<DownItem>.None, current) { }
-            public DownItem WithNext(FinalChart.Entry current) => new DownItem(this.Some(), current);
-            public Boolean Contains(FinalChart.Entry entry) 
+            public DownItem(ChartEntry current) : this(Option<DownItem>.None, current) { }
+            public DownItem WithNext(ChartEntry current) => new DownItem(this.Some(), current);
+            public Boolean Contains(ChartEntry entry) 
                 => this.Current.Equals(entry) || this.Previous.Map(p => p.Contains(entry)).Or(false);
         }
 

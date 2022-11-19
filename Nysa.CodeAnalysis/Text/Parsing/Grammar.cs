@@ -13,16 +13,16 @@ namespace Nysa.Text.Parsing
     public partial class Grammar
     {
         // static members
-        private static readonly Take.Node _RuleCheck        = Take.AtStart.Then(Take.One('<')).Then(Take.Until(Take.One('>'))).Where(s => s.Length > 2);
-        private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then(Take.One('{')).Then(Take.Until(Take.One('}'))).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _RuleCheck        = Find.AtStart.Then('<'.OneX()).Then(Find.Until('>'.OneX())).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _CategoryCheck    = Find.AtStart.Then('{'.OneX()).Then(Find.Until('}'.OneX())).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
-            => (   _RuleCheck.Find(Start.Span(symbol)) is LexMiss
-                && _CategoryCheck.Find(Start.Span(symbol)) is LexMiss);
+            => (   _RuleCheck.Function(Start.Span(symbol)) is LexMiss
+                && _CategoryCheck.Function(Start.Span(symbol)) is LexMiss);
         public static Boolean IsRuleSymbol(String symbol)
-            => _RuleCheck.Find(Start.Span(symbol)) is LexHit;
+            => _RuleCheck.Function(Start.Span(symbol)) is LexHit;
         public static Boolean IsCategorySymbol(String symbol)
-            => _CategoryCheck.Find(Start.Span(symbol)) is LexHit;
+            => _CategoryCheck.Function(Start.Span(symbol)) is LexHit;
 
         // We use a specific empty instance a list of rules to signify terminal symbols.
         private static readonly List<Rule>  TERMINAL       = new List<Rule>();

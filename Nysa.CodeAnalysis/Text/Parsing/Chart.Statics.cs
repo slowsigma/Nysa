@@ -20,7 +20,7 @@ namespace Nysa.Text.Parsing
                 return chart;
 
             foreach (var rule in grammar.Rules(grammar.StartId))
-                chart[0].AddRaw(new Chart.Entry(rule, 0, 0));
+                chart[0].AddRaw(new ChartEntry(rule, 0, 0));
 
             for (Int32 p = 0; p < input.Length; p++)
             {
