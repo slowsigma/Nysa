@@ -207,4 +207,24 @@ public static class RuleFunctions
         return check;
     }
 
+    public static LexFind FindEqual(Rule subject, Rule check, TextSpan current)
+    {
+        var findSubject = subject.Function(current);
+        var findCheck   = check.Function(current);
+
+        return findSubject.Match(sh => findCheck.Match(ch => sh.Span.Length == ch.Span.Length ? (LexFind)sh : Lex.Miss(sh.Span.Length),
+                                                       cm => Lex.Miss(sh.Span.Length)),
+                                 sm => sm);
+    }
+
+    public static LexFind FindNotEqual(Rule subject, Rule check, TextSpan current)
+    {
+        var findSubject = subject.Function(current);
+        var findCheck   = check.Function(current);
+
+        return findSubject.Match(sh => findCheck.Match(ch => sh.Span.Length == ch.Span.Length ? (LexFind)Lex.Miss(sh.Span.Length) : sh,
+                                                       cm => sh),
+                                 sm => sm);
+    }
+
 }

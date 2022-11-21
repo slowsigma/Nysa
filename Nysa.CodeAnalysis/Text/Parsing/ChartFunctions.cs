@@ -9,10 +9,9 @@ using Nysa.Text.Lexing;
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Chart
+    public static class ChartFunctions
     {
-        // static members
-        public static Chart Create(Grammar grammar, Token[] input)
+        public static Chart Chart(this Grammar grammar, Token[] input)
         {
             var chart = new Chart(grammar, input.Length + 1);
 

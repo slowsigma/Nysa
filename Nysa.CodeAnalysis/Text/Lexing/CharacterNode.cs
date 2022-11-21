@@ -6,7 +6,7 @@ using Nysa.Logics;
 
 namespace Nysa.Text.Lexing;
 
-internal class CharacterNode
+internal sealed class CharacterNode
 {
     public Boolean      IgnoreCase  { get; private set; }
     public Char         Value       { get; private set; }
@@ -38,12 +38,12 @@ internal class CharacterNode
     public Rule ToRule()
         => (this.Id == null && this.Nexts.Count == 1)
            ? this.Nexts.First().Value.ToRule(this.Value.ToString())     // collapse more
-           : this.Value.OneX().Then(this.GetNext());                    // no collapse
+           : this.Value.One().Then(this.GetNext());                    // no collapse
 
     public Rule ToRule(String sequence)
         => (this.Id == null && this.Nexts.Count == 1)
            ? this.Nexts.First().Value.ToRule(String.Concat(sequence, this.Value))                   // collapse more
-           : String.Concat(sequence, this.Value).SequenceX(this.IgnoreCase).Then(this.GetNext());   // no collapse
+           : String.Concat(sequence, this.Value).Sequence(this.IgnoreCase).Then(this.GetNext());   // no collapse
 
     public CharacterNode(String literal, Identifier id, Boolean ignoreCase)
     {

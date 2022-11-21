@@ -6,11 +6,11 @@ namespace Nysa.Text.Lexing;
 
 public abstract record LexFind();
 
-public record LexHit(
+public sealed record LexHit(
     TextSpan        Span,
     TokenIdentifier Id
 ) : LexFind();
 
-public record LexMiss(
+public sealed record LexMiss(
     Int32 Size
 ) : LexFind();

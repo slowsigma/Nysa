@@ -10,65 +10,75 @@ namespace Nysa.Text.Lexing;
 
 public abstract record Rule(Func<TextSpan, LexFind> Function);
 
-public record AssertRule(Func<TextSpan, Boolean> Predicate) : Rule(c => Predicate(c) ? Lex.Hit(c) : Lex.Miss(0));
+public sealed record AssertRule(Func<TextSpan, Boolean> Predicate) : Rule(c => Predicate(c) ? Lex.Hit(c) : Lex.Miss(0));
 
-public record IdRule(Identifier Id) : Rule(c => Lex.Hit(c, Id.ToTokenIdentifier()));
+public sealed record IdRule(Identifier Id) : Rule(c => Lex.Hit(c, Id.ToTokenIdentifier()));
 
-public record OneRule(
+public sealed record OneRule(
     Char Value,
     Boolean IgnoreCase
 ) : Rule(c => RuleFunctions.FindOne(Value, IgnoreCase, c));
 
-public record SetRule(
+public sealed record SetRule(
     IReadOnlySet<Char> Values,      // Build with Char.ToUpperInvariant when this.IgnoreCase
     Boolean IgnoreCase
 ) : Rule(c => RuleFunctions.FindSet(Values, IgnoreCase, c));
 
-public record SequenceRule(
+public sealed record SequenceRule(
     String Value,
     Boolean IgnoreCase
 ) : Rule(c => RuleFunctions.FindSequence(Value, IgnoreCase, c));
 
-public record OrRule(
+public sealed record OrRule(
     Rule Primary,
     Rule Secondary
 ) : Rule(c => RuleFunctions.FindOr(Primary, Secondary, c));
 
-public record ThenRule(
+public sealed record ThenRule(
     Rule First,
     Rule Next
 ) : Rule(c => RuleFunctions.FindThen(First, Next, c));
 
-public record NotRule(
+public sealed record NotRule(
     Rule Condition
 ) : Rule(c => RuleFunctions.FindNot(Condition, c));
 
-public record AndRule(
+public sealed record AndRule(
     Rule One,
     Rule Two
 ) : Rule(c => RuleFunctions.FindAnd(One, Two, c));
 
-public record UntilRule(
+public sealed record UntilRule(
     Rule Condition
 ) : Rule(c => RuleFunctions.FindUntil(Condition, c));
 
-public record WhileRule(
+public sealed record WhileRule(
     Rule Condition
 ) : Rule(c => RuleFunctions.FindWhile(Condition, c));
 
-public record MaybeRule(
+public sealed record MaybeRule(
     Rule Condition
 ) : Rule(c => RuleFunctions.FindMaybe(Condition, c));
 
-public record LongestRule(
+public sealed record LongestRule(
     IReadOnlyList<Rule> Alternatives
 ) : Rule(c => RuleFunctions.FindLongest(Alternatives, c));
 
-public record StackRule(
+public sealed record EqualRule(
+    Rule Subject,
+    Rule Check
+) : Rule(c => RuleFunctions.FindEqual(Subject, Check, c));
+
+public sealed record NotEqualRule(
+    Rule Subject,
+    Rule Check
+) : Rule(c => RuleFunctions.FindNotEqual(Subject, Check, c));
+
+public sealed record StackRule(
     Rule Push,
     Rule Pop
 ) : Rule(c => RuleFunctions.FindStack(Push, Pop, c));
 
-public record SeekRule(
+public sealed record SeekRule(
     Rule Subject
 ) : Rule(c => RuleFunctions.FindSeek(Subject, c));

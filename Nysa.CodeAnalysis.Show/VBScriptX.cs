@@ -499,11 +499,65 @@ public static partial class VBScriptX
 
         Find.IgnoreCase     = true;
 
-        var realNewLine     = Find.Longest('\r'.OneX(), '\n'.OneX(), Find.SequenceX("\r\n"));
+        var reserved        = Find.Longest("and".Sequence(),
+                                           "byref".Sequence(),
+                                           "byval".Sequence(),
+                                           "call".Sequence(),
+                                           "case".Sequence(),
+                                           "class".Sequence(),
+                                           "const".Sequence(),
+                                           "dim".Sequence(),
+                                           "do".Sequence(),
+                                           "each".Sequence(),
+                                           "else".Sequence(),
+                                           "elseif".Sequence(),
+                                           "empty".Sequence(),
+                                           "end".Sequence(),
+                                           "eqv".Sequence(),
+                                           "exit".Sequence(),
+                                           "false".Sequence(),
+                                           "for".Sequence(),
+                                           "function".Sequence(),
+                                           "get".Sequence(),
+                                           "goto".Sequence(),
+                                           "if".Sequence(),
+                                           "imp".Sequence(),
+                                           "in".Sequence(),
+                                           "is".Sequence(),
+                                           "let".Sequence(),
+                                           "loop".Sequence(),
+                                           "mod".Sequence(),
+                                           "new".Sequence(),
+                                           "next".Sequence(),
+                                           "not".Sequence(),
+                                           "nothing".Sequence(),
+                                           "null".Sequence(),
+                                           "on".Sequence(),
+                                           "option".Sequence(),
+                                           "or".Sequence(),
+                                           "preserve".Sequence(),
+                                           "private".Sequence(),
+                                           "public".Sequence(),
+                                           "redim".Sequence(),
+                                           "rem".Sequence(),
+                                           "resume".Sequence(),
+                                           "select".Sequence(),
+                                           "set".Sequence(),
+                                           "sub".Sequence(),
+                                           "then".Sequence(),
+                                           "to".Sequence(),
+                                           "true".Sequence(),
+                                           "until".Sequence(),
+                                           "wend".Sequence(),
+                                           "while".Sequence(),
+                                           "with".Sequence(),
+                                           "xor".Sequence());
+
+        var realNewLine     = Find.Longest('\r'.One(), '\n'.One(), Find.Sequence("\r\n"));
         var printable       = String.Concat(@"!", "\"", @"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~");
         var space           = String.Concat("\t", " ");
-        //var spacePlus       = space.Set().Value.Then('_'.OneX()).Then(Find.While(space.Set().Value)).Then(Find.Maybe(realNewLine));
-        var spacePlus       = '_'.OneX().Then(Find.While(space.Set())).Then(realNewLine);
+        //var spacePlus       = space.Set().Value.Then('_'.One()).Then(Find.While(space.Set().Value)).Then(Find.Maybe(realNewLine));
+        var spacePlus       = '_'.One().Then(Find.While(space.Set())).Then(realNewLine);
 
         var stringChar      = Find.Set(printable.Replace("\"", String.Empty));
         var dateChar        = Find.Set(printable.Replace("#", String.Empty));
@@ -514,33 +568,33 @@ public static partial class VBScriptX
         var digit           = Find.Set("0123456789");
         var octDigit        = Find.Set("01234567");
         var hexDigit        = Find.Set("0123456789ABCDEF");
-        //var newLine         = Find.Longest(realNewLine, Find.OneX(':')).Value.Then(VBScriptX.Grammar.Id("{new-line}"));
+        //var newLine         = Find.Longest(realNewLine, Find.One(':')).Value.Then(VBScriptX.Grammar.Id("{new-line}"));
         var newLine         = realNewLine.Then(VBScriptX.Grammar.Id("{new-line}"));
         var intLiteral      = digit.Then(Find.While(digit)).Then(VBScriptX.Grammar.Id("{intliteral}"));
-        var dateLiteral     = '#'.OneX().Then(dateChar.Then(Find.While(dateChar))).Then('#'.OneX()).Then(VBScriptX.Grammar.Id("{dateliteral}"));
-        var hexLiteral      = "&H".SequenceX().Then(hexDigit.Then(Find.While(hexDigit))).Then(Find.Maybe('&'.OneX())).Then(VBScriptX.Grammar.Id("{hexliteral}"));
-        var octLiteral      = '&'.OneX().Then(octDigit.Then(Find.While(octDigit))).Then(Find.Maybe('&'.OneX())).Then(VBScriptX.Grammar.Id("{octliteral}"));
-        //var stringLiteral   = '"'.OneX().Then(Find.Until("\"\"".SequenceX().Maybe().Then('"'.OneX()))).Then("\"\"\"".SequenceX().Or('"'.OneX())).Then(VBScriptX.Grammar.Id("{stringliteral}"));
-        var stringLiteral   = '"'.OneX().Then(Find.While("\"\"".SequenceX().Or(Find.Not('"'.OneX())))).Then('"'.OneX()).Then(VBScriptX.Grammar.Id("{stringliteral}"));
+        var dateLiteral     = '#'.One().Then(dateChar.Then(Find.While(dateChar))).Then('#'.One()).Then(VBScriptX.Grammar.Id("{dateliteral}"));
+        var hexLiteral      = "&H".Sequence().Then(hexDigit.Then(Find.While(hexDigit))).Then(Find.Maybe('&'.One())).Then(VBScriptX.Grammar.Id("{hexliteral}"));
+        var octLiteral      = '&'.One().Then(octDigit.Then(Find.While(octDigit))).Then(Find.Maybe('&'.One())).Then(VBScriptX.Grammar.Id("{octliteral}"));
+        //var stringLiteral   = '"'.One().Then(Find.Until("\"\"".Sequence().Maybe().Then('"'.One()))).Then("\"\"\"".Sequence().Or('"'.One())).Then(VBScriptX.Grammar.Id("{stringliteral}"));
+        var stringLiteral   = '"'.One().Then(Find.While("\"\"".Sequence().Or(Find.Not('"'.One())))).Then('"'.One()).Then(VBScriptX.Grammar.Id("{stringliteral}"));
 
         var digitOneToN     = digit.Then(Find.While(digit));
-        var exponent        = 'E'.OneX().Then(Find.Maybe("+-".Set())).Then(digitOneToN);
-        var floatPeriod     = '.'.OneX().Then(digitOneToN).Then(Find.Maybe(exponent));
+        var exponent        = 'E'.One().Then(Find.Maybe("+-".Set())).Then(digitOneToN);
+        var floatPeriod     = '.'.One().Then(digitOneToN).Then(Find.Maybe(exponent));
         var floatFull       = digitOneToN.Then(floatPeriod);
         var floatExp        = digitOneToN.Then(exponent);
 
         var floatLiteral    = Find.Longest(floatPeriod, floatFull, floatExp).Then(VBScriptX.Grammar.Id("{floatliteral}"));
 
         var idBaseOne       = letter.Then(Find.While(idTail));
-        var idBaseTwo       = '['.OneX().Then(Find.While(idNameChar)).Then(']'.OneX());
+        var idBaseTwo       = '['.One().Then(Find.While(idNameChar)).Then(']'.One());
 
-        var id              = Find.Longest(idBaseOne, idBaseTwo).Then(VBScriptX.Grammar.Id("{id}"));
-        var idDot           = Find.Longest(idBaseOne, idBaseTwo).Then('.'.OneX()).Then(VBScriptX.Grammar.Id("{iddot}"));
-        var dotId           = '.'.OneX().Then(Find.Longest(idBaseOne, idBaseTwo)).Then(VBScriptX.Grammar.Id("{dotid}"));
-        var dotIdDot        = '.'.OneX().Then(Find.Longest(idBaseOne, idBaseTwo)).Then('.'.OneX()).Then(VBScriptX.Grammar.Id("{dotiddot}"));
+        var id              = Find.Longest(idBaseOne, idBaseTwo).NotEqual(reserved).Then(VBScriptX.Grammar.Id("{id}"));
+        var idDot           = Find.Longest(idBaseOne, idBaseTwo).Then('.'.One()).Then(VBScriptX.Grammar.Id("{iddot}"));
+        var dotId           = '.'.One().Then(Find.Longest(idBaseOne, idBaseTwo)).Then(VBScriptX.Grammar.Id("{dotid}"));
+        var dotIdDot        = '.'.One().Then(Find.Longest(idBaseOne, idBaseTwo)).Then('.'.One()).Then(VBScriptX.Grammar.Id("{dotiddot}"));
 
-        var commentOne      = '\''.OneX().Then(Find.Until(realNewLine)).Then(Identifier.Trivia);
-        var commentTwo      = "REM".SequenceX().Then(Find.Longest(realNewLine, space.Set().Then(Find.While(String.Concat(space, printable).Set())))).Then(Identifier.Trivia);
+        var commentOne      = '\''.One().Then(Find.Until(realNewLine)).Then(Identifier.Trivia);
+        var commentTwo      = "REM".Sequence().Then(Find.Longest(realNewLine, space.Set().Then(Find.While(String.Concat(space, printable).Set())))).Then(Identifier.Trivia);
 
         var literals        = Find.Literals(VBScriptX.Grammar.LiteralSymbols().Select(s => (s, VBScriptX.Grammar.Id(s))));
 
@@ -717,7 +771,7 @@ public static partial class VBScriptX
 
         var hits     = VBScriptX.Seek.Repeat(source).Where(h => !h.Id.IsEqual(Identifier.Trivia)).ToArray();
         var tokens   = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScriptX.Grammar.Id(VBScriptX.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
-        var recChart = Chart.Create(VBScriptX.Grammar, tokens);
+        var recChart = VBScriptX.Grammar.Chart(tokens);
 
         if (recChart[recChart.Length - 1].Any(entry => entry.Rule.Symbol == "<Program>" && entry.Number == 0))
         {

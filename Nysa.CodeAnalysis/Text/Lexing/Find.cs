@@ -58,8 +58,8 @@ public static class Find
     public static ThenRule Then(this Rule first, Identifier id) => new ThenRule(first, new IdRule(id));
 
     public static OrRule Or(this Rule primary, Rule secondary) => new OrRule(primary, secondary);
-    public static OneRule OneX(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
-    public static SequenceRule SequenceX(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
+    public static OneRule One(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
+    public static SequenceRule Sequence(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
     public static IdRule IdX(this Identifier id) => new IdRule(id);
     public static AndRule And(this Rule primary, Rule secondary) => new AndRule(primary, secondary);
     public static NotRule Not(this Rule condition) => new NotRule(condition);
@@ -67,6 +67,9 @@ public static class Find
     public static UntilRule Until(Rule condition) => new UntilRule(condition);
     public static WhileRule While(this Rule condition) => new WhileRule(condition);
     public static StackRule Stack(this Rule push, Rule pop) => new StackRule(push, pop);
+
+    public static EqualRule Equal(this Rule subject, Rule check) => new EqualRule(subject, check);
+    public static NotEqualRule NotEqual(this Rule subject, Rule check) => new NotEqualRule(subject, check);
 
     public static AssertRule Where(Func<TextSpan, Boolean> predicate)
         => new AssertRule(predicate);

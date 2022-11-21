@@ -9,55 +9,26 @@ using System.Threading.Tasks;
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Chart : IEnumerable<ChartPosition>
+    public class Chart : IEnumerable<ChartPosition>
     {
         // instance members
         public Grammar Grammar { get; private set; }
 
         internal List<ChartEntry>[]   _Data;
-        private ChartPosition        _NullPosition;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Dictionary<Int32, List<(Int32 Position, Int32 Entry)>> _TracePoints;
-        public IReadOnlyDictionary<Int32, List<(Int32 Position, Int32 Entry)>> TracePoints { get => this._TracePoints; }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Dictionary<Int32, List<Int32>> _TraceContributors;
-        public IReadOnlyDictionary<Int32, List<Int32>> TraceContributors { get => this._TraceContributors; }
-        //private Dictionary<Int32, List<Int32>> _CompletionToTraces;
+        public IReadOnlyList<List<ChartEntry>> Data => this._Data;
 
         internal Chart(Grammar grammar, Int32 size)
         {
             this.Grammar        = grammar;
             this._Data          = new List<ChartEntry>[size];
-            this._NullPosition  = new ChartPosition(null, 0);
-
-            this._TracePoints       = new Dictionary<Int32, List<(Int32 Position, Int32 Entry)>>();
-            this._TraceContributors = new Dictionary<Int32, List<Int32>>();
         }
 
         public ChartPosition this[Int32 index]
         {
-            get => (index >= 0) && (index < this._Data.Length) ? new ChartPosition(this, index) : this._NullPosition;
-        }
-
-        public void AddTracePoint(Int32 traceId, Int32 position, Int32 entry)
-        {
-            if (!this._TracePoints.ContainsKey(traceId))
-                this._TracePoints.Add(traceId, new List<(Int32 Position, Int32 Entry)>());
-            // Ensure all trace identifiers have at least an empty entry in _TraceContributors.
-            if (!this._TraceContributors.ContainsKey(traceId))
-                this._TraceContributors.Add(traceId, new List<Int32>());
-
-            this._TracePoints[traceId].Add((position, entry));
-        }
-
-        public void AddTraceContributor(Int32 traceId, Int32 contributorTraceId)
-        {
-            if (!this._TraceContributors.ContainsKey(traceId))
-                this._TraceContributors.Add(traceId, new List<Int32>());
-
-            this._TraceContributors[traceId].Add(contributorTraceId);
+            get => (index >= 0) && (index < this._Data.Length)
+                   ? new ChartPosition(this, index)
+                   : throw new IndexOutOfRangeException();
         }
 
         public IEnumerator<ChartPosition> GetEnumerator()
