@@ -16,19 +16,18 @@ public struct ChartEntry : IEquatable<ChartEntry>
     public static Boolean operator !=(ChartEntry lhs, ChartEntry rhs) => !lhs.Equals(rhs);
 
     // instance members
-    public Grammar.Rule Rule    { get; private set; }
+    public GrammarRule  Rule    { get; private set; }
     public Int32        Number  { get; private set; }
     public Int32        Next    { get; private set; }
 
-    public ChartEntry(Grammar.Rule rule, Int32 number, Int32 next)
+    public ChartEntry(GrammarRule rule, Int32 number, Int32 next)
     {
-        this.Rule = rule;
+        this.Rule   = rule;
         this.Number = number;
-        this.Next = next;
+        this.Next   = next;
     }
 
-    public Identifier NextRuleId
-    { get => (this.Next < this.Rule.DefinitionIds.Count) ? this.Rule.DefinitionIds[this.Next] : Identifier.None; }
+    public Identifier NextRuleId => (this.Next < this.Rule.DefinitionIds.Count) ? this.Rule.DefinitionIds[this.Next] : Identifier.None;
 
     public ChartEntry AsNextEntry() => new ChartEntry(this.Rule, this.Number, this.Next + 1);
     public ChartEntry AsInverted(ChartPosition fromPosition) => new ChartEntry(this.Rule, fromPosition.Index - this.Number, this.Next);
@@ -51,8 +50,6 @@ public struct ChartEntry : IEquatable<ChartEntry>
     }
 
     public override string ToString()
-    {
-        return String.Concat(this.Rule.Symbol, " [", this.Number, "] ::= ", String.Join(" ", this.RuleState().ToArray()));
-    }
+        => String.Concat(this.Rule.Symbol, " [", this.Number, "] ::= ", String.Join(" ", this.RuleState().ToArray()));
 
 }

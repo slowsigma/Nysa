@@ -16,7 +16,6 @@ namespace Nysa.Text
         public static Boolean operator !=(TextSpan lhs, TextSpan rhs) => !lhs.Equals(rhs);
 
         public static implicit operator TextSpan(TextPosition position) => new TextSpan(position.Source, position.Value, 0);
-        // public static implicit operator TextSpan(String source) => new TextSpan(source ?? String.Empty, 0, (source ?? String.Empty).Length);
 
         // instance members
         public String  Source   { get; private set; }

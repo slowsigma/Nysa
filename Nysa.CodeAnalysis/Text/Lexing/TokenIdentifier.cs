@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nysa.Text.Lexing;
 
-public class TokenIdentifier
+public sealed class TokenIdentifier
 {
     public static TokenIdentifier Create(Identifier id) => id.ToTokenIdentifier();
 

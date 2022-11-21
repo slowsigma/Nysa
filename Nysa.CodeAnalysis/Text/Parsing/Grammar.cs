@@ -25,7 +25,7 @@ namespace Nysa.Text.Parsing
             => _CategoryCheck.Function(Start.Span(symbol)) is LexHit;
 
         // We use a specific empty instance a list of rules to signify terminal symbols.
-        private static readonly List<Rule>  TERMINAL       = new List<Rule>();
+        internal static readonly List<GrammarRule>  TERMINAL       = new List<GrammarRule>();
 
         // instance members
         private Dictionary<String, Identifier>              _SymbolIdentifier;
@@ -89,7 +89,7 @@ namespace Nysa.Text.Parsing
         public Boolean IsValid(String symbol) => this.IsValid(this.Id(symbol));
         public Boolean IsTerminal(Identifier id) => this.IsValid(id) && this._Rules[id].IsTerminal;
 
-        public IReadOnlyList<Rule> Rules(Identifier id)
+        public IReadOnlyList<GrammarRule> Rules(Identifier id)
             => this.IsValid(id) ? this._Rules[id].Variants : TERMINAL;
 
         public HashSet<Identifier> NullableIds

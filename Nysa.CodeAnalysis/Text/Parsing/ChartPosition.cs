@@ -25,13 +25,14 @@ public struct ChartPosition : IEquatable<ChartPosition>, IEnumerable<ChartEntry>
         this.Index = index;
     }
 
-    public Int32 Count { get => this.Chart._Data[this.Index] == null ? 0 : this.Chart._Data[this.Index].Count; }
+    public Int32 Count => this.Chart._Data[this.Index] == null ? 0 : this.Chart._Data[this.Index].Count;
+    
     public ChartEntry this[Int32 entry] { get => this.Chart._Data[this.Index][entry]; }
 
     public IEnumerable<ChartEntry> Where(Func<ChartEntry, Boolean> predicate)
         => (this.Chart._Data[this.Index] != null)
-            ? this.Chart._Data[this.Index].Where(predicate)
-            : None<ChartEntry>.Enumerable();
+           ? this.Chart._Data[this.Index].Where(predicate)
+           : None<ChartEntry>.Enumerable();
 
     public IEnumerable<ChartEntry> GetEntries()
     {
@@ -53,51 +54,37 @@ public struct ChartPosition : IEquatable<ChartPosition>, IEnumerable<ChartEntry>
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    internal Int32 AddUnique(ChartEntry entry)
+    internal void AddUnique(ChartEntry entry)
     {
         if (this.Chart._Data[this.Index] == null)
             this.Chart._Data[this.Index] = new List<ChartEntry>();
 
         var entries = this.Chart._Data[this.Index];
-        var entryIndex = entries.IndexOf(entry);
 
-        if (entryIndex < 0)
-        {
-            entryIndex = entries.Count;
+        if (entries.IndexOf(entry) < 0)
             entries.Add(entry);
-        }
-
-        return entryIndex;
     }
 
-    internal Int32 AddUnique(Grammar.Rule rule, Int32 origin, Int32 next)
+    internal void AddUnique(GrammarRule rule, Int32 origin, Int32 next)
     {
         if (this.Chart._Data[this.Index] == null)
             this.Chart._Data[this.Index] = new List<ChartEntry>();
 
         var entries = this.Chart._Data[this.Index];
-        var entry = new ChartEntry(rule, origin, next);
-        var entryIndex = entries.IndexOf(entry);
+        var entry   = new ChartEntry(rule, origin, next);
 
-        if (entryIndex < 0)
-        {
-            entryIndex = entries.Count;
+        if (entries.IndexOf(entry) < 0)
             entries.Add(entry);
-        }
-
-        return entryIndex;
     }
 
-    internal Int32 AddRaw(ChartEntry entry)
+    internal void AddRaw(ChartEntry entry)
     {
         if (this.Chart._Data[this.Index] == null)
             this.Chart._Data[this.Index] = new List<ChartEntry>();
 
         var entries = this.Chart._Data[this.Index];
-        var entryIndex = entries.Count;
+
         entries.Add(entry);
-
-        return entryIndex;
     }
 
     public Boolean Equals(ChartPosition other) => (this.Chart == other.Chart) && (this.Index == other.Index);

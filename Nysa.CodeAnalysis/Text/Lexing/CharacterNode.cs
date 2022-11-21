@@ -20,7 +20,7 @@ internal sealed class CharacterNode
         var nexts       = nextRules.Where(n => !(n is OneRule o && o.IgnoreCase == this.IgnoreCase)).ToList();
         // pull out ones we can make into a set
         var oneRules    = nextRules.Where(n => n is OneRule o && o.IgnoreCase == this.IgnoreCase).Cast<OneRule>().ToArray();
-        // if have enough for a set
+        // if we have enough for a set
         if (oneRules.Length > 1) // create it and add to nexts
             nexts.Add(oneRules.Aggregate(String.Empty, (s, o) => String.Concat(s, o.Value)).Set(this.IgnoreCase));
         else // otherwise, put what we can't use back into nexts
