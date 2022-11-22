@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using SyntaxNode = Dorata.Text.Parsing.Node;
+using SyntaxNode = Nysa.Text.Parsing.Node;
 
 using HtmlAgilityPack;
 

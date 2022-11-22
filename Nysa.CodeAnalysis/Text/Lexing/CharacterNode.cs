@@ -27,7 +27,7 @@ internal sealed class CharacterNode
             nexts.AddRange(oneRules);
         // if we have more than one, we turn nexts into a single LongestRule
         if (nexts.Count > 1)
-            nexts = Return.Enumerable(Find.Longest(nexts)).ToList<Rule>();
+            nexts = Return.Enumerable(Take.Longest(nexts)).ToList<Rule>();
 
         return   nexts.Count == 1 && this.Id != null ? nexts[0].Or(this.Id.Value.IdX())
                : nexts.Count == 1                    ? nexts[0]

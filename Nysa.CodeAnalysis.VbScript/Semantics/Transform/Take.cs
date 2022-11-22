@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Nysa.Logics;
-
-using ParseId = Dorata.Text.Identifier;
+using Nysa.Text.Lexing;
+using ParseId = Nysa.Text.Identifier;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -21,7 +20,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 {
                     if (b[current.Value] is SemanticItem semantic && semantic.Value is T node)
                     { items.Add(node); }
-                    else if (b[current.Value] is TokenItem token && parseIds.Contains(token.Value.Id))
+                    else if (b[current.Value] is TokenItem token && parseIds.Any(p => token.Value.Id.IsEqual(p)))
                     { break; }
                     else if (!(b[current.Value] is TokenItem))
                     { break; }

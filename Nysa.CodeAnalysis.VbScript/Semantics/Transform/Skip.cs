@@ -4,8 +4,9 @@ using System.Linq;
 
 using Nysa.Logics;
 
-using ParseId = Dorata.Text.Identifier;
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using Nysa.Text.Lexing;
+using ParseId = Nysa.Text.Identifier;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -40,7 +41,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
                 while (current.Value < b.Length)
                 {
-                    if (b[current.Value] is TokenItem token && parseIds.Contains(token.Value.Id))
+                    if (b[current.Value] is TokenItem token && parseIds.Any(p => token.Value.Id.IsEqual(p)))
                         return (token.Value, current);
                     else
                         current = current.Value + 1;

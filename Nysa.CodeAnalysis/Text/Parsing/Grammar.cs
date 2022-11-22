@@ -10,8 +10,8 @@ namespace Nysa.Text.Parsing
     public class Grammar
     {
         // static members
-        private static readonly Nysa.Text.Lexing.Rule _RuleCheck        = Find.AtStart.Then('<'.One()).Then(Find.Until('>'.One())).Where(s => s.Length > 2);
-        private static readonly Nysa.Text.Lexing.Rule _CategoryCheck    = Find.AtStart.Then('{'.One()).Then(Find.Until('}'.One())).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _RuleCheck        = Take.AtStart.Then('<'.One()).Then(Take.Until('>'.One())).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
             => (   _RuleCheck.Function(Start.Span(symbol)) is LexMiss

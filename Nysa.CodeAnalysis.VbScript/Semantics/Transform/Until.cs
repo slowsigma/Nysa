@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 using Nysa.Logics;
 
-using ParseId = Dorata.Text.Identifier;
+using Nysa.Text.Lexing;
+using ParseId = Nysa.Text.Identifier;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -18,7 +19,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
                 for (; r < b.Length; r++)
                 {
-                    if (b[r] is TokenItem item && item.Value.Id == parseId)
+                    if (b[r] is TokenItem item && item.Value.Id.IsEqual(parseId))
                         break;
                     else
                         items.Add(b[r]);

@@ -26,6 +26,11 @@ namespace Nysa.Text.Lexing
             this.Id   = id;
         }
 
+        public Token(TextSpan span, Identifier id)
+            : this(span, id.ToTokenIdentifier())
+        {
+        }
+
         public Boolean Equals(Token other) => this.Span == other.Span && this.Id.IsEqual(other.Id);
         public override Boolean Equals(object? obj) => obj is Token tkn ? this.Equals(tkn) : false;
         public override Int32 GetHashCode() => this.Span.HashWithOther(this.Id);

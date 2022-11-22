@@ -1,15 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Nysa.IO\Nysa.IO.csproj" />
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
-    <ProjectReference Include="..\Nysa.Text\Nysa.Text.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

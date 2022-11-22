@@ -2,8 +2,9 @@ using System;
 
 using Nysa.Logics;
 
-using ParseId = Dorata.Text.Identifier;
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using Nysa.Text.Lexing;
+using ParseId = Nysa.Text.Identifier;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -13,7 +14,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         // assumes current token might be one of a specific type (parseIds), only moves forward if so (no errors)
         public static Get<Option<SyntaxToken>> TokenOf(params ParseId[] parseIds)
-            => (b, i) => i.Value < b.Length && b[i] is TokenItem item && parseIds.Contains(item.Value.Id)
+            => (b, i) => i.Value < b.Length && b[i] is TokenItem item && parseIds.Any(p => item.Value.Id.IsEqual(p))
                          ? (item.Value.Some(), i.Value + 1)
                          : (Option<SyntaxToken>.None, i);
 

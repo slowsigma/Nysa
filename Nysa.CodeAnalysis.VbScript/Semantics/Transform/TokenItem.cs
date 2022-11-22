@@ -1,6 +1,6 @@
 using System;
 
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {

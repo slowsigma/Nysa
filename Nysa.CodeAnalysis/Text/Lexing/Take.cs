@@ -8,9 +8,9 @@ using Nysa.Logics;
 
 namespace Nysa.Text.Lexing;
 
-public static class Find
+public static class Take
 {
-    static Find() { Find.IgnoreCase = true; }
+    static Take() { Take.IgnoreCase = true; }
     public static Boolean IgnoreCase { get; set; }
 
 
@@ -45,12 +45,12 @@ public static class Find
 
     public static SetRule Set(this String alternatives, Boolean? ignoreCase = null)
     {
-        var set = ignoreCase.GetValueOrDefault(Find.IgnoreCase)
+        var set = ignoreCase.GetValueOrDefault(Take.IgnoreCase)
                   ? alternatives.ToArray().Select(c => Char.ToUpperInvariant(c)).ToHashSet()
                   : alternatives.ToArray().ToHashSet();
 
         return (set.Count > 1)
-               ? new SetRule(set, ignoreCase.GetValueOrDefault(Find.IgnoreCase))
+               ? new SetRule(set, ignoreCase.GetValueOrDefault(Take.IgnoreCase))
                : throw new Exception("SetRule requires two or more values.");
     }
 
@@ -58,8 +58,8 @@ public static class Find
     public static ThenRule Then(this Rule first, Identifier id) => new ThenRule(first, new IdRule(id));
 
     public static OrRule Or(this Rule primary, Rule secondary) => new OrRule(primary, secondary);
-    public static OneRule One(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
-    public static SequenceRule Sequence(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Find.IgnoreCase));
+    public static OneRule One(this Char value, Boolean? ignoreCase = null) => new OneRule(value, ignoreCase.GetValueOrDefault(Take.IgnoreCase));
+    public static SequenceRule Sequence(this String value, Boolean? ignoreCase = null) => new SequenceRule(value, ignoreCase.GetValueOrDefault(Take.IgnoreCase));
     public static IdRule IdX(this Identifier id) => new IdRule(id);
     public static AndRule And(this Rule primary, Rule secondary) => new AndRule(primary, secondary);
     public static NotRule Not(this Rule condition) => new NotRule(condition);
@@ -80,7 +80,7 @@ public static class Find
 
     public static Rule Literals(IEnumerable<(String Sequence, Identifier Id)> literals, Boolean? ignoreCase = null)
     {
-        var si        = ignoreCase.GetValueOrDefault(Find.IgnoreCase);
+        var si        = ignoreCase.GetValueOrDefault(Take.IgnoreCase);
         var charNodes = new Dictionary<Char, CharacterNode>();
 
         foreach (var literal in literals.Where(t => !String.IsNullOrWhiteSpace(t.Sequence)))
@@ -107,7 +107,7 @@ public static class Find
             nexts.AddRange(oneRules);
         // if we have more than one, we turn nexts into a single LongestRule
         if (nexts.Count > 1)
-            nexts = Return.Enumerable(Find.Longest(nexts)).ToList<Rule>();
+            nexts = Return.Enumerable(Take.Longest(nexts)).ToList<Rule>();
 
         return nexts.Count == 1
                ? nexts[0]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using SyntaxNode  = Dorata.Text.Parsing.Node;
+using SyntaxNode  = Nysa.Text.Parsing.Node;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {

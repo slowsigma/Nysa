@@ -6,9 +6,9 @@ using System.Text;
 using System.Web;
 using System.Xml;
 
-using Dorata.Text.Parsing;
-using LexToken  = Dorata.Text.Lexing.Token;
-using ParseNode = Dorata.Text.Parsing.Node;
+using Nysa.Text.Parsing;
+using LexToken  = Nysa.Text.Lexing.Token;
+using ParseNode = Nysa.Text.Parsing.Node;
 
 using HtmlAgilityPack;
 
@@ -36,18 +36,8 @@ namespace Nysa.CodeAnalysis.VbScript
         private static String Path(this XmlElement @this, XmlAttribute attribute)
             => String.Concat(@this.Path(), "/@", attribute.LocalName);
 
-        private static ParseException ToParseError(this Dorata.Text.Parsing.VBScript.ParseError @this)
-            => new ParseException(@this.Type == VBScript.ParseErrorTypes.InvalidSymbol ? "Invalid symbol." : "Unexpected symbol.",
-                                  @this.LineNumber,
-                                  @this.ColumnNumber,
-                                  @this.ErrorLine,
-                                  @this.ErrorRules.Select(l => String.Join("\r\n", l), String.Empty));
-
         private static Suspect<ParseNode> Parse(this String @this)
-            => Return.Try(() => VBScript.Parse(String.Concat(@this, "\r\n")))
-                     .Bind(g => g.IsA
-                                ? g.A.Confirmed()
-                                : (Failed<ParseNode>)g.B.ToParseError());
+            => Return.Try(() => VbScript.Language.Parse(String.Concat(@this, "\r\n")));
 
         private static HtmlContent AsHtmlContent(this XmlContent @this)
             => new HtmlContent(@this.Source, @this.Hash, @this.Value);
