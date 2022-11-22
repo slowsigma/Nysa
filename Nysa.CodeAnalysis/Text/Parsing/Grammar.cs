@@ -54,6 +54,8 @@ namespace Nysa.Text.Parsing
         public Boolean IsValid(String symbol) => this.IsValid(this.Id(symbol));
         public Boolean IsTerminal(Identifier id) => this.IsValid(id) && this._Rules[id].IsTerminal;
 
+        public NodePolicy NodePolicy(Identifier id) => this._Rules[id].NodePolicy;
+
         public IReadOnlyList<GrammarRule> Rules(Identifier id)
             => this.IsValid(id) ? this._Rules[id].Variants : TERMINAL;
 

@@ -17,12 +17,6 @@ public static partial class VBScriptX
     public static readonly Grammar Grammar;
     public static readonly SeekRule Seek;
 
-    private static readonly HashSet<Identifier> _AlwaysRemove;
-    private static readonly HashSet<Identifier> _ListCollapse;
-    private static readonly HashSet<Identifier> _SingleItemCollapse;
-
-    private static readonly HashSet<Identifier> _EmptyNodeRemove;
-
     static VBScriptX()
     {
         var builder = new GrammarBuilder("<Program>");
@@ -32,24 +26,28 @@ public static partial class VBScriptX
         builder.Rule("<InlineNL>").Is(":", "<InlineNL>")
                                   .Or(":");
 
-        builder.Rule("<NL>").Is("{new-line}", "<NL>")
-                            .Or("{new-line}")
-                            .Or("<InlineNL>", "<NL>")
-                            .Or("<InlineNL>");
+        builder.Rule("<NL>", NodePolicy.Remove)
+               .Is("{new-line}", "<NL>")
+               .Or("{new-line}")
+               .Or("<InlineNL>", "<NL>")
+               .Or("<InlineNL>");
 
-        builder.Rule("<NLOpt>").Is("<NL>")
-                               .OrOptional();
+        builder.Rule("<NLOpt>", NodePolicy.Remove)
+               .Is("<NL>")
+               .OrOptional();
 
-        builder.Rule("<GlobalStmtList>").Is("<GlobalStmt>", "<GlobalStmtList>")
-                                        .OrOptional();
+        builder.Rule("<GlobalStmtList>", NodePolicy.Collapse)
+               .Is("<GlobalStmt>", "<GlobalStmtList>")
+               .OrOptional();
 
-        builder.Rule("<GlobalStmt>").Is("<OptionExplicit>")
-                                    .Or("<ClassDecl>")
-                                    .Or("<FieldDecl>")
-                                    .Or("<ConstDecl>")
-                                    .Or("<SubDecl>")
-                                    .Or("<FunctionDecl>")
-                                    .Or("<BlockStmt>");
+        builder.Rule("<GlobalStmt>", NodePolicy.Collapse)
+               .Is("<OptionExplicit>")
+               .Or("<ClassDecl>")
+               .Or("<FieldDecl>")
+               .Or("<ConstDecl>")
+               .Or("<SubDecl>")
+               .Or("<FunctionDecl>")
+               .Or("<BlockStmt>");
 
         builder.Rule("<OptionExplicit>").Is("Option", "Explicit", "<NL>");
 
@@ -60,7 +58,7 @@ public static partial class VBScriptX
 
         builder.Rule("<ConstDecl>").Is("<AccessModifierOpt>", "Const", "<ConstList>", "<NL>");
 
-        builder.Rule("<BlockConstDecl>").Is("Const", "<ConstList>", "<NL>");            // new
+        builder.Rule("<BlockConstDecl>").Is("Const", "<ConstList>", "<NL>");            // modification to original BNF
 
         builder.Rule("<SubDecl>").Is("<MethodAccessOpt>", "Sub", "<ExtendedID>", "<MethodArgList>", "<NL>", "<MethodStmtList>", "End", "Sub", "<NL>")
                                  .Or("<MethodAccessOpt>", "Sub", "<ExtendedID>", "<MethodArgList>", "<InlineStmt>", "End", "Sub", "<NL>");
@@ -68,21 +66,23 @@ public static partial class VBScriptX
         builder.Rule("<FunctionDecl>").Is("<MethodAccessOpt>", "Function", "<ExtendedID>", "<MethodArgList>", "<NL>", "<MethodStmtList>", "End", "Function", "<NL>")
                                       .Or("<MethodAccessOpt>", "Function", "<ExtendedID>", "<MethodArgList>", "<InlineStmt>", "End", "Function", "<NL>");
 
-        builder.Rule("<BlockStmt>").Is("<VarDecl>")
-                                   .Or("<RedimStmt>")
-                                   .Or("<IfStmt>")
-                                   .Or("<WithStmt>")
-                                   .Or("<SelectStmt>")
-                                   .Or("<LoopStmt>")
-                                   .Or("<ForStmt>")
-                                   .Or("<BlockConstDecl>")                          // new
-                                   .Or("<InlineStmt>", "<NL>");
+        builder.Rule("<BlockStmt>", NodePolicy.Collapse)
+               .Is("<VarDecl>")
+               .Or("<RedimStmt>")
+               .Or("<IfStmt>")
+               .Or("<WithStmt>")
+               .Or("<SelectStmt>")
+               .Or("<LoopStmt>")
+               .Or("<ForStmt>")
+               .Or("<BlockConstDecl>")                          // modification to original BNF
+               .Or("<InlineStmt>", "<NL>");
 
         builder.Rule("<ExtendedID>").Is("<SafeKeywordID>")
                                     .Or("{ID}");
 
-        builder.Rule("<MemberDeclList>").Is("<MemberDecl>", "<MemberDeclList>")
-                                        .OrOptional();
+        builder.Rule("<MemberDeclList>", NodePolicy.Collapse)
+               .Is("<MemberDecl>", "<MemberDeclList>")
+               .OrOptional();
 
         builder.Rule("<FieldName>").Is("<FieldID>", "(", "<ArrayRankList>", ")")
                                    .Or("<FieldID>");
@@ -96,8 +96,8 @@ public static partial class VBScriptX
 
         builder.Rule("<ConstList>").Is("<ExtendedID>", "=", "<ConstExprDef>", ",", "<ConstList>")
                                    .Or("<ExtendedID>", "=", "<ConstExprDef>")
-                                   .Or("<ExtendedID>", ",", "<ConstList>")          // new
-                                   .Or("<ExtendedID>");                             // new
+                                   .Or("<ExtendedID>", ",", "<ConstList>")          // modification to original BNF
+                                   .Or("<ExtendedID>");                             // modification to original BNF
 
         builder.Rule("<MethodAccessOpt>").Is("Public", "Default")
                                          .Or("<AccessModifierOpt>");
@@ -106,8 +106,9 @@ public static partial class VBScriptX
                                        .Or("(", ")")
                                        .OrOptional();
 
-        builder.Rule("<MethodStmtList>").Is("<MethodStmt>", "<MethodStmtList>")
-                                        .OrOptional();
+        builder.Rule("<MethodStmtList>", NodePolicy.Collapse)
+               .Is("<MethodStmt>", "<MethodStmtList>")
+               .OrOptional();
 
         builder.Rule("<InlineStmtList>").Is("<InlineStmt>", "<InlineNL>", "<InlineStmtList>")
                                        .Or("<InlineStmt>", "<InlineNL>")
@@ -128,12 +129,13 @@ public static partial class VBScriptX
                                        .Or("Property")
                                        .Or("Step");
 
-        builder.Rule("<MemberDecl>").Is("<FieldDecl>")
-                                    .Or("<VarDecl>")
-                                    .Or("<ConstDecl>")
-                                    .Or("<SubDecl>")
-                                    .Or("<FunctionDecl>")
-                                    .Or("<PropertyDecl>");
+        builder.Rule("<MemberDecl>", NodePolicy.Collapse)
+               .Is("<FieldDecl>")
+               .Or("<VarDecl>")
+               .Or("<ConstDecl>")
+               .Or("<SubDecl>")
+               .Or("<FunctionDecl>")
+               .Or("<PropertyDecl>");
 
         builder.Rule("<FieldID>").Is("{ID}")
                                  .Or("Default")
@@ -150,12 +152,16 @@ public static partial class VBScriptX
                                       .Or("+", "<ConstExprDef>")
                                       .Or("<ConstExpr>");
 
-        builder.Rule("<ArgList>").Is("<Arg>", ",", "<ArgList>")
-                                 .Or("<Arg>");
+        builder.Rule("<ArgList>", NodePolicy.Collapse)
+               .Is("<Arg>", ",", "<ArgList>")
+               .Or("<Arg>");
 
+        // original BNF had this:
         //builder.Rule("<MethodStmt>").Is("<ConstDecl>")
         //                            .Or("<BlockStmt>");
-        builder.Rule("<MethodStmt>").Is("<BlockStmt>");                     // new
+        // we modified to this:
+        builder.Rule("<MethodStmt>", NodePolicy.Collapse)
+               .Is("<BlockStmt>");
 
         builder.Rule("<AssignStmt>").Is("<LeftExpr>", "=", "<Expr>")
                                     .Or("Set", "<LeftExpr>", "=", "<Expr>");
@@ -232,8 +238,9 @@ public static partial class VBScriptX
         builder.Rule("<ForStmt>").Is("For", "<ExtendedID>", "=", "<Expr>", "To", "<Expr>", "<StepOpt>", "<NL>", "<BlockStmtList>", "Next", "<NL>")
                                  .Or("For", "Each", "<ExtendedID>", "In", "<Expr>", "<NL>", "<BlockStmtList>", "Next", "<NL>");
 
-        builder.Rule("<BlockStmtList>").Is("<BlockStmt>", "<BlockStmtList>")
-                                       .OrOptional();
+        builder.Rule("<BlockStmtList>", NodePolicy.Collapse)
+               .Is("<BlockStmt>", "<BlockStmtList>")
+               .OrOptional();
 
         builder.Rule("<StepOpt>").Is("Step", "<Expr>")
                                  .OrOptional();
@@ -251,8 +258,9 @@ public static partial class VBScriptX
                                    .Or("{DateLiteral}")
                                    .Or("<Nothing>");
 
-        builder.Rule("<Arg>").Is("<ArgModifierOpt>", "<ExtendedID>", "(", ")")
-                             .Or("<ArgModifierOpt>", "<ExtendedID>");
+        builder.Rule("<Arg>", NodePolicy.Collapse)
+               .Is("<ArgModifierOpt>", "<ExtendedID>", "(", ")")
+               .Or("<ArgModifierOpt>", "<ExtendedID>");
 
         builder.Rule("<NewObjectExpr>").Is("New", "<LeftExpr>");
 
@@ -265,60 +273,73 @@ public static partial class VBScriptX
 
         builder.Rule("<Expr>").Is("<ImpExpr>");
 
-        builder.Rule("<ImpExpr>").Is("<ImpExpr>", "Imp", "<EqvExpr>")
-                                 .Or("<EqvExpr>");
+        builder.Rule("<ImpExpr>", NodePolicy.CollapseSingle)
+               .Is("<ImpExpr>", "Imp", "<EqvExpr>")
+               .Or("<EqvExpr>");
 
-        builder.Rule("<EqvExpr>").Is("<EqvExpr>", "Eqv", "<XorExpr>")
-                                 .Or("<XorExpr>");
+        builder.Rule("<EqvExpr>", NodePolicy.CollapseSingle)
+               .Is("<EqvExpr>", "Eqv", "<XorExpr>")
+               .Or("<XorExpr>");
 
-        builder.Rule("<XorExpr>").Is("<XorExpr>", "Xor", "<OrExpr>")
-                                 .Or("<OrExpr>");
+        builder.Rule("<XorExpr>", NodePolicy.CollapseSingle)
+               .Is("<XorExpr>", "Xor", "<OrExpr>")
+               .Or("<OrExpr>");
 
-        builder.Rule("<OrExpr>").Is("<OrExpr>", "Or", "<AndExpr>")
-                                .Or("<AndExpr>");
+        builder.Rule("<OrExpr>", NodePolicy.CollapseSingle)
+               .Is("<OrExpr>", "Or", "<AndExpr>")
+               .Or("<AndExpr>");
 
-        builder.Rule("<AndExpr>").Is("<AndExpr>", "And", "<NotExpr>")
-                                 .Or("<NotExpr>");
+        builder.Rule("<AndExpr>", NodePolicy.CollapseSingle)
+               .Is("<AndExpr>", "And", "<NotExpr>")
+               .Or("<NotExpr>");
 
-        builder.Rule("<NotExpr>").Is("Not", "<NotExpr>")
-                                 .Or("<CompareExpr>");
+        builder.Rule("<NotExpr>", NodePolicy.CollapseSingle)
+               .Is("Not", "<NotExpr>")
+               .Or("<CompareExpr>");
 
-        builder.Rule("<CompareExpr>").Is("<CompareExpr>", "Is", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "Is", "Not", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", ">=", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "=>", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "<=", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "=<", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", ">", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "<", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "<>", "<ConcatExpr>")
-                                     .Or("<CompareExpr>", "=", "<ConcatExpr>")
-                                     .Or("<ConcatExpr>");
+        builder.Rule("<CompareExpr>", NodePolicy.CollapseSingle)
+               .Is("<CompareExpr>", "Is", "<ConcatExpr>")
+               .Or("<CompareExpr>", "Is", "Not", "<ConcatExpr>")
+               .Or("<CompareExpr>", ">=", "<ConcatExpr>")
+               .Or("<CompareExpr>", "=>", "<ConcatExpr>")
+               .Or("<CompareExpr>", "<=", "<ConcatExpr>")
+               .Or("<CompareExpr>", "=<", "<ConcatExpr>")
+               .Or("<CompareExpr>", ">", "<ConcatExpr>")
+               .Or("<CompareExpr>", "<", "<ConcatExpr>")
+               .Or("<CompareExpr>", "<>", "<ConcatExpr>")
+               .Or("<CompareExpr>", "=", "<ConcatExpr>")
+               .Or("<ConcatExpr>");
 
-        builder.Rule("<ConcatExpr>").Is("<ConcatExpr>", "&", "<AddExpr>")
-                                    .Or("<AddExpr>");
+        builder.Rule("<ConcatExpr>", NodePolicy.CollapseSingle)
+               .Is("<ConcatExpr>", "&", "<AddExpr>")
+               .Or("<AddExpr>");
 
-        builder.Rule("<AddExpr>").Is("<AddExpr>", "+", "<ModExpr>")
-                                 .Or("<AddExpr>", "-", "<ModExpr>")
-                                 .Or("<ModExpr>");
+        builder.Rule("<AddExpr>", NodePolicy.CollapseSingle)
+               .Is("<AddExpr>", "+", "<ModExpr>")
+               .Or("<AddExpr>", "-", "<ModExpr>")
+               .Or("<ModExpr>");
 
-        builder.Rule("<ModExpr>").Is("<ModExpr>", "Mod", "<IntDivExpr>")
-                                 .Or("<IntDivExpr>");
+        builder.Rule("<ModExpr>", NodePolicy.CollapseSingle)
+               .Is("<ModExpr>", "Mod", "<IntDivExpr>")
+               .Or("<IntDivExpr>");
 
-        builder.Rule("<IntDivExpr>").Is("<IntDivExpr>", @"\", "<MultExpr>")
-                                    .Or("<MultExpr>");
+        builder.Rule("<IntDivExpr>", NodePolicy.CollapseSingle)
+               .Is("<IntDivExpr>", @"\", "<MultExpr>")
+               .Or("<MultExpr>");
 
-        builder.Rule("<MultExpr>").Is("<MultExpr>", "*", "<UnaryExpr>")
-                                  .Or("<MultExpr>", "/", "<UnaryExpr>")
-                                  .Or("<UnaryExpr>");
+        builder.Rule("<MultExpr>", NodePolicy.CollapseSingle)
+               .Is("<MultExpr>", "*", "<UnaryExpr>")
+               .Or("<MultExpr>", "/", "<UnaryExpr>")
+               .Or("<UnaryExpr>");
 
-        builder.Rule("<UnaryExpr>").Is("-", "<UnaryExpr>")
-                                   .Or("+", "<UnaryExpr>")
-                                   .Or("<ExpExpr>");
+        builder.Rule("<UnaryExpr>", NodePolicy.CollapseSingle)
+               .Is("-", "<UnaryExpr>")
+               .Or("+", "<UnaryExpr>")
+               .Or("<ExpExpr>");
 
-        builder.Rule("<ExpExpr>").Is("<Value>", "^", "<ExpExpr>")
-                                 .Or("<Value>");
-
+        builder.Rule("<ExpExpr>", NodePolicy.CollapseSingle)
+               .Is("<Value>", "^", "<ExpExpr>")
+               .Or("<Value>");
 
         builder.Rule("<QualifiedID>").Is("{IDDot}", "<QualifiedIDTail>")
                                      .Or("{DotIDDot}", "<QualifiedIDTail>")
@@ -332,10 +353,11 @@ public static partial class VBScriptX
                                          .Or("{ID}")
                                          .Or("<KeywordID>");
 
-        builder.Rule("<CommaExprList>").Is(",", "<Expr>", "<CommaExprList>")
-                                       .Or(",", "<CommaExprList>")
-                                       .Or(",", "<Expr>")
-                                       .Or(",");
+        builder.Rule("<CommaExprList>", NodePolicy.Collapse)
+               .Is(",", "<Expr>", "<CommaExprList>")
+               .Or(",", "<CommaExprList>")
+               .Or(",", "<Expr>")
+               .Or(",");
 
         builder.Rule("<IndexOrParamsList>").Is("<IndexOrParams>", "<IndexOrParamsList>")
                                            .Or("<IndexOrParams>");
@@ -373,70 +395,86 @@ public static partial class VBScriptX
                                  .Or("Null")
                                  .Or("Empty");
 
-        builder.Rule("<ArgModifierOpt>").Is("ByVal")
-                                        .Or("ByRef")
-                                        .OrOptional();
+        builder.Rule("<ArgModifierOpt>", NodePolicy.RemoveEmpty)
+               .Is("ByVal")
+               .Or("ByRef")
+               .OrOptional();
 
         builder.Rule("<Value>").Is("<ConstExpr>")
                                .Or("<LeftExpr>")
                                .Or("(", "<Expr>", ")")
                                .Or("(", "<Expr>", ").", "<LeftExprTail>");
 
-        builder.Rule("<SubSafeExpr>").Is("<SubSafeImpExpr>");
+        builder.Rule("<SubSafeExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeImpExpr>");
 
-        builder.Rule("<SubSafeImpExpr>").Is("<SubSafeImpExpr>", "Imp", "<EqvExpr>")
-                                        .Or("<SubSafeEqvExpr>");
+        builder.Rule("<SubSafeImpExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeImpExpr>", "Imp", "<EqvExpr>")
+               .Or("<SubSafeEqvExpr>");
 
-        builder.Rule("<SubSafeEqvExpr>").Is("<SubSafeEqvExpr>", "Eqv", "<XorExpr>")
-                                        .Or("<SubSafeXorExpr>");
+        builder.Rule("<SubSafeEqvExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeEqvExpr>", "Eqv", "<XorExpr>")
+               .Or("<SubSafeXorExpr>");
 
-        builder.Rule("<SubSafeXorExpr>").Is("<SubSafeXorExpr>", "Xor", "<OrExpr>")
-                                        .Or("<SubSafeOrExpr>");
+        builder.Rule("<SubSafeXorExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeXorExpr>", "Xor", "<OrExpr>")
+               .Or("<SubSafeOrExpr>");
 
-        builder.Rule("<SubSafeOrExpr>").Is("<SubSafeOrExpr>", "Or", "<AndExpr>")
-                                       .Or("<SubSafeAndExpr>");
+        builder.Rule("<SubSafeOrExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeOrExpr>", "Or", "<AndExpr>")
+               .Or("<SubSafeAndExpr>");
 
-        builder.Rule("<SubSafeAndExpr>").Is("<SubSafeAndExpr>", "And", "<NotExpr>")
-                                        .Or("<SubSafeNotExpr>");
+        builder.Rule("<SubSafeAndExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeAndExpr>", "And", "<NotExpr>")
+               .Or("<SubSafeNotExpr>");
 
-        builder.Rule("<SubSafeNotExpr>").Is("Not", "<NotExpr>")
-                                        .Or("<SubSafeCompareExpr>");
+        builder.Rule("<SubSafeNotExpr>", NodePolicy.CollapseSingle)
+               .Is("Not", "<NotExpr>")
+               .Or("<SubSafeCompareExpr>");
 
-        builder.Rule("<SubSafeCompareExpr>").Is("<SubSafeCompareExpr>", "Is", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "Is", "Not", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", ">=", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "=>", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "<=", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "=<", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", ">", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "<", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "<>", "<ConcatExpr>")
-                                            .Or("<SubSafeCompareExpr>", "=", "<ConcatExpr>")
-                                            .Or("<SubSafeConcatExpr>");
+        builder.Rule("<SubSafeCompareExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeCompareExpr>", "Is", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "Is", "Not", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", ">=", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "=>", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "<=", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "=<", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", ">", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "<", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "<>", "<ConcatExpr>")
+               .Or("<SubSafeCompareExpr>", "=", "<ConcatExpr>")
+               .Or("<SubSafeConcatExpr>");
 
-        builder.Rule("<SubSafeConcatExpr>").Is("<SubSafeConcatExpr>", "&", "<AddExpr>")
-                                           .Or("<SubSafeAddExpr>");
+        builder.Rule("<SubSafeConcatExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeConcatExpr>", "&", "<AddExpr>")
+               .Or("<SubSafeAddExpr>");
 
-        builder.Rule("<SubSafeAddExpr>").Is("<SubSafeAddExpr>", "+", "<ModExpr>")
-                                        .Or("<SubSafeAddExpr>", "-", "<ModExpr>")
-                                        .Or("<SubSafeModExpr>");
+        builder.Rule("<SubSafeAddExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeAddExpr>", "+", "<ModExpr>")
+               .Or("<SubSafeAddExpr>", "-", "<ModExpr>")
+               .Or("<SubSafeModExpr>");
 
-        builder.Rule("<SubSafeModExpr>").Is("<SubSafeModExpr>", "Mod", "<IntDivExpr>")
-                                        .Or("<SubSafeIntDivExpr>");
+        builder.Rule("<SubSafeModExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeModExpr>", "Mod", "<IntDivExpr>")
+               .Or("<SubSafeIntDivExpr>");
 
-        builder.Rule("<SubSafeIntDivExpr>").Is("<SubSafeIntDivExpr>", @"\", "<MultExpr>")
-                                           .Or("<SubSafeMultExpr>");
+        builder.Rule("<SubSafeIntDivExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeIntDivExpr>", @"\", "<MultExpr>")
+               .Or("<SubSafeMultExpr>");
 
-        builder.Rule("<SubSafeMultExpr>").Is("<SubSafeMultExpr>", "*", "<UnaryExpr>")
-                                         .Or("<SubSafeMultExpr>", "/", "<UnaryExpr>")
-                                         .Or("<SubSafeUnaryExpr>");
+        builder.Rule("<SubSafeMultExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeMultExpr>", "*", "<UnaryExpr>")
+               .Or("<SubSafeMultExpr>", "/", "<UnaryExpr>")
+               .Or("<SubSafeUnaryExpr>");
 
-        builder.Rule("<SubSafeUnaryExpr>").Is("-", "<UnaryExpr>")
-                                          .Or("+", "<UnaryExpr>")
-                                          .Or("<SubSafeExpExpr>");
+        builder.Rule("<SubSafeUnaryExpr>", NodePolicy.CollapseSingle)
+               .Is("-", "<UnaryExpr>")
+               .Or("+", "<UnaryExpr>")
+               .Or("<SubSafeExpExpr>");
 
-        builder.Rule("<SubSafeExpExpr>").Is("<SubSafeValue>", "^", "<ExpExpr>")
-                                        .Or("<SubSafeValue>");
+        builder.Rule("<SubSafeExpExpr>", NodePolicy.CollapseSingle)
+               .Is("<SubSafeValue>", "^", "<ExpExpr>")
+               .Or("<SubSafeValue>");
 
         builder.Rule("<SubSafeValue>").Is("<ConstExpr>")
                                       .Or("<LeftExpr>");
@@ -616,88 +654,7 @@ public static partial class VBScriptX
                                spacePlus.Then(Identifier.Trivia));
 
         VBScriptX.Seek = Find.Seek(all);
-
-        _AlwaysRemove = new HashSet<Identifier>();
-        _AlwaysRemove.Add(VBScriptX.Grammar.Id("<NL>"));
-        _AlwaysRemove.Add(VBScriptX.Grammar.Id("<NLOpt>"));
-        _AlwaysRemove.Add(VBScriptX.Grammar.Id("{new-line}"));
-
-        _ListCollapse = new HashSet<Identifier>();
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<GlobalStmtList>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<GlobalStmt>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<MemberDeclList>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<MemberDecl>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<MethodStmtList>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<MethodStmt>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<BlockStmt>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<BlockStmtList>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<Arg>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<ArgList>"));
-        _ListCollapse.Add(VBScriptX.Grammar.Id("<CommaExprList>"));
-
-        _SingleItemCollapse = new HashSet<Identifier>();
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<ImpExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<EqvExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<XorExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<OrExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<AndExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<NotExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<CompareExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<ConcatExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<AddExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<ModExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<IntDivExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<MultExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<UnaryExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<ExpExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeImpExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeEqvExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeXorExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeOrExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeAndExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeNotExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeCompareExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeConcatExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeAddExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeModExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeIntDivExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeMultExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeUnaryExpr>"));
-        _SingleItemCollapse.Add(VBScriptX.Grammar.Id("<SubSafeExpExpr>"));
-
-        _EmptyNodeRemove = new HashSet<Identifier>();
-        _EmptyNodeRemove.Add(VBScriptX.Grammar.Id("<ArgModifierOpt>"));
-
     }
-
-    private static IEnumerable<NodeOrToken> CollapsedMembers(this IEnumerable<NodeOrToken> members)
-    {
-        foreach (var member in members)
-        {
-            if (member.AsNode != null)
-            {
-                if (_AlwaysRemove.Contains(member.AsNode.Id))
-                    continue;
-                if (_ListCollapse.Contains(member.AsNode.Id))
-                    foreach (var sub in member.AsNode.Members.CollapsedMembers())
-                        yield return sub;
-                else if (_SingleItemCollapse.Contains(member.AsNode.Id) && member.AsNode.Members.Count == 1)
-                    foreach (var sub in member.AsNode.Members.CollapsedMembers())
-                        yield return sub;
-                else if (_EmptyNodeRemove.Contains(member.AsNode.Id) && member.AsNode.Members.Count == 0)
-                    continue;
-                else
-                    yield return member.AsNode.Collapsed();
-            }
-            else
-                yield return member;
-        }
-    }
-
-    private static Node Collapsed(this Node node)
-        => new Node(node.Id, node.Symbol, node.Members.CollapsedMembers());
-
 
     private static ParseException CreateError(Chart chart, String source, Token[] tokens)
     {
@@ -745,7 +702,7 @@ public static partial class VBScriptX
         var positionStart = tokens[lineStart].Span.Position;
         var positionStop  = tokens[lineStop].Span.Position + tokens[lineStop].Span.Length;
 
-        var errorLine = positionStart >= 0 && positionStop > positionStart
+        var errorLine     = positionStart >= 0 && positionStop > positionStart
                             ? source.Substring(positionStart, (positionStop - positionStart))
                             : String.Empty;
 
@@ -773,16 +730,14 @@ public static partial class VBScriptX
         var tokens   = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), VBScriptX.Grammar.Id(VBScriptX.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
         var recChart = VBScriptX.Grammar.Chart(tokens);
 
-        if (recChart[recChart.Length - 1].Any(entry => entry.Rule.Symbol == "<Program>" && entry.Number == 0))
+        if (!recChart.IsIncomplete())
         {
             var hitsChart = new FinalChart(recChart);
 
-            if (hitsChart[0].Any(entry => entry.Rule.Symbol == "<Program>"))
+            if (!hitsChart.IsIncomplete())
             {
-                var ast = Node.Create(hitsChart, tokens);
-
-                if (ast is Some<Node> someAst)
-                    return someAst.Value.Collapsed().Confirmed();
+                return hitsChart.ToSyntaxTree(tokens).Match(n => n.Confirmed(),
+                                                            () => CreateError(recChart, source, tokens).Failed<Node>());
             }
         }
 

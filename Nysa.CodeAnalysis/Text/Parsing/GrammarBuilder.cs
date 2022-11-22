@@ -12,10 +12,7 @@ public class GrammarBuilder
     private class RuleStart : IGrammarBuildStart, IGrammarBuildContinue
     {
         private Action<String[]> _Add;
-        public RuleStart(Action<IEnumerable<String>> add)
-        {
-            this._Add = add;
-        }
+        public RuleStart(Action<IEnumerable<String>> add) { this._Add = add; }
 
         public IGrammarBuildContinue Is(params String[] definition)
         {
@@ -29,28 +26,28 @@ public class GrammarBuilder
 
     // instance members    
     public String StartSymbol { get; private set; }
-    private Dictionary<String, (String Symbol, List<String[]> Definitions)> _Rules;
+    private Dictionary<String, (String Symbol, NodePolicy NodePolicy, List<String[]> Definitions)> _Rules;
 
     public GrammarBuilder(String startSymbol)
     {
         this.StartSymbol = startSymbol;
-        this._Rules = new Dictionary<String, (String Symbol, List<String[]> Definitions)>();
+        this._Rules = new Dictionary<String, (String Symbol, NodePolicy NodePolicy, List<String[]> Definitions)>();
     }
 
-    private void Add(String symbol, IEnumerable<String> definition)
+    private void Add(String symbol, NodePolicy nodePolicy, IEnumerable<String> definition)
     {
         var key = symbol.ToLowerInvariant();
 
         if (!this._Rules.ContainsKey(key))
-            this._Rules.Add(key, (symbol, new List<String[]>()));
+            this._Rules.Add(key, (symbol, nodePolicy, new List<String[]>()));
 
         this._Rules[key].Definitions.Add(definition.Where(i => i != null).ToArray());
     }
 
-    public IGrammarBuildStart Rule(String symbol)
-        => new RuleStart(d => this.Add(symbol, d));
+    public IGrammarBuildStart Rule(String symbol, NodePolicy nodePolicy = NodePolicy.Default)
+        => new RuleStart(d => this.Add(symbol, nodePolicy, d));
 
-    public IEnumerable<(String Symbol, List<String[]> Definitions)> Rules()
+    public IEnumerable<(String Symbol, NodePolicy NodePolicy, List<String[]> Definitions)> Rules()
         => this._Rules.Select(kvp => kvp.Value);
 
     public IEnumerable<String> Symbols()

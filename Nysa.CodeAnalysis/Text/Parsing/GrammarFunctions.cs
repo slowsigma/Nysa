@@ -23,7 +23,7 @@ public static class GrammarFunctions
 
         var definitions = @this.Rules()
                                .ToDictionary(rk => rk.Symbol, 
-                                             rv => SymbolDefinition.Create(symbolIndex, rv.Symbol, rv.Definitions),
+                                             rv => SymbolDefinition.Create(symbolIndex, rv.Symbol, rv.NodePolicy, rv.Definitions),
                                              StringComparer.OrdinalIgnoreCase);
 
         var rules       = symbolIndex.All
