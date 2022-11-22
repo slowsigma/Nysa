@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Nysa.Logics;
 
@@ -55,37 +53,13 @@ public struct ChartPosition : IEquatable<ChartPosition>, IEnumerable<ChartEntry>
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     internal void AddUnique(ChartEntry entry)
-    {
-        if (this.Chart._Data[this.Index] == null)
-            this.Chart._Data[this.Index] = new List<ChartEntry>();
-
-        var entries = this.Chart._Data[this.Index];
-
-        if (entries.IndexOf(entry) < 0)
-            entries.Add(entry);
-    }
+        => this.Chart.AddUnique(this.Index, entry);
 
     internal void AddUnique(GrammarRule rule, Int32 origin, Int32 next)
-    {
-        if (this.Chart._Data[this.Index] == null)
-            this.Chart._Data[this.Index] = new List<ChartEntry>();
-
-        var entries = this.Chart._Data[this.Index];
-        var entry   = new ChartEntry(rule, origin, next);
-
-        if (entries.IndexOf(entry) < 0)
-            entries.Add(entry);
-    }
+        => this.Chart.AddUnique(this.Index, rule, origin, next);
 
     internal void AddRaw(ChartEntry entry)
-    {
-        if (this.Chart._Data[this.Index] == null)
-            this.Chart._Data[this.Index] = new List<ChartEntry>();
-
-        var entries = this.Chart._Data[this.Index];
-
-        entries.Add(entry);
-    }
+        => this.Chart.AddRaw(this.Index, entry);
 
     public Boolean Equals(ChartPosition other) => (this.Chart == other.Chart) && (this.Index == other.Index);
     public override Boolean Equals(Object? other) => other is ChartPosition pos && this.Equals(pos);

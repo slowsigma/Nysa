@@ -25,7 +25,7 @@ public static partial class VBScriptX
 
     static VBScriptX()
     {
-        var builder = new Grammar.Builder("<Program>");
+        var builder = new GrammarBuilder("<Program>");
 
         builder.Rule("<Program>").Is("<NLOpt>", "<GlobalStmtList>", END_OF_INPUT);
 
