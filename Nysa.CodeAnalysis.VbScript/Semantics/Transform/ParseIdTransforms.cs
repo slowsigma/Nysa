@@ -264,11 +264,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
                     if (item is TokenItem token)
                     {
-                        var tid = token.Value.Id.Values().First();
+                        var tid = token.Value.Id.Values().FirstOrNone(i => stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(i));
 
-                        if (stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(tid))
+                        if (tid is Some<ParseId> someId && stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(someId.Value))
                         {
-                            var trans = stateTrans[state][tid];
+                            var trans = stateTrans[state][someId.Value];
 
                             switch (trans.Action)
                             {
