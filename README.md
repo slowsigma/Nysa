@@ -1,6 +1,9 @@
 # Nysa
 This repository is dedicated to general computer sciency stuff.
 
+## Nysa.CodeAnalysis
+This is a class library that wraps an implementation of the Earley parsing algorithm in a largely function and fluent API.
+
 ## Nysa.CodeAnalysis.VbScript
 This is a class library and supporting files used to create basic semantic trees for VbScript code files. This is used to convert VbScript to JavaScript.
 
@@ -23,9 +26,6 @@ For these elevated types, Nysa.Logics defines functions (using extension methods
 * Match - `Func<E<T>, Func<T, R>, Func<R>, R>`
 * Apply - `Func<E<Func<T, R>>, E<T>, Func<E<R>>>`
 * Apply - `Func<E<Func<T1, T2, TR>>, E<T1>, E<Func<T2, TR>>>`
-
-## Nysa.Parse
-This is a class library that wraps an implementation of the Earley parsing algorithm in a largely function and fluent API.
 
 ## Nysa.Presentation
 This is a class library supporting low-xaml WPF.
