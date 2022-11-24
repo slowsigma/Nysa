@@ -8,6 +8,15 @@
 		},
 		{
 			"path": "..\\Nysa.CodeAnalysis.VbScript"
+		},
+		{
+			"path": "../../Dorata/Dorata.Common"
+		},
+		{
+			"path": "../../Dorata/Dorata.VBScript"
+		},
+		{
+			"path": "../Nysa.Logics"
 		}
 	],
 	"settings": {}

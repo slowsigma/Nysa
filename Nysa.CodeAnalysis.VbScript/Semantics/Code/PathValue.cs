@@ -5,7 +5,7 @@ using System.Linq;
 
 using Nysa.Logics;
 
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {

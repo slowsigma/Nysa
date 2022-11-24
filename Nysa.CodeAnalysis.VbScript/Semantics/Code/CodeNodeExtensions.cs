@@ -3,8 +3,8 @@ using System.Linq;
 
 using Nysa.Logics;
 
-using Dorata.Text.Lexing;
-using Dorata.Text.Parsing;
+using Nysa.Text.Lexing;
+using Nysa.Text.Parsing;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -14,7 +14,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         public static (Token? Start, Token? End, Token? StartPlusOne, Token? EndMinusOne) TokenBounds(this CodeNode @this)
         {
-            var tokens = @this.Node.Match(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).ToArray(), () => new Token[] {});
+            var tokens = @this.Node.Match(n => n.OrderedTokens().ToArray(), () => new Token[] {});
             var length = tokens.Length;
 
             return length > 0
@@ -23,15 +23,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         }
 
         public static Token LeadToken(this CodeNode @this)
-            => @this.Node.Map(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).First()) is Some<Token> someToken
+            => @this.Node.Bind(n => n.OrderedTokens().FirstOrNone()) is Some<Token> someToken
                ? someToken.Value
                : throw new Exception("Unexpected type in call to LeadToken function.");
 
-        public static Token? FirstToken(this CodeNode @this, Dorata.Text.Identifier tokenId)
-        {
-            return @this.Node.Match(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).FirstOrNone(tk => tk.Id.Equals(tokenId)).Match(f => f, () => (Token?)null),
-                                    () => (Token?)null);
-        }
+        // public static Token? FirstToken(this CodeNode @this, Nysa.Text.Identifier tokenId)
+        // {
+        //     return @this.Node.Match(n => n.Where(nt => nt.IsToken).Select(v => v.AsToken).FirstOrNone(tk => tk.Id.Equals(tokenId)).Match(f => f, () => (Token?)null),
+        //                             () => (Token?)null);
+        // }
 
     }
 

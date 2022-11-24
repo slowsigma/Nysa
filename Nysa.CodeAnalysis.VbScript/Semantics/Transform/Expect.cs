@@ -1,7 +1,8 @@
 using System;
 
-using ParseId = Dorata.Text.Identifier;
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using Nysa.Text.Lexing;
+using ParseId = Nysa.Text.Identifier;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -18,12 +19,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         // Note: If no token throw error.
         public static Get<String> TokenValue()
             => (b, i) => b[i] is TokenItem token
-                         ? (token.Value.Span.Value, i.Value + 1)
+                         ? (token.Value.Span.ToString(), i.Value + 1)
                          : throw new Exception(With.MISSING_TOKEN);
 
         // Note: If no token found of one of the given types throw error.
         public static Get<SyntaxToken> TokenOf(params ParseId[] parseIds)
-            => (b, i) => b[i] is TokenItem token && parseIds.Contains(token.Value.Id)
+            => (b, i) => b[i] is TokenItem token && parseIds.Any(p => token.Value.Id.IsEqual(p))
                          ? (token.Value, i.Value + 1)
                          : throw new Exception(With.MISSING_TOKEN);
 

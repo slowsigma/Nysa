@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Nullable>enable</Nullable>    
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

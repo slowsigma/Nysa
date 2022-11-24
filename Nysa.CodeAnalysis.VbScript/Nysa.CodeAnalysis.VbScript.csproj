@@ -1,29 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeCommonLibraries</TargetsForTfmSpecificBuildOutput>
-  </PropertyGroup>
-
-  <Target Name="IncludeCommonLibraries">
-    <ItemGroup>
-      <BuildOutputInPackage Include="$(OutputPath)Dorata.Common.dll" TargetPath="" />
-      <BuildOutputInPackage Include="$(OutputPath)Dorata.VbScript.dll" TargetPath="" />
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
-    <Reference Include="Dorata.Common">
-      <HintPath>lib\Dorata.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Dorata.VbScript">
-      <HintPath>lib\Dorata.VbScript.dll</HintPath>
-    </Reference>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

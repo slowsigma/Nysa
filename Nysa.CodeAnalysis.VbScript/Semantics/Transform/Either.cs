@@ -2,8 +2,8 @@ using System;
 
 using Nysa.Logics;
 
-using SyntaxToken = Dorata.Text.Lexing.Token;
-using SytnaxNode  = Dorata.Text.Parsing.Node;
+using SyntaxToken = Nysa.Text.Lexing.Token;
+using SytnaxNode  = Nysa.Text.Parsing.Node;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {

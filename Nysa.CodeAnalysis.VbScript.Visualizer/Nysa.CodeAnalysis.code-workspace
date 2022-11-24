@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../Nysa.CodeAnalysis"
+		},
+		{
+			"path": "../Nysa.CodeAnalysis.VbScript"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

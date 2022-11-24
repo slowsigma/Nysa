@@ -6,13 +6,13 @@ using System.Text;
 
 using Nysa.Logics;
 
-using Dorata.Text.Lexing;
-using Dorata.Text.Parsing;
+using Nysa.Text.Lexing;
+using Nysa.Text.Parsing;
 
-using ParseId       = Dorata.Text.Identifier;
-using Span          = Dorata.Text.TextSpan;
-using SyntaxNode    = Dorata.Text.Parsing.Node;
-using SyntaxToken   = Dorata.Text.Lexing.Token;
+using ParseId       = Nysa.Text.Identifier;
+using Span          = Nysa.Text.TextSpan;
+using SyntaxNode    = Nysa.Text.Parsing.Node;
+using SyntaxToken   = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -36,24 +36,24 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             where T : CodeNode
             => @this.Select(cn => new SemanticItem(cn)).ToArray();
 
-        private static LiteralValueTypes ToLiteralValueType(this ParseId identifier)
-            =>   identifier == Id.Category.FloatLiteral ? LiteralValueTypes.Float
-               : identifier == Id.Category.StringLiteral ? LiteralValueTypes.String
-               : identifier == Id.Category.DateLiteral ? LiteralValueTypes.Date
-               : identifier == Id.Symbol.Nothing ? LiteralValueTypes.Nothing
-               : identifier == Id.Symbol.Null ? LiteralValueTypes.Null
-               : identifier == Id.Symbol.Empty ? LiteralValueTypes.Empty
+        private static LiteralValueTypes ToLiteralValueType(this TokenIdentifier identifier)
+            =>   identifier.IsEqual(Id.Category.FloatLiteral) ? LiteralValueTypes.Float
+               : identifier.IsEqual(Id.Category.StringLiteral) ? LiteralValueTypes.String
+               : identifier.IsEqual(Id.Category.DateLiteral) ? LiteralValueTypes.Date
+               : identifier.IsEqual(Id.Symbol.Nothing) ? LiteralValueTypes.Nothing
+               : identifier.IsEqual(Id.Symbol.Null) ? LiteralValueTypes.Null
+               : identifier.IsEqual(Id.Symbol.Empty) ? LiteralValueTypes.Empty
                : throw new ArgumentOutOfRangeException($"Invalid use of {nameof(ToLiteralValueType)}.");
 
-        private static VisibilityTypes ToVisibilityType(this ParseId identifier)
-            =>   identifier == Id.Symbol.Private ? VisibilityTypes.Private
-               : identifier == Id.Symbol.Public  ? VisibilityTypes.Public
-               :                                   throw new ArgumentOutOfRangeException($"Invalid use of {nameof(ToVisibilityType)}");
+        private static VisibilityTypes ToVisibilityType(this TokenIdentifier identifier)
+            =>   identifier.IsEqual(Id.Symbol.Private) ? VisibilityTypes.Private
+               : identifier.IsEqual(Id.Symbol.Public)  ? VisibilityTypes.Public
+               :                                         throw new ArgumentOutOfRangeException($"Invalid use of {nameof(ToVisibilityType)}");
 
         private static Option<VisibilityTypes> ToVisbilityTypeOption(this SyntaxToken syntaxToken)
-            =>   syntaxToken.Id == Id.Symbol.Private ? VisibilityTypes.Private.Some()
-               : syntaxToken.Id == Id.Symbol.Public  ? VisibilityTypes.Public.Some()
-               :                                       Option<VisibilityTypes>.None;
+            =>   syntaxToken.Id.IsEqual(Id.Symbol.Private) ? VisibilityTypes.Private.Some()
+               : syntaxToken.Id.IsEqual(Id.Symbol.Public)  ? VisibilityTypes.Public.Some()
+               :                                             Option<VisibilityTypes>.None;
 
         private static Get<Option<(VisibilityTypes Visibility, Boolean IsDefault)>> BuildMethodAccess()
             => (b, i) =>
@@ -61,34 +61,34 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                 var next = (Index)(i.Value + 1);
 
                 return (b[i] is TokenItem firstToken)
-                       ? (firstToken.Value.Id == Id.Symbol.Public)
-                         ? (b[next] is TokenItem secondToken && secondToken.Value.Id == Id.Symbol.Default)
+                       ? (firstToken.Value.Id.IsEqual(Id.Symbol.Public))
+                         ? (b[next] is TokenItem secondToken && secondToken.Value.Id.IsEqual(Id.Symbol.Default))
                            ? ((VisibilityTypes.Public, true).Some(), next.Value + 1)
                            : ((VisibilityTypes.Public, false).Some(), i.Value + 1)
-                         : (firstToken.Value.Id == Id.Symbol.Private)
+                         : (firstToken.Value.Id.IsEqual(Id.Symbol.Private))
                            ? ((VisibilityTypes.Private, false).Some(), i.Value + 1)
                            : (Option<(VisibilityTypes Visibility, Boolean IsDefault)>.None, i)
                        : (Option<(VisibilityTypes Visibility, Boolean IsDefault)>.None, i);
             };
 
-        private static ConstantOperationTypes ToConstantOperationType(this ParseId identifier)
-            =>   identifier == Id.Symbol.OpenParen ? ConstantOperationTypes.precedence
-               : identifier == Id.Symbol.Plus ? ConstantOperationTypes.add
-               : identifier == Id.Symbol.Minus ? ConstantOperationTypes.subtract
+        private static ConstantOperationTypes ToConstantOperationType(this TokenIdentifier identifier)
+            =>   identifier.IsEqual(Id.Symbol.OpenParen) ? ConstantOperationTypes.precedence
+               : identifier.IsEqual(Id.Symbol.Plus) ? ConstantOperationTypes.add
+               : identifier.IsEqual(Id.Symbol.Minus) ? ConstantOperationTypes.subtract
                : throw new ArgumentOutOfRangeException($"Invalid use of {nameof(ToConstantOperationType)}");
 
-        private static PropertyAccessTypes ToPropertyAccessType(this ParseId parseId)
-            =>   parseId == Id.Symbol.Get ? PropertyAccessTypes.Get
-               : parseId == Id.Symbol.Let ? PropertyAccessTypes.Let
-               : parseId == Id.Symbol.Set ? PropertyAccessTypes.Set
+        private static PropertyAccessTypes ToPropertyAccessType(this TokenIdentifier parseId)
+            =>   parseId.IsEqual(Id.Symbol.Get) ? PropertyAccessTypes.Get
+               : parseId.IsEqual(Id.Symbol.Let) ? PropertyAccessTypes.Let
+               : parseId.IsEqual(Id.Symbol.Set) ? PropertyAccessTypes.Set
                : throw new Exception(PROGRAM_ERROR);
 
-        private static ExitTypes ToExitType(this ParseId parseId)
-            =>   parseId == Id.Symbol.Do ? ExitTypes.Do
-               : parseId == Id.Symbol.For ? ExitTypes.For
-               : parseId == Id.Symbol.Function ? ExitTypes.Function
-               : parseId == Id.Symbol.Property ? ExitTypes.Property
-               : parseId == Id.Symbol.Sub ? ExitTypes.Sub
+        private static ExitTypes ToExitType(this TokenIdentifier parseId)
+            =>   parseId.IsEqual(Id.Symbol.Do) ? ExitTypes.Do
+               : parseId.IsEqual(Id.Symbol.For) ? ExitTypes.For
+               : parseId.IsEqual(Id.Symbol.Function) ? ExitTypes.Function
+               : parseId.IsEqual(Id.Symbol.Property) ? ExitTypes.Property
+               : parseId.IsEqual(Id.Symbol.Sub) ? ExitTypes.Sub
                : throw new Exception(PROGRAM_ERROR);
 
 
@@ -104,7 +104,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             {
                 if (members[current] is TokenItem token)
                 {
-                    if (token.Value.Id == Id.Symbol.Comma)
+                    if (token.Value.Id.IsEqual(Id.Symbol.Comma))
                     {
                         if (id == null)
                             throw new Exception(With.MISSING_NODE);
@@ -115,11 +115,11 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                         id = null;
                         sfx = false;
                     }
-                    else if (token.Value.Id == Id.Symbol.ByVal)
+                    else if (token.Value.Id.IsEqual(Id.Symbol.ByVal))
                         mod = ArgumentModifiers.ByVal.Some();
-                    else if (token.Value.Id == Id.Symbol.ByRef)
+                    else if (token.Value.Id.IsEqual(Id.Symbol.ByRef))
                         mod = ArgumentModifiers.ByRef.Some();
-                    else if (id != null && token.Value.Id == Id.Symbol.OpenParen)
+                    else if (id != null && token.Value.Id.IsEqual(Id.Symbol.OpenParen))
                         sfx = true;
                 }
                 else if (members[current] is SemanticItem node && node.Value is Identifier nextId)
@@ -147,7 +147,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             {
                 if (members[current] is TokenItem token)
                 {
-                    if (token.Value.Id == Id.Symbol.Comma)
+                    if (token.Value.Id.IsEqual(Id.Symbol.Comma))
                     {
                         if (id == null)
                             throw new Exception(With.MISSING_NODE);
@@ -264,14 +264,16 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
                     if (item is TokenItem token)
                     {
-                        if (stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(token.Value.Id))
+                        var tid = token.Value.Id.Values().FirstOrNone(i => stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(i));
+
+                        if (tid is Some<ParseId> someId && stateTrans.ContainsKey(state) && stateTrans[state].ContainsKey(someId.Value))
                         {
-                            var trans = stateTrans[state][token.Value.Id];
+                            var trans = stateTrans[state][someId.Value];
 
                             switch (trans.Action)
                             {
                                 case PathTransitionActions.SaveId:
-                                    items.Add(new PathIdentifier(token.Value, token.Value.Span.Value));
+                                    items.Add(new PathIdentifier(token.Value, token.Value.Span.ToString()));
                                     break;
                                 case PathTransitionActions.SaveWith:
                                     items.Add(new PathWith(token.Value));
@@ -402,36 +404,36 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                              With.Parts(Expect.TokenOf(Id.Symbol.Plus, Id.Symbol.Minus),
                                         Skip.ToZeroOrMore<Expression>())
                                  .Make((ns, t, e) => new OperateExpression(ns,
-                                                                           t.Id == Id.Symbol.Plus ? OperationTypes.SignPositive : OperationTypes.SignNegative,
+                                                                           t.Id.IsEqual(Id.Symbol.Plus) ? OperationTypes.SignPositive : OperationTypes.SignNegative,
                                                                            e)));
 
         private static readonly Transform AddOpTransform
             = (c, m) => m.Length > 2
                         ? m[1].Match(cn => m,
-                                     st =>   st.Id == Id.Symbol.Plus  ? SingleOpTransform(OperationTypes.Add)(c, m)
-                                           : st.Id == Id.Symbol.Minus ? SingleOpTransform(OperationTypes.Subtract)(c, m)
+                                     st =>   st.Id.IsEqual(Id.Symbol.Plus)  ? SingleOpTransform(OperationTypes.Add)(c, m)
+                                           : st.Id.IsEqual(Id.Symbol.Minus) ? SingleOpTransform(OperationTypes.Subtract)(c, m)
                                            : m)
                         : m;
 
         private static readonly Transform MultOpTransform
             = (c, m) => m.Length > 2
                         ? m[1].Match(cn => m,
-                                     st =>   st.Id == Id.Symbol.Mult ? SingleOpTransform(OperationTypes.Multiply)(c, m)
-                                           : st.Id == Id.Symbol.Div  ? SingleOpTransform(OperationTypes.Divide)(c, m)
-                                           :                          m)
+                                     st =>   st.Id.IsEqual(Id.Symbol.Mult) ? SingleOpTransform(OperationTypes.Multiply)(c, m)
+                                           : st.Id.IsEqual(Id.Symbol.Div)  ? SingleOpTransform(OperationTypes.Divide)(c, m)
+                                           :                                 m)
                         : m;
 
-        private static Option<OperationTypes> ToOperationType(ParseId id, TransformItem next)
-            =>   id == Id.Symbol.GTE ||
-                 id == Id.Symbol.EGT    ? OperationTypes.GreaterOrEqual.Some()
-               : id == Id.Symbol.EGT    ? OperationTypes.GreaterOrEqual.Some()
-               : id == Id.Symbol.LTE ||
-                 id == Id.Symbol.ELT    ? OperationTypes.LesserOrEqual.Some()
-               : id == Id.Symbol.GT     ? OperationTypes.Greater.Some()
-               : id == Id.Symbol.LT     ? OperationTypes.Lesser.Some()
-               : id == Id.Symbol.NEQ    ? OperationTypes.NotEqual.Some()
-               : id == Id.Symbol.Equals ? OperationTypes.Equal.Some()
-               : id == Id.Symbol.Is     ? next.Match(cn => OperationTypes.Is, st => OperationTypes.IsNot).Some()
+        private static Option<OperationTypes> ToOperationType(TokenIdentifier id, TransformItem next)
+            =>   id.IsEqual(Id.Symbol.GTE) ||
+                 id.IsEqual(Id.Symbol.EGT)    ? OperationTypes.GreaterOrEqual.Some()
+               : id.IsEqual(Id.Symbol.EGT)    ? OperationTypes.GreaterOrEqual.Some()
+               : id.IsEqual(Id.Symbol.LTE) ||
+                 id.IsEqual(Id.Symbol.ELT)    ? OperationTypes.LesserOrEqual.Some()
+               : id.IsEqual(Id.Symbol.GT)     ? OperationTypes.Greater.Some()
+               : id.IsEqual(Id.Symbol.LT)     ? OperationTypes.Lesser.Some()
+               : id.IsEqual(Id.Symbol.NEQ)    ? OperationTypes.NotEqual.Some()
+               : id.IsEqual(Id.Symbol.Equals) ? OperationTypes.Equal.Some()
+               : id.IsEqual(Id.Symbol.Is)     ? next.Match(cn => OperationTypes.Is, st => OperationTypes.IsNot).Some()
                :                          Option<OperationTypes>.None;
 
         private static readonly Transform CompareOpTransform
@@ -465,8 +467,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                          Skip.ToZeroOrMore<Statement>())
                   .Make((ns, tw, e, s) => new WhileStatement(ns, e, s));
 
-        private static LoopTypes ToLoopType(this ParseId id)
-            => id == Id.Symbol.While ? LoopTypes.While : LoopTypes.Until;
+        private static LoopTypes ToLoopType(this TokenIdentifier id)
+            => id.IsEqual(Id.Symbol.While) ? LoopTypes.While : LoopTypes.Until;
 
         private static readonly Transform DoLoopTransform
             = With.Parts(Expect.TokenOf(Id.Symbol.Do),
@@ -518,15 +520,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             {
                 var v = dottenToken(i, r);
 
-                return v.Item.Id switch
-                {
-                    ParseId p when p == Id.Category.ID => (new SyntaxToken[] { v.Item }, v.Remainder),
-                    ParseId p when p == Id.Category.IDDot => (new SyntaxToken[] { v.Item.WithoutEndDot(Id.Category.ID), v.Item.EndDot() }, v.Remainder),
-                    ParseId p when p == Id.Category.DotID => (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.ID) }, v.Remainder),
-                    ParseId p when p == Id.Category.DotIDDot => (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.IDDot).WithoutEndDot(Id.Category.ID), v.Item.EndDot() }, v.Remainder),
-                    ParseId p when p == Id.Symbol.CloseParenDot => (new SyntaxToken[] { v.Item.WithoutEndDot(Id.Symbol.CloseParen), v.Item.EndDot() }, v.Remainder),
-                    _ => (new SyntaxToken[] { v.Item }, v.Remainder)
-                };
+                return   (v.Item.Id.IsEqual(Id.Category.ID))          ? (new SyntaxToken[] { v.Item }, v.Remainder)
+                       : (v.Item.Id.IsEqual(Id.Category.IDDot))       ? (new SyntaxToken[] { v.Item.WithoutEndDot(Id.Category.ID), v.Item.EndDot() }, v.Remainder)
+                       : (v.Item.Id.IsEqual(Id.Category.DotID))       ? (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.ID) }, v.Remainder)
+                       : (v.Item.Id.IsEqual(Id.Category.DotIDDot))    ? (new SyntaxToken[] { v.Item.StartDot(), v.Item.WithoutStartDot(Id.Category.IDDot).WithoutEndDot(Id.Category.ID), v.Item.EndDot() }, v.Remainder)
+                       : (v.Item.Id.IsEqual(Id.Symbol.CloseParenDot)) ? (new SyntaxToken[] { v.Item.WithoutEndDot(Id.Symbol.CloseParen), v.Item.EndDot() }, v.Remainder)
+                       :                                                (new SyntaxToken[] { v.Item }, v.Remainder);
             };
 
         private static Get<TokenItem> ChangeToId(this Get<SyntaxToken> keyword)
@@ -534,9 +533,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             {
                 var v = keyword(i, r);
 
-                return v.Item.Id == Id.Category.ID
+                return v.Item.Id.IsEqual(Id.Category.ID)
                        ? v
-                       : v.Item.Span.Make(o => ((TokenItem)new SyntaxToken(o, Id.Category.ID), v.Remainder));
+                       : v.Item.Span.Make(o => ((TokenItem)new SyntaxToken(o, Id.Category.ID.ToTokenIdentifier()), v.Remainder));
             };
 
         private static readonly Dictionary<ParseId, Transform> NodeBuilders = new Dictionary<ParseId, Transform>()
@@ -545,10 +544,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             { Id.Rule.KeywordID,         With.Parts(Expect.Token().ChangeToId()).Make((ns, i) => new TransformItem[] { i }) },
             { Id.Rule.OptionExplicit,    With.Parts().Make(ns => new OptionExplicitStatement(ns)) },
             { Id.Rule.BoolLiteral,       With.Parts(Expect.TokenValue()).Make((ns, tv) => new LiteralValue(ns, LiteralValueTypes.Boolean, tv)) },
-            { Id.Rule.Nothing,           With.Parts(Expect.Token()).Make((ns, t) => new LiteralValue(ns, t.Id.ToLiteralValueType(), t.Span.Value)) },
+            { Id.Rule.Nothing,           With.Parts(Expect.Token()).Make((ns, t) => new LiteralValue(ns, t.Id.ToLiteralValueType(), t.Span.ToString())) },
             { Id.Rule.IntLiteral,        With.Parts(Expect.TokenValue()).Make((ns, tv) => new LiteralValue(ns, LiteralValueTypes.Integer, tv)) },
             { Id.Rule.ConstExpr,         With.Either(cn => cn,
-                                                     (sb, st) => new LiteralValue(sb, st.Id.ToLiteralValueType(), st.Span.Value))
+                                                     (sb, st) => new LiteralValue(sb, st.Id.ToLiteralValueType(), st.Span.ToString()))
                                              .ToTransform() },
             { Id.Rule.ExtendedID,        With.Parts(Expect.TokenValue()).Make((ns, tv) => new Identifier(ns, tv)) },
             { Id.Rule.QualifiedID,       With.Concat(Expect.Token().DotSplit(),
@@ -649,7 +648,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             { Id.Rule.ErrorStmt,         With.Parts(Expect.TokenOf(Id.Symbol.On),
                                                     Expect.TokenOf(Id.Symbol.Error),
                                                     Expect.Token())
-                                             .Make((ns, a, b, c) => c.Id == Id.Symbol.Resume
+                                             .Make((ns, a, b, c) => c.Id.IsEqual(Id.Symbol.Resume)
                                                                     ? (CodeNode)new OnErrorResumeNext(ns)
                                                                     : (CodeNode)new OnErrorGotoZero(ns)) },
             { Id.Rule.InlineStmt,        InlineStmtTransform },
@@ -691,10 +690,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                         With.Parts(Expect.TokenOf(Id.Symbol.Redim),
                                                                    Skip.ToOneOrMore<RedimVariable>())
                                                             .Make((ns, tr, v) => new RedimStatement(ns, false, v))) },
-            { Id.Rule.LoopStmt,          With.Condition((c, i) => i.Length > 0 && i[0] is TokenItem token && token.Value.Id == Id.Symbol.Do,
+            { Id.Rule.LoopStmt,          With.Condition((c, i) => i.Length > 0 && i[0] is TokenItem token && token.Value.Id.IsEqual(Id.Symbol.Do),
                                                         DoLoopTransform,
                                                         WhileTransform) },
-            { Id.Rule.ForStmt,           With.Condition((c, i) => i.Length > 1 && i[1] is TokenItem token && token.Value.Id == Id.Symbol.Each,
+            { Id.Rule.ForStmt,           With.Condition((c, i) => i.Length > 1 && i[1] is TokenItem token && token.Value.Id.IsEqual(Id.Symbol.Each),
                                                         ForEachTransform,
                                                         ForTransform) },
             { Id.Rule.WithStmt,          With.Parts(Expect.TokenOf(Id.Symbol.With),

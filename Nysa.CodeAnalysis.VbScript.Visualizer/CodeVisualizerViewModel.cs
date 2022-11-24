@@ -12,8 +12,6 @@ using Nysa.CodeAnalysis.VbScript.Semantics;
 using Nysa.Logics;
 using Nysa.Windows.Input;
 
-using Dorata.Text.Parsing;
-
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 

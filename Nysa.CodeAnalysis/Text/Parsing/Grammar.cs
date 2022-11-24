@@ -1,74 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using Nysa.Text;
 using Nysa.Text.Lexing;
 
 namespace Nysa.Text.Parsing
 {
 
-    public partial class Grammar
+    public class Grammar
     {
         // static members
-        private static readonly Take.Node _RuleCheck        = Take.AtStart.Then('<'.One()).Then(Take.Until('>'.One())).Where(s => s.Length > 2);
-        private static readonly Take.Node _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _RuleCheck        = Take.AtStart.Then('<'.One()).Then(Take.Until('>'.One())).Where(s => s.Length > 2);
+        private static readonly Nysa.Text.Lexing.Rule _CategoryCheck    = Take.AtStart.Then('{'.One()).Then(Take.Until('}'.One())).Where(s => s.Length > 2);
 
         public static Boolean IsLiteralSymbol(String symbol)
-            => (_RuleCheck.Find(symbol.Start()) is LexMiss && _CategoryCheck.Find(symbol.Start()) is LexMiss);
+            => (   _RuleCheck.Function(Start.Span(symbol)) is LexMiss
+                && _CategoryCheck.Function(Start.Span(symbol)) is LexMiss);
         public static Boolean IsRuleSymbol(String symbol)
-            => _RuleCheck.Find(symbol.Start()) is LexHit;
+            => _RuleCheck.Function(Start.Span(symbol)) is LexHit;
         public static Boolean IsCategorySymbol(String symbol)
-            => _CategoryCheck.Find(symbol.Start()) is LexHit;
+            => _CategoryCheck.Function(Start.Span(symbol)) is LexHit;
 
         // We use a specific empty instance a list of rules to signify terminal symbols.
-        private static readonly List<Rule>  TERMINAL       = new List<Rule>();
+        internal static readonly List<GrammarRule>  TERMINAL       = new List<GrammarRule>();
 
         // instance members
-        private Dictionary<String, Identifier>              _SymbolIdentifier;
+        private SymbolIndex                                 _Index;
         private Dictionary<Identifier, SymbolDefinition>    _Rules;
         private HashSet<Identifier>                         _NullableIdSet;
 
         public String StartSymbol { get; private set; }
         public Identifier StartId { get; private set; }
 
-        private Grammar(Builder builder)
+        internal Grammar(String startSymbol, Identifier startId, SymbolIndex index, Dictionary<Identifier, SymbolDefinition> rulesIndex, HashSet<Identifier> nullables)
         {
-            this.StartSymbol = builder.StartSymbol;
-
-            this._SymbolIdentifier = new Dictionary<String, Identifier>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var keyIndex in builder.Symbols().Select((s, i) => (Symbol: s, Id: Identifier.FromInteger(i + 1))))
-                this._SymbolIdentifier.Add(keyIndex.Symbol, keyIndex.Id);
-
-            var definitions = builder.Rules()
-                                     .ToDictionary(rk => rk.Symbol, 
-                                                   rv => SymbolDefinition.Create(this, rv.Symbol, rv.Definitions),
-                                                   StringComparer.OrdinalIgnoreCase);
-
-            this._Rules     = this._SymbolIdentifier
-                                  .Select(kvp => definitions.ContainsKey(kvp.Key)
-                                                 ? definitions[kvp.Key]
-                                                 : SymbolDefinition.CreateTerminal(kvp.Key))
-                                  .ToDictionary(dk => this._SymbolIdentifier[dk.Name]);
-
-            var known    = new HashSet<Identifier>(this._Rules.Where(r => r.Value.IsTerminal).Select(t => t.Key));
-            var nullable = new HashSet<Identifier>(this._Rules.Where(r => !r.Value.IsTerminal && r.Value.Variants.Any(v => v.IsEmpty)).Select(n => n.Key));
-            var unknown  = new HashSet<Identifier>(this._Rules.Where(r => !known.Contains(r.Key) && !nullable.Contains(r.Key)).Select(u => u.Key));
-
-            var moreNull = unknown.Where(u => !this._Rules[u].IsTerminal && this._Rules[u].Variants.Any(d => d.DefinitionIds.All(s => nullable.Contains(s)))).ToArray();
-
-            while (moreNull.Length > 0)
-            {
-                nullable.UnionWith(moreNull);
-                unknown.ExceptWith(moreNull);
-                moreNull = unknown.Where(u => !this._Rules[u].IsTerminal && this._Rules[u].Variants.Any(d => d.DefinitionIds.All(s => nullable.Contains(s)))).ToArray();
-            }
-
-            this._NullableIdSet = nullable;
-            this.StartId = this.Id(this.StartSymbol);
+            this.StartSymbol        = startSymbol;
+            this.StartId            = startId;
+            this._Index             = index;
+            this._Rules             = rulesIndex;
+            this._NullableIdSet     = nullables;
         }
 
         public IEnumerable<Identifier> GetIds(String[] symbols)
@@ -76,18 +46,17 @@ namespace Nysa.Text.Parsing
         public IEnumerable<String> GetSymbols(IEnumerable<Identifier> ids)
             => ids.Select(i => this._Rules[i].Name);
 
-        public Identifier Id(String symbol)
-        {
-            Identifier id;
-            return this._SymbolIdentifier.TryGetValue(symbol, out id) ? id : Identifier.None;
-        }
+        public Identifier Id(String symbol) => this._Index.Id(symbol);
 
-        public String Symbol(Identifier id) => (id != Identifier.None && this._Rules.ContainsKey(id)) ? this._Rules[id].Name : "invalid-symbol-id";
+        public String Symbol(Identifier id) => this._Index.Symbol(id);
         public Boolean IsValid(Identifier id) => (id != Identifier.None && this._Rules.ContainsKey(id));
+        public Boolean IsValid(TokenIdentifier id) => id.Values().All(i => this.IsValid(i));
         public Boolean IsValid(String symbol) => this.IsValid(this.Id(symbol));
         public Boolean IsTerminal(Identifier id) => this.IsValid(id) && this._Rules[id].IsTerminal;
 
-        public IReadOnlyList<Rule> Rules(Identifier id)
+        public NodePolicy NodePolicy(Identifier id) => this._Rules[id].NodePolicy;
+
+        public IReadOnlyList<GrammarRule> Rules(Identifier id)
             => this.IsValid(id) ? this._Rules[id].Variants : TERMINAL;
 
         public HashSet<Identifier> NullableIds
@@ -96,11 +65,11 @@ namespace Nysa.Text.Parsing
         }
 
         public IEnumerable<String> LiteralSymbols()
-            => this._SymbolIdentifier.Where(kvp => IsLiteralSymbol(kvp.Key)).Select(l => l.Key);
+            => this._Index.All.Where(kvp => IsLiteralSymbol(kvp.Symbol)).Select(l => l.Symbol);
         public IEnumerable<String> RuleSymbols()
-            => this._SymbolIdentifier.Where(kvp => IsRuleSymbol(kvp.Key)).Select(r => r.Key);
+            => this._Index.All.Where(kvp => IsRuleSymbol(kvp.Symbol)).Select(r => r.Symbol);
         public IEnumerable<String> CategorySymbols()
-            => this._SymbolIdentifier.Where(kvp => IsCategorySymbol(kvp.Key)).Select(c => c.Key);
+            => this._Index.All.Where(kvp => IsCategorySymbol(kvp.Symbol)).Select(c => c.Symbol);
 
         public override string ToString()
             => this._Rules

@@ -5,7 +5,7 @@ using System.Linq;
 
 using Nysa.Logics;
 
-using SyntaxNode  = Dorata.Text.Parsing.Node;
+using SyntaxNode  = Nysa.Text.Parsing.Node;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {

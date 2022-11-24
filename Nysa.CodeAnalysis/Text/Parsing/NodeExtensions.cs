@@ -92,14 +92,23 @@ namespace Nysa.Text.Parsing
                : predicate(item)     ? Return.Enumerable(item)
                :                       None<NodeOrToken>.Enumerable();
 
-        public static IEnumerable<Token> Tokens(this Node node)
+        public static IEnumerable<Token> OrderedTokens(this Node node)
         {
             foreach (var nort in node.Members)
             {
                 if (nort.AsNode != null)
-                    foreach (var token in nort.AsNode.Tokens())
+                    foreach (var token in nort.AsNode.OrderedTokens())
                         yield return token;
                 else if (nort.AsToken != null)
+                    yield return nort.AsToken.Value;
+            }
+        }
+
+        public static IEnumerable<Token> MemberTokens(this Node node)
+        {
+            foreach (var nort in node.Members)
+            {
+                if (nort.AsToken != null)
                     yield return nort.AsToken.Value;
             }
         }

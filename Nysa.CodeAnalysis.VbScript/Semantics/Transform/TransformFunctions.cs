@@ -2,9 +2,9 @@ using System;
 
 using Nysa.Logics;
 
-using ParseId     = Dorata.Text.Identifier;
-using SyntaxNode  = Dorata.Text.Parsing.Node;
-using SyntaxToken = Dorata.Text.Lexing.Token;
+using ParseId     = Nysa.Text.Identifier;
+using SyntaxNode  = Nysa.Text.Parsing.Node;
+using SyntaxToken = Nysa.Text.Lexing.Token;
 
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
@@ -78,8 +78,8 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             // note how each member node gets its own context object from @this
             var members = @this.Node
                                .Members
-                               .SelectMany(m => m.IsNode ? @this.ForMember(m.AsNode).Select(getNodeTransform)
-                                                         : Return.Enumerable((TransformItem)(TokenItem)m.AsToken))
+                               .SelectMany(m => m.Match(n => @this.ForMember(n).Select(getNodeTransform),
+                                                        t => Return.Enumerable((TransformItem)(TokenItem)t)))
                                .ToArray();
 
                /* ?tranform function for this symbol? */

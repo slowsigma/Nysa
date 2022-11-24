@@ -1,18 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Reference Include="Dorata.Common.dll">
-      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Dorata.VBScript.dll">
-      <HintPath>..\Nysa.CodeAnalysis.VbScript\DorataLibs\Dorata.VBScript.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
+    <ProjectReference Include="..\..\Dorata\Dorata.VBScript\Dorata.VBScript.csproj" />
+    <ProjectReference Include="..\..\Dorata\Dorata.Common\Dorata.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics\Nysa.Logics.csproj" />
-    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
-    <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
   </ItemGroup>
 
   <PropertyGroup>

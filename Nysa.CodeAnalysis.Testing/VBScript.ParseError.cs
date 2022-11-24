@@ -29,17 +29,17 @@ namespace Nysa.Text.Parsing
 
                 var newLine = Grammar.Id("{new-line}");
 
-                if (tokens[errPoint.Index].Id == newLine)
+                if (tokens[errPoint.Index].Id.IsEqual(newLine))
                 {
-                    while (lineStart > 0 && tokens[lineStart - 1].Id != newLine)
+                    while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
                         lineStart--;
                 }
                 else
                 {
-                    while (lineStart > 0 && tokens[lineStart - 1].Id != newLine)
+                    while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
                         lineStart--;
 
-                    while (lineStop < tokens.Length && tokens[lineStop].Id != newLine)
+                    while (lineStop < tokens.Length && !tokens[lineStop].Id.IsEqual(newLine))
                         lineStop++;
                 }
 
@@ -48,7 +48,7 @@ namespace Nysa.Text.Parsing
 
                 while (current > -1)
                 {
-                    if (tokens[current].Id == newLine)
+                    if (tokens[current].Id.IsEqual(newLine))
                         lineCount++;
 
                     current--;
