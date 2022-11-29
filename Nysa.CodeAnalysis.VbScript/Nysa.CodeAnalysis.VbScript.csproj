@@ -2,9 +2,12 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
-    <PackageReference Include="Nysa.CodeAnalysis" Version="1.0.3" />
     <PackageReference Include="Nysa.Logics" Version="1.0.3" />
     <PackageReference Include="Nysa.Text" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
