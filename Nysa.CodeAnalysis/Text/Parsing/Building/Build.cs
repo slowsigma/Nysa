@@ -13,7 +13,7 @@ namespace Nysa.Text.Parsing.Building;
 internal static class Build
 {
 
-    internal static Option<AcrossItem> Across(FinalChart chart, Token[] input, ChartEntry initialEntry, ChartPosition initialPosition)
+    internal static Option<AcrossItem> Across(InverseChart chart, Token[] input, ChartEntry initialEntry, Int32 initialPosition)
     {
         var stack   = new Stack<BuildCall>();
         var across  = new AcrossCall(BuildStates.ACROSS_CALL, BuildStates.FINAL, initialEntry, initialPosition, 0, initialEntry.Number);
@@ -36,11 +36,11 @@ internal static class Build
             // this implementation could be expanded to check more entries, but the 
             // downside would be that it would need to look at permutations
             var checkSymbolId = checkRule.DefinitionIds[checkAcross.CurrentRule + 1];
-            var checkPosition = chart[checkAcross.Position.Index + checkFind.Number];
+            var checkPosition = checkAcross.Position + checkFind.Number;
 
             return chart.Grammar.IsTerminal(checkSymbolId)
-                    ? input[checkPosition.Index].Id.IsEqual(checkSymbolId)
-                    : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
+                    ? input[checkPosition].Id.IsEqual(checkSymbolId)
+                    : chart.Entries(checkPosition).Any(e => e.Rule.Id == checkSymbolId);
         }
 
         Boolean isValidDown(DownCall checkDown, ChartEntry checkFind)
@@ -56,26 +56,26 @@ internal static class Build
                 return (checkDown.Entry.Number == checkFind.Number);
 
             var checkSymbolId = checkRule.DefinitionIds[1];
-            var checkPosition = chart[checkDown.Position.Index + checkFind.Number];
+            var checkPosition = checkDown.Position + checkFind.Number;
 
             return chart.Grammar.IsTerminal(checkSymbolId)
-                    ? input[checkPosition.Index].Id.IsEqual(checkSymbolId)
-                    : checkPosition.Any(e => e.Rule.Id == checkSymbolId);
+                    ? input[checkPosition].Id.IsEqual(checkSymbolId)
+                    : chart.Entries(checkPosition).Any(e => e.Rule.Id == checkSymbolId);
         }
 
-        void CallAcross(BuildStates @return, ChartEntry entry, ChartPosition position, Int32 currentRule, Int32 lengthLeft, AcrossItem? previous = null)
+        void CallAcross(BuildStates @return, ChartEntry entry, Int32 position, Int32 currentRule, Int32 lengthLeft, AcrossItem? previous = null)
         {
             stack.Push(build);
 
             across = new AcrossCall(BuildStates.ACROSS_CALL, @return, entry, position, currentRule, lengthLeft, previous);
-            build = across;
+            build  = across;
         }
 
-        void CallDown(BuildStates @return, ChartEntry callEntry, ChartPosition callPosition, DownItem? above = null)
+        void CallDown(BuildStates @return, ChartEntry callEntry, Int32 callPosition, DownItem? above = null)
         {
             stack.Push(build);
 
-            down = new DownCall(BuildStates.DOWN_CALL, @return, callEntry, callPosition, above);
+            down  = new DownCall(BuildStates.DOWN_CALL, @return, callEntry, callPosition, above);
             build = down;
         }
 
@@ -121,13 +121,13 @@ internal static class Build
 
                 if (chart.Grammar.IsTerminal(id))
                 {
-                    var token = input[across.Position.Index];
-                    var nextPosition = chart[across.Position.Index + 1];
+                    var token        = input[across.Position];
+                    var nextPosition = across.Position + 1;
 
                     if (token.Id.IsEqual(id))
                     {
                         var previous = across.Previous.Match(p => p.NextAcrossToken(nextPosition, token),
-                                                                () => AcrossItem.StartWithToken(across.Entry, nextPosition, token));
+                                                             () => AcrossItem.StartWithToken(across.Entry, nextPosition, token));
 
                         CallAcross(BuildStates.RETURN, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - 1, previous);
                     }
@@ -148,10 +148,11 @@ internal static class Build
         stateLogic[BuildStates.ACROSS_MATCH] = () =>
         {
             across.MatchIndex = across.MatchIndex + 1; // Note: MatchIndex is initialized to -1
+            var entries = chart.Entries(across.Position);
 
-            if (across.MatchIndex < across.Position.Count)
+            if (across.MatchIndex < entries.Count)
             {
-                var find = across.Position[across.MatchIndex];
+                var find = entries[across.MatchIndex];
 
                 if (isValidAcross(across, find))
                 {
@@ -188,7 +189,7 @@ internal static class Build
             {
                 var nextPosition = someAcross.Value.NextPosition;
                 var previous = across.Previous.Match(p => p.NextAcrossNode(nextPosition, someAcross.Value),
-                                                        () => AcrossItem.StartWithNode(across.Entry, nextPosition, someAcross.Value));
+                                                     () => AcrossItem.StartWithNode(across.Entry, nextPosition, someAcross.Value));
 
                 CallAcross(BuildStates.ACROSS_MATCH_ACROSS_CHECK, across.Entry, nextPosition, across.CurrentRule + 1, across.LengthLeft - across.Match.Number, previous);
             }
@@ -211,8 +212,8 @@ internal static class Build
             if (down.Entry.Rule.IsEmpty)
             {
                 down.Result = down.Entry.Number == 0
-                                ? AcrossItem.StartWithEmpty(down.Entry, down.Position).Some<AcrossItem>()
-                                : Option<AcrossItem>.None;
+                              ? AcrossItem.StartWithEmpty(down.Entry, down.Position).Some<AcrossItem>()
+                              : Option<AcrossItem>.None;
                 CallReturn();
             }
             else
@@ -221,8 +222,8 @@ internal static class Build
 
                 if (chart.Grammar.IsTerminal(id))
                 {
-                    var token = input[down.Position.Index];
-                    var nextPosition = chart[down.Position.Index + 1];
+                    var token        = input[down.Position];
+                    var nextPosition = down.Position + 1;
 
                     if (token.Id.IsEqual(id))
                     {
@@ -238,7 +239,7 @@ internal static class Build
                 {
                     down.SearchId = id;
                     down.Above = down.Above.Match(p => p.WithNext(down.Entry).Some(),
-                                                    () => new DownItem(down.Entry).Some());
+                                                  () => new DownItem(down.Entry).Some());
                     down.SetCallState(BuildStates.DOWN_MATCH);
                 }
             }
@@ -247,10 +248,11 @@ internal static class Build
         stateLogic[BuildStates.DOWN_MATCH] = () =>
         {
             down.MatchIndex = down.MatchIndex + 1; // Note: MatchIndex is initialized to -1
+            var entries = chart.Entries(down.Position);
 
-            if (down.MatchIndex < down.Position.Count)
+            if (down.MatchIndex < entries.Count)
             {
-                var find = down.Position[down.MatchIndex];
+                var find = entries[down.MatchIndex];
 
                 if (isValidDown(down, find))
                 {
@@ -302,20 +304,20 @@ internal static class Build
     }
 
 
-    public static Option<Node> Create(FinalChart chart, Token[] input)
+    public static Option<Node> Create(InverseChart chart, Token[] input)
     {
         var id = chart.Grammar.StartId;
         var symbol = chart.Grammar.StartSymbol;
         var result = Option<Node>.None;
 
-        if (chart.Length > 0)
+        if (chart.Data.Count > 0)
         {
-            foreach (var entry in chart[0].Where(e => e.Rule.Id == id))
+            foreach (var entry in chart.Entries(0).Where(e => e.Rule.Id == id))
             {
                 if (entry.Rule.IsEmpty && entry.Number == 0)
                     continue;
 
-                var check = Build.Across(chart, input, entry, chart[0]);
+                var check = Build.Across(chart, input, entry, 0);
 
                 if (check is Some<AcrossItem> someAcross)
                     return someAcross.Value.AsNode().Some();
