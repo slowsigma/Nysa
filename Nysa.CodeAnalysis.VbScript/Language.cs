@@ -664,19 +664,21 @@ public static partial class Language
         if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
             source = String.Concat(source, "\r\n");
 
-        var hits     = Language.Seek.Repeat(source).Where(h => !h.Id.IsEqual(Identifier.Trivia)).ToArray();
-        var tokens   = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
+        var hits     = Language.Seek.Repeat(source).ToArray();
+        var tokens   = hits.Select(h => new Token(h.Span, h.Id))
+                           .Where(t => !t.Id.IsEqual(Identifier.Trivia))
+                           .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
+                           .ToArray();
         var chart    =  Language.Grammar.CreateChart(tokens);
 
         if (!chart.IsIncomplete())
         {
             var inverse = chart.InverseChart();
 
-            if (!inverse.IsIncomplete())
+            if (   !inverse.IsIncomplete()
+                && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
-                return inverse.ToSyntaxTree(tokens).Match(n => n.Confirmed(),
-                                                          () => chart.CreateError(source, tokens).Failed<Node>());
-
+                return someTree.Value.Confirmed();
             }
         }
 

@@ -139,69 +139,78 @@ public static class ChartFunctions
         return new InverseChart(@this.Grammar, data);
     }
 
-    public static ParseException CreateError(this ParseChart chart, String source, Token[] tokens)
+    private static (Int32 ErrorIndex, String Rules) ErrorInfo(this ParseChart chart)
     {
-        var errIndex = 0;
-        var errPoint = chart.Entries(0);
+        var errIndex  = 0;
+        var errPoint  = chart.Entries(0);
 
-        while (errIndex < tokens.Length - 1 && errPoint.Count > 0)
+        // Note: The last token should always be an end-of-input marker.
+        // Find the first spot in the chart where there are no entries.
+        while (errIndex < chart.Data.Count - 1 && errPoint.Count > 0)
         {
             errIndex++;
             errPoint = chart.Entries(errIndex);
         }
-            
-        var lineStart = errIndex;
-        var lineStop  = errIndex;
 
-        var newLine = chart.Grammar.Id("{new-line}");
-
-        if (tokens[errIndex].Id.IsEqual(newLine))
+        // we're not at the start and we stopped where there are no entries...
+        if (errIndex > 0 && errPoint.Count < 1)
         {
-            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
-                lineStart--;
-        }
-        else
-        {
-            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
-                lineStart--;
-
-            while (lineStop < tokens.Length && !tokens[lineStop].Id.IsEqual(newLine))
-                lineStop++;
+            // back up one
+            errIndex--;
+            errPoint = chart.Entries(errIndex);
         }
 
-        var lineCount = (Int32)1;
-        var current   = lineStart - 1;
+        // formulate rules string from outstanding rules where the next rule is a terminal
+        // these are the expected terminals the current token didn't match
+        var rules = String.Join("\r\n", errPoint.Where(e =>    e.NextRuleId != Identifier.None
+                                                            && chart.Grammar.IsTerminal(e.NextRuleId))
+                                                .Select(t => t.ToString()));
 
-        while (current > -1)
+        return (errIndex, rules);
+    }
+
+    public static (Int32 LineNumber, Int32 LineStart, Int32 LineLength) LineInfo(this Token @this, String source)
+    {
+        var position = 0;
+        var lineIdx  = 0;
+        var startIdx = 0;
+        var endIdx   = @this.Span.Position + @this.Span.Length;
+
+        while (position <= @this.Span.Position)
         {
-            if (tokens[current].Id.IsEqual(newLine))
-                lineCount++;
+            var newLineNext = source[position] == '\n';
 
-            current--;
+            position++;
+
+            if (newLineNext)
+            {
+                lineIdx++;
+                startIdx = position;
+            } 
         }
 
-        var lineNumber    = lineCount;
-        var columnNumber  = (  tokens[errIndex].Span.Position
-                             - tokens[lineStart].Span.Position);
+        return (lineIdx + 1, startIdx, (position - startIdx) + @this.Span.Length);
+    }
 
-        var positionStart = tokens[lineStart].Span.Position;
-        var positionStop  = tokens[lineStop].Span.Position + tokens[lineStop].Span.Length;
+    private static String ErrorMessage(this ParseChart @this, Token[] tokens, Int32 errorIndex)
+        => @this.Grammar.IsValid(tokens[errorIndex].Id)
+           ? "Unexpected symbol."
+           : "Invalid symbol.";
 
-        var errorLine     = positionStart >= 0 && positionStop > positionStart
-                            ? source.Substring(positionStart, (positionStop - positionStart))
-                            : String.Empty;
+    public static ParseException CreateError(this ParseChart chart, String source, Token[] tokens)
+    {
+        var (errIndex,
+             errRules  ) = chart.ErrorInfo();
+        var errToken     = tokens[errIndex];
+        var (lineNumber,
+             lineStart,
+             lineLength) = errToken.LineInfo(source);
 
-        if (chart.Grammar.IsValid(tokens[errIndex].Id))
-        {
-            var rules = String.Join("\r\n", errPoint.Where(e => e.NextRuleId != Identifier.None && chart.Grammar.IsTerminal(e.NextRuleId))
-                                                    .Select(t => t.ToString()));
-
-            return new ParseException("Unexpected symbol.", lineNumber, columnNumber, errorLine, rules);
-        }
-        else
-        {
-            return new ParseException("Invalid symbol.", lineNumber, columnNumber, errorLine, String.Empty);
-        }
+        return new ParseException(chart.ErrorMessage(tokens, errIndex),
+                                  lineNumber,
+                                  (lineLength - errToken.Span.Length),
+                                  source.Substring(lineStart, lineLength),
+                                  errRules);
     }
 
     private static IEnumerable<NodeOrToken> CollapsedMembers(this IEnumerable<NodeOrToken> members, Grammar grammar)
