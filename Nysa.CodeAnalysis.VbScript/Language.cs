@@ -657,69 +657,6 @@ public static partial class Language
         Language.Seek = Take.Seek(all);
     }
 
-    private static ParseException CreateError(Chart chart, String source, Token[] tokens)
-    {
-        var errPoint = chart[0];
-
-        while (errPoint.Index < tokens.Length - 1 && chart[errPoint.Index + 1].Count > 0)
-            errPoint = chart[errPoint.Index + 1];
-        
-        //var errPoint = chart.FirstOrDefault(p => p.GetEntries().Count() == 0 || p.Index == tokens.Length - 1);
-
-        var lineStart = errPoint.Index;
-        var lineStop  = errPoint.Index;
-
-        var newLine = Grammar.Id("{new-line}");
-
-        if (tokens[errPoint.Index].Id.IsEqual(newLine))
-        {
-            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
-                lineStart--;
-        }
-        else
-        {
-            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
-                lineStart--;
-
-            while (lineStop < tokens.Length && !tokens[lineStop].Id.IsEqual(newLine))
-                lineStop++;
-        }
-
-        var lineCount = (Int32)1;
-        var current   = lineStart - 1;
-
-        while (current > -1)
-        {
-            if (tokens[current].Id.IsEqual(newLine))
-                lineCount++;
-
-            current--;
-        }
-
-        var lineNumber   = lineCount;
-        var columnNumber = (  tokens[errPoint.Index].Span.Position
-                                - tokens[lineStart].Span.Position     );
-
-        var positionStart = tokens[lineStart].Span.Position;
-        var positionStop  = tokens[lineStop].Span.Position + tokens[lineStop].Span.Length;
-
-        var errorLine     = positionStart >= 0 && positionStop > positionStart
-                            ? source.Substring(positionStart, (positionStop - positionStart))
-                            : String.Empty;
-
-        if (Grammar.IsValid(tokens[errPoint.Index].Id))
-        {
-            var rules = String.Join("\r\n", errPoint.Where(e => e.NextRuleId != Identifier.None && Grammar.IsTerminal(e.NextRuleId))
-                                                    .Select(t => t.ToString()));
-
-            return new ParseException("Unexpected symbol.", lineNumber, columnNumber, errorLine, rules);
-        }
-        else
-        {
-            return new ParseException("Invalid symbol.", lineNumber, columnNumber, errorLine, String.Empty);
-        }
-    }
-
     public static Suspect<Node> Parse(String source)
     {
         var lastChar = source[source.Length - 1];
@@ -727,22 +664,25 @@ public static partial class Language
         if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
             source = String.Concat(source, "\r\n");
 
-        var hits     = Language.Seek.Repeat(source).Where(h => !h.Id.IsEqual(Identifier.Trivia)).ToArray();
-        var tokens   = hits.Select(h => new Token(h.Span, h.Id)).Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) }).ToArray();
-        var recChart = Language.Grammar.Chart(tokens);
+        var hits     = Language.Seek.Repeat(source).ToArray();
+        var tokens   = hits.Select(h => new Token(h.Span, h.Id))
+                           .Where(t => !t.Id.IsEqual(Identifier.Trivia))
+                           .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
+                           .ToArray();
+        var chart    =  Language.Grammar.CreateChart(tokens);
 
-        if (!recChart.IsIncomplete())
+        if (!chart.IsIncomplete())
         {
-            var hitsChart = new FinalChart(recChart);
+            var inverse = chart.InverseChart();
 
-            if (!hitsChart.IsIncomplete())
+            if (   !inverse.IsIncomplete()
+                && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
-                return hitsChart.ToSyntaxTree(tokens).Match(n => n.Confirmed(),
-                                                            () => CreateError(recChart, source, tokens).Failed<Node>());
+                return someTree.Value.Confirmed();
             }
         }
 
-        return CreateError(recChart, source, tokens).Failed<Node>();
+        return chart.CreateError(source, tokens).Failed<Node>();
     }
 
 }

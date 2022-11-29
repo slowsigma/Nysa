@@ -28,9 +28,10 @@ public struct ChartEntry : IEquatable<ChartEntry>
     }
 
     public Identifier NextRuleId => (this.Next < this.Rule.DefinitionIds.Count) ? this.Rule.DefinitionIds[this.Next] : Identifier.None;
+    public Boolean IsComplete => !(this.Next < this.Rule.DefinitionIds.Count);
 
     public ChartEntry AsNextEntry() => new ChartEntry(this.Rule, this.Number, this.Next + 1);
-    public ChartEntry AsInverted(ChartPosition fromPosition) => new ChartEntry(this.Rule, fromPosition.Index - this.Number, this.Next);
+    public ChartEntry AsInverted(Int32 fromPosition) => new ChartEntry(this.Rule, fromPosition - this.Number, this.Next);
 
     public override bool Equals(object? obj) => obj is ChartEntry entry ? this.Equals(entry) : false;
     public bool Equals(ChartEntry other) => (this.Rule == other.Rule) && (this.Number == other.Number) && (this.Next == other.Next);

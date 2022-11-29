@@ -11,4 +11,4 @@ using Nysa.Text.Lexing;
 namespace Nysa.Text.Parsing.Building;
 
 // Key used to memoize building down.
-internal record struct DownKey(ChartEntry Entry, ChartPosition Position);
+internal record struct DownKey(ChartEntry Entry, Int32 Position);

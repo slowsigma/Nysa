@@ -8,11 +8,12 @@ namespace Nysa.Text.Parsing;
 
 public sealed class GrammarRule
 {
-    private SymbolIndex                 _Index  { get; init; }
-    public Identifier                   Id      { get; init; }
-    public String                       Symbol  => this._Index.Symbol(this.Id);
+    public Identifier                   Id            { get; init; }
+    public String                       Symbol        => this._Index.Symbol(this.Id);
     public IReadOnlyList<Identifier>    DefinitionIds { get; init; }
-    public Boolean IsEmpty              => this.DefinitionIds.Count == 0;
+    public Boolean                      IsEmpty       => this.DefinitionIds.Count == 0;
+
+    private SymbolIndex _Index;
 
     internal GrammarRule(SymbolIndex index, Identifier id, IEnumerable<Identifier> definitionIds)
     {

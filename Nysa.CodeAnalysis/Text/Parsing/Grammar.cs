@@ -25,20 +25,20 @@ namespace Nysa.Text.Parsing
         internal static readonly List<GrammarRule>  TERMINAL       = new List<GrammarRule>();
 
         // instance members
+        public String                   StartSymbol { get; init; }
+        public Identifier               StartId     { get; init; }
+        public IReadOnlySet<Identifier> NullableIds { get; init; }
+
         private SymbolIndex                                 _Index;
         private Dictionary<Identifier, SymbolDefinition>    _Rules;
-        private HashSet<Identifier>                         _NullableIdSet;
-
-        public String StartSymbol { get; private set; }
-        public Identifier StartId { get; private set; }
 
         internal Grammar(String startSymbol, Identifier startId, SymbolIndex index, Dictionary<Identifier, SymbolDefinition> rulesIndex, HashSet<Identifier> nullables)
         {
             this.StartSymbol        = startSymbol;
             this.StartId            = startId;
+            this.NullableIds        = nullables;
             this._Index             = index;
             this._Rules             = rulesIndex;
-            this._NullableIdSet     = nullables;
         }
 
         public IEnumerable<Identifier> GetIds(String[] symbols)
@@ -46,23 +46,19 @@ namespace Nysa.Text.Parsing
         public IEnumerable<String> GetSymbols(IEnumerable<Identifier> ids)
             => ids.Select(i => this._Rules[i].Name);
 
-        public Identifier Id(String symbol) => this._Index.Id(symbol);
-
-        public String Symbol(Identifier id) => this._Index.Symbol(id);
-        public Boolean IsValid(Identifier id) => (id != Identifier.None && this._Rules.ContainsKey(id));
-        public Boolean IsValid(TokenIdentifier id) => id.Values().All(i => this.IsValid(i));
-        public Boolean IsValid(String symbol) => this.IsValid(this.Id(symbol));
-        public Boolean IsTerminal(Identifier id) => this.IsValid(id) && this._Rules[id].IsTerminal;
-
-        public NodePolicy NodePolicy(Identifier id) => this._Rules[id].NodePolicy;
-
+        public Identifier Id(String symbol)
+            => this._Index.Id(symbol);
+        public String Symbol(Identifier id)
+            => this._Index.Symbol(id);
+        public NodePolicy NodePolicy(Identifier id)
+            => this._Rules[id].NodePolicy;
         public IReadOnlyList<GrammarRule> Rules(Identifier id)
             => this.IsValid(id) ? this._Rules[id].Variants : TERMINAL;
 
-        public HashSet<Identifier> NullableIds
-        {
-            get => this._NullableIdSet;
-        }
+        public Boolean IsValid(Identifier id)       => (id != Identifier.None && this._Rules.ContainsKey(id));
+        public Boolean IsValid(TokenIdentifier id)  => id.Values().All(i => this.IsValid(i));
+        public Boolean IsValid(String symbol)       => this.IsValid(this.Id(symbol));
+        public Boolean IsTerminal(Identifier id)    => this.IsValid(id) && this._Rules[id].IsTerminal;
 
         public IEnumerable<String> LiteralSymbols()
             => this._Index.All.Where(kvp => IsLiteralSymbol(kvp.Symbol)).Select(l => l.Symbol);

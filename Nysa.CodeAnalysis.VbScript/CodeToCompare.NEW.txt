@@ -1,0 +1,65 @@
+    public static ParseException CreateError(this ParseChart chart, String source, Token[] tokens)
+    {
+        var errIndex = 0;
+        var errPoint = chart.Entries(0);
+
+        while (errIndex < tokens.Length - 1 && errPoint.Count > 0)
+        {
+            errIndex++;
+            errPoint = chart.Entries(errIndex);
+        }
+            
+        var lineStart = errIndex;
+        var lineStop  = errIndex;
+
+        var newLine = chart.Grammar.Id("{new-line}");
+
+        if (tokens[errIndex].Id.IsEqual(newLine))
+        {
+            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
+                lineStart--;
+        }
+        else
+        {
+            while (lineStart > 0 && !tokens[lineStart - 1].Id.IsEqual(newLine))
+                lineStart--;
+
+            while (lineStop < tokens.Length && !tokens[lineStop].Id.IsEqual(newLine))
+                lineStop++;
+        }
+
+        var lineCount = (Int32)1;
+        var current   = lineStart - 1;
+
+        while (current > -1)
+        {
+            if (tokens[current].Id.IsEqual(newLine))
+                lineCount++;
+
+            current--;
+        }
+
+        var lineNumber    = lineCount;
+        var columnNumber  = (  tokens[errIndex].Span.Position
+                             - tokens[lineStart].Span.Position);
+
+        var positionStart = tokens[lineStart].Span.Position;
+        var positionStop  = tokens[lineStop].Span.Position + tokens[lineStop].Span.Length;
+
+        var errorLine     = positionStart >= 0 && positionStop > positionStart
+                            ? source.Substring(positionStart, (positionStop - positionStart))
+                            : String.Empty;
+
+        if (chart.Grammar.IsValid(tokens[errIndex].Id))
+        {
+            var rules = String.Join("\r\n", errPoint.Where(e => e.NextRuleId != Identifier.None && chart.Grammar.IsTerminal(e.NextRuleId))
+                                                    .Select(t => t.ToString()));
+
+            return new ParseException("Unexpected symbol.", lineNumber, columnNumber, errorLine, rules);
+        }
+        else
+        {
+            return new ParseException("Invalid symbol.", lineNumber, columnNumber, errorLine, String.Empty);
+        }
+    }
+

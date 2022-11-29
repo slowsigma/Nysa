@@ -14,11 +14,11 @@ namespace Nysa.Text.Parsing.Building;
 internal abstract class AcrossItem
 {
     // static members
-    public static AcrossItem StartWithNode(ChartEntry entry, ChartPosition nextPosition, AcrossItem member)
+    public static AcrossItem StartWithNode(ChartEntry entry, Int32 nextPosition, AcrossItem member)
         => new NodeAcrossItem(entry, nextPosition, Option<AcrossItem>.None, member);
-    public static AcrossItem StartWithEmpty(ChartEntry entry, ChartPosition nextPosition)
+    public static AcrossItem StartWithEmpty(ChartEntry entry, Int32 nextPosition)
         => new EmptyAcrossItem(entry, nextPosition, Option<AcrossItem>.None);
-    public static AcrossItem StartWithToken(ChartEntry entry, ChartPosition nextPosition, Token token)
+    public static AcrossItem StartWithToken(ChartEntry entry, Int32 nextPosition, Token token)
         => new TokenAcrossItem(entry, nextPosition, Option<AcrossItem>.None, token);
 
     private sealed class NodeAcrossItem : AcrossItem
@@ -26,7 +26,7 @@ internal abstract class AcrossItem
         // instance members
         public AcrossItem   Member  { get; private set; }
 
-        public NodeAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous, AcrossItem member)
+        public NodeAcrossItem(ChartEntry entry, Int32 nextPosition, Option<AcrossItem> previous, AcrossItem member)
             : base(entry, nextPosition, previous)
         {
             this.Member = member;
@@ -45,7 +45,7 @@ internal abstract class AcrossItem
 
     private sealed class EmptyAcrossItem : AcrossItem
     {
-        public EmptyAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous)
+        public EmptyAcrossItem(ChartEntry entry, Int32 nextPosition, Option<AcrossItem> previous)
             : base(entry, nextPosition, previous)
         {
         }
@@ -67,7 +67,7 @@ internal abstract class AcrossItem
         // instance members
         public Token Token { get; private set; }
 
-        public TokenAcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous, Token token)
+        public TokenAcrossItem(ChartEntry entry, Int32 nextPosition, Option<AcrossItem> previous, Token token)
             : base(entry, nextPosition, previous)
         {
             this.Token = token;
@@ -85,22 +85,22 @@ internal abstract class AcrossItem
     }
 
     // instance members
-    public ChartEntry           Entry           { get; private set; }
-    public ChartPosition        NextPosition    { get; private set; }
-    public Option<AcrossItem>   Previous        { get; private set; }
+    public ChartEntry           Entry           { get; init; }
+    public Int32                NextPosition    { get; init; }
+    public Option<AcrossItem>   Previous        { get; init; }
 
-    protected AcrossItem(ChartEntry entry, ChartPosition nextPosition, Option<AcrossItem> previous)
+    protected AcrossItem(ChartEntry entry, Int32 nextPosition, Option<AcrossItem> previous)
     {
         this.Entry          = entry;
         this.NextPosition   = nextPosition;
         this.Previous       = previous;
     }
 
-    public AcrossItem NextAcrossNode(ChartPosition nextPosition, AcrossItem member)
+    public AcrossItem NextAcrossNode(Int32 nextPosition, AcrossItem member)
         => new NodeAcrossItem(this.Entry, nextPosition, this.Some(), member);
     public AcrossItem NextAcrossEmpty(ChartEntry empty)
         => new EmptyAcrossItem(this.Entry, this.NextPosition, this.Some());
-    public AcrossItem NextAcrossToken(ChartPosition nextPosition, Token token)
+    public AcrossItem NextAcrossToken(Int32 nextPosition, Token token)
         => new TokenAcrossItem(this.Entry, nextPosition, this.Some(), token);
 
     protected abstract NodeOrToken? ToMember();
