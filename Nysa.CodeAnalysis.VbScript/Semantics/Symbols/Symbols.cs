@@ -665,6 +665,16 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, params String[] tags)
             => new FunctionSymbol(@this, newName, Option.None, true, Option.None, _NoMembers, tags);
 
+        private static IEnumerable<ArgumentSymbol> ArgPlaceholders(this Int32 @this)
+            => Enumerable.Range(0, @this).Select(i => new ArgumentSymbol(String.Concat('_', (Char)('a' + i)), Option.None, Option.None, false));
+
+        public static FunctionSymbol ToFunctionSymbol(this String @this, Int32 argCount, params String[] tags)
+            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, argCount.ArgPlaceholders(), tags);
+
+        public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, Int32 argCount, params String[] tags)
+            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, argCount.ArgPlaceholders(), tags);
+
+
         public static FunctionSymbol ToErrFunctionSymbol(this String @this, String errorMessage)
             => new FunctionSymbol(@this, Option.None, errorMessage.Some(), true, Option.None, _NoMembers);
 

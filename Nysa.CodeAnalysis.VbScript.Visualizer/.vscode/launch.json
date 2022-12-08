@@ -12,7 +12,7 @@
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/net7.0-windows/Nysa.CodeAnalysis.VbScript.Visualizer.dll",
             "args": [
-                "/path", "C:\\Git\\slowsigma\\Dorata\\VBScriptFiles"
+                "/path", "D:\\Git\\Dorata\\VBScriptFiles"
             ],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

@@ -7,7 +7,6 @@
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <PackageId>Nysa.CodeAnalysis</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
