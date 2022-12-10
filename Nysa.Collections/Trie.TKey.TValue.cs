@@ -10,6 +10,7 @@ namespace Nysa.Collections
 
     public class Trie<TKey, TValue> : IEnumerable<(TKey Key, Trie<TKey, TValue> Value)>
         where TKey : IEquatable<TKey>
+        where TValue : notnull
     {
         public Option<Trie<TKey, TValue>> Parent { get; private set; }
         public Option<TValue>             Value  { get; private set; }

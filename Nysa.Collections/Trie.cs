@@ -9,10 +9,13 @@ namespace Nysa.Collections
 
     public static class Trie
     {
-        public delegate IEnumerable<(TKey key, Trie<TKey, TValue> child)> ChildrenFunction<TKey, TValue>(Trie<TKey, TValue> parent) where TKey : IEquatable<TKey>;
+        public delegate IEnumerable<(TKey key, Trie<TKey, TValue> child)> ChildrenFunction<TKey, TValue>(Trie<TKey, TValue> parent)
+            where TKey : IEquatable<TKey>
+            where TValue : notnull;
 
         private static ChildrenFunction<TKey, TValue> CreateChildren<TKey, TValue>(Int32 keyPosition, IEnumerable<(TKey[] key, TValue value)> subset)
             where TKey : IEquatable<TKey>
+            where TValue : notnull
             => p =>
             {
                 var nextKeyPosition = keyPosition + 1;
@@ -25,6 +28,7 @@ namespace Nysa.Collections
 
         public static Trie<TKey, TValue> Create<TKey, TValue>(params (TKey[] key, TValue value)[] items)
             where TKey : IEquatable<TKey>
+            where TValue : notnull
         {
             var value = items.Where(s => s.key.Length == 0).Select(t => t.value).FirstOrNone();
 
@@ -33,6 +37,7 @@ namespace Nysa.Collections
 
         public static Trie<TKey, TValue> Create<TKey, TValue>(IEnumerable<(TKey[] key, TValue value)> items)
             where TKey : IEquatable<TKey>
+            where TValue : notnull
         {
             var value = items.Where(s => s.key.Length == 0).Select(t => t.value).FirstOrNone();
 
@@ -41,11 +46,13 @@ namespace Nysa.Collections
 
         public static Option<TValue> Find<TKey, TValue>(this Trie<TKey, TValue> @this, TKey[] key, Int32 keyPosition = 0)
             where TKey : IEquatable<TKey>
+            where TValue : notnull
             => keyPosition < key.Length
                ? @this[key[keyPosition]].Bind(s => s.Find(key, keyPosition + 1))
                : @this.Value;
 
         public static CharTrie<T> Create<T>(params (String key, T value)[] items)
+            where T : notnull
         {
             var value = items.Where(s => s.key.Length == 0)
                              .Select(t => t.value)
@@ -55,6 +62,7 @@ namespace Nysa.Collections
         }
 
         public static Option<T> Find<T>(this CharTrie<T> @this, String key, Int32 keyPosition = 0)
+            where T : notnull
             => @this.Find(key.ToArray(), keyPosition);
 
     }
