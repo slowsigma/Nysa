@@ -114,6 +114,22 @@ namespace Nysa.Logics
                     yield return item;
         }
 
+        public static IEnumerable<T> ConfirmedOnly<T>(this IEnumerable<Suspect<T>> @this)
+            where T : notnull
+        {
+            foreach (var item in @this)
+                if (item is Confirmed<T> confirmed)
+                    yield return confirmed.Value;
+        }
+
+        public static IEnumerable<Exception> FailedOnly<T>(this IEnumerable<Suspect<T>> @this)
+            where T : notnull
+        {
+            foreach (var item in @this)
+                if (item is Failed<T> failed)
+                    yield return failed.Value;
+        }
+
         public static Suspect<R> Switch<T, R>(this T value, params (T ifValue, R thenValue)[] options)
             where T : IEquatable<T>
         {

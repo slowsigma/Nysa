@@ -3,18 +3,23 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageId>Nysa.CodeAnalysis</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.4" />
     <PackageReference Include="Nysa.Text" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

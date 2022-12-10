@@ -3,13 +3,17 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="Nysa.CodeAnalysis" Version="1.0.4" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.4" />
     <PackageReference Include="Nysa.Text" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -2,16 +2,18 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
-    <Version>1.0.3</Version>
+    <Version>1.0.5</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <Nullable>enable</Nullable>
     <PackageId>Nysa.Logics</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="IsExternalInit.cs" Condition="'$(TargetFramework)' == 'net5.0'"/>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
+
 </Project>
