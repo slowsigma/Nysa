@@ -2,10 +2,10 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
     <Version>1.0.5</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
-    <Nullable>enable</Nullable>
     <PackageId>Nysa.Logics</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

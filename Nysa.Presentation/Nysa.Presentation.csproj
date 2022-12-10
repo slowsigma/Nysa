@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
     <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
