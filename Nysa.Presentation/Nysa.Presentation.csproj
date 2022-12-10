@@ -1,18 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
+    <Version>1.0.1</Version>
+    <Authors>Philip Fucich</Authors>
+    <Company>slowsigma</Company>
+    <PackageId>Nysa.Presentation</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.IO\Nysa.IO.csproj" />
+    <PackageReference Include="Nysa.IO" Version="1.0.1" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+    <None Include="docs\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
