@@ -1,18 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <Nullable>enable</Nullable>
     <PackageId>Nysa.Data.TSqlClient</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

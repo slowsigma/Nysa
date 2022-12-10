@@ -1,16 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
-    <PackageReference Include="Nysa.CodeAnalysis" Version="1.0.4" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.4" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="docs\readme.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Version>1.0.8</Version>
@@ -21,6 +9,18 @@
     <PackageId>Nysa.CodeAnalysis.VbScript</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Nysa.CodeAnalysis" Version="1.0.6" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
+    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
