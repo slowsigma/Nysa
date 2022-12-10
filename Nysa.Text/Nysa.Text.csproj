@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <Version>1.0.2</Version>
     <Authors>Philip Fucich</Authors>
@@ -10,10 +9,15 @@
     <PackageId>Nysa.Text</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Nysa.Logics" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\readme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
