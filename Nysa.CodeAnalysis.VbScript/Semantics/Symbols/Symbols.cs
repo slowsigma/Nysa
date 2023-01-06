@@ -670,10 +670,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                          .Select(i => new ArgumentSymbol(String.Concat('_', (Char)('a' + i)), Option.None, Option.None, false, !(i < required)));
 
         public static FunctionSymbol ToFunctionSymbol(this String @this, Int32 requiredArgs, Int32 optionalArgs, params String[] tags)
-            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, 0), tags);
+            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, optionalArgs), tags);
 
         public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, Int32 requiredArgs, Int32 optionalArgs, params String[] tags)
-            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, 0), tags);
+            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, optionalArgs), tags);
 
 
         public static FunctionSymbol ToErrFunctionSymbol(this String @this, String errorMessage)
