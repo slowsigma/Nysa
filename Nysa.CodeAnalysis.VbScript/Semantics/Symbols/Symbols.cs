@@ -21,45 +21,45 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             symbols.Add("me".ToVariableSymbol("this".Some()));
 
-            symbols.Add("Abs".ToFunctionSymbol("Global.Abs".Some()));
+            symbols.Add("Abs".ToFunctionSymbol("Global.Abs".Some(), 1, 0));
             symbols.Add("Array".ToFunctionSymbol());
-            symbols.Add("Asc".ToFunctionSymbol("Global.Asc".Some()));
-            symbols.Add("Atn".ToFunctionSymbol());
-            symbols.Add("CBool".ToFunctionSymbol("Global.CBool".Some()));
-            symbols.Add("CByte".ToFunctionSymbol());
-            symbols.Add("CCur".ToFunctionSymbol());
-            symbols.Add("CDate".ToFunctionSymbol());
-            symbols.Add("CDbl".ToFunctionSymbol("Global.CDbl".Some()));
-            symbols.Add("CInt".ToFunctionSymbol("Global.CInt".Some()));
-            symbols.Add("CLng".ToFunctionSymbol("Global.CLng".Some()));
-            symbols.Add("Cos".ToFunctionSymbol());
-            symbols.Add("CSng".ToFunctionSymbol("Global.CSng".Some()));
-            symbols.Add("CStr".ToFunctionSymbol("Global.CStr".Some()));
+            symbols.Add("Asc".ToFunctionSymbol("Global.Asc".Some(), 1, 0));
+            symbols.Add("Atn".ToFunctionSymbol("Global.Atn".Some(), 1, 0));
+            symbols.Add("CBool".ToFunctionSymbol("Global.CBool".Some(), 1, 0));
+            symbols.Add("CByte".ToFunctionSymbol("Global.CByte".Some(), 1, 0));
+            symbols.Add("CCur".ToFunctionSymbol("Global.CCur".Some(), 1, 0));
+            symbols.Add("CDate".ToFunctionSymbol("Global.CDate".Some(), 1, 0));
+            symbols.Add("CDbl".ToFunctionSymbol("Global.CDbl".Some(), 1, 0));
+            symbols.Add("CInt".ToFunctionSymbol("Global.CInt".Some(), 1, 0));
+            symbols.Add("CLng".ToFunctionSymbol("Global.CLng".Some(), 1, 0));
+            symbols.Add("Cos".ToFunctionSymbol("Global.Cos".Some(), 1, 0));
+            symbols.Add("CSng".ToFunctionSymbol("Global.CSng".Some(), 1, 0));
+            symbols.Add("CStr".ToFunctionSymbol("Global.CStr".Some(), 1, 0));
             symbols.Add("Date".ToFunctionSymbol("Global.Date".Some()));
             symbols.Add("DateAdd".ToFunctionSymbol());
             symbols.Add("DateDiff".ToFunctionSymbol());
             symbols.Add("DatePart".ToFunctionSymbol());
             symbols.Add("DateSerial".ToFunctionSymbol());
             symbols.Add("DateValue".ToFunctionSymbol());
-            symbols.Add("Day".ToFunctionSymbol("Global.Day".Some()));
+            symbols.Add("Day".ToFunctionSymbol("Global.Day".Some(), 1, 0));
             symbols.Add("Eval".ToErrFunctionSymbol("Eval has no equivalent translation."));
             symbols.Add("Execute".ToErrFunctionSymbol("Execute has no equivalent translation."));
-            symbols.Add("Exp".ToFunctionSymbol());
+            symbols.Add("Exp".ToFunctionSymbol("Global.Exp".Some(), 1, 0));
             symbols.Add("Filter".ToFunctionSymbol());
-            symbols.Add("Fix".ToFunctionSymbol("Global.Fix".Some()));
+            symbols.Add("Fix".ToFunctionSymbol("Global.Fix".Some(), 1, 0));
             symbols.Add("FormatCurrency".ToFunctionSymbol());
             symbols.Add("FormatDateTime".ToFunctionSymbol());
-            symbols.Add("FormatNumber".ToFunctionSymbol("Global.FormatNumber".Some()));
+            symbols.Add("FormatNumber".ToFunctionSymbol("Global.FormatNumber".Some(), 1, 4));
             symbols.Add("FormatPercent".ToFunctionSymbol());
             symbols.Add("GetLocale".ToFunctionSymbol());
             symbols.Add("GetObject".ToFunctionSymbol());
-            symbols.Add("GetRef".ToFunctionSymbol("Global.GetRef".Some()));
-            symbols.Add("Hex".ToFunctionSymbol("Global.Hex".Some()));
+            symbols.Add("GetRef".ToFunctionSymbol("Global.GetRef".Some(), 1, 0));
+            symbols.Add("Hex".ToFunctionSymbol("Global.Hex".Some(), 1, 0));
             symbols.Add("Hour".ToFunctionSymbol("Global.Hour".Some()));
-            symbols.Add("Chr".ToFunctionSymbol("Global.Chr".Some()));
+            symbols.Add("Chr".ToFunctionSymbol("Global.Chr".Some(), 1, 0));
             symbols.Add("InputBox".ToFunctionSymbol());
-            symbols.Add("InStr".ToFunctionSymbol("Global.InStr".Some()));
-            symbols.Add("InStrRev".ToFunctionSymbol("Global.InStrRev".Some()));
+            symbols.Add("InStr".ToFunctionSymbol("Global.InStr".Some(), 2, 2));
+            symbols.Add("InStrRev".ToFunctionSymbol("Global.InStrRev".Some(), 2, 2));
             symbols.Add("Int".ToFunctionSymbol("Global.Int".Some()));
             symbols.Add("IsArray".ToFunctionSymbol("Global.IsArray".Some()));
             symbols.Add("IsDate".ToFunctionSymbol("Global.IsDate".Some()));
@@ -68,54 +68,54 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             symbols.Add("IsNumeric".ToFunctionSymbol("Global.IsNumeric".Some()));
             symbols.Add("IsObject".ToFunctionSymbol("Global.IsObject".Some()));
             symbols.Add("Join".ToFunctionSymbol("Global.Join".Some()));
-            symbols.Add("LBound".ToFunctionSymbol("Global.LBound".Some()));
-            symbols.Add("LCase".ToFunctionSymbol("Global.LCase".Some()));
-            symbols.Add("Left".ToFunctionSymbol("Global.Left".Some()));
-            symbols.Add("Len".ToFunctionSymbol("Global.Len".Some()));
+            symbols.Add("LBound".ToFunctionSymbol("Global.LBound".Some(), 1, 1));
+            symbols.Add("LCase".ToFunctionSymbol("Global.LCase".Some(), 1, 0));
+            symbols.Add("Left".ToFunctionSymbol("Global.Left".Some(), 2, 0));
+            symbols.Add("Len".ToFunctionSymbol("Global.Len".Some(), 1, 0));
             symbols.Add("LoadPicture".ToFunctionSymbol());
-            symbols.Add("Log".ToFunctionSymbol());
-            symbols.Add("LTrim".ToFunctionSymbol("Global.LTrim".Some()));
-            symbols.Add("Mid".ToFunctionSymbol("Global.Mid".Some()));
-            symbols.Add("Minute".ToFunctionSymbol("Global.Minute".Some()));
-            symbols.Add("Month".ToFunctionSymbol("Global.Month".Some()));
+            symbols.Add("Log".ToFunctionSymbol("Global.Log".Some(), 1, 0));
+            symbols.Add("LTrim".ToFunctionSymbol("Global.LTrim".Some(), 1, 0));
+            symbols.Add("Mid".ToFunctionSymbol("Global.Mid".Some(), 2, 1));
+            symbols.Add("Minute".ToFunctionSymbol("Global.Minute".Some(), 1, 0));
+            symbols.Add("Month".ToFunctionSymbol("Global.Month".Some(), 1, 0));
             symbols.Add("MonthName".ToFunctionSymbol());
-            //symbols.Add("MsgBox".ToFunctionSymbol("Global.MsgBox".Some()));   // not mapping here
-            //symbols.Add("CreateObject".ToFunctionSymbol("Global.CreateObject".Some(), SymbolCategories.com)); // not mapping here
+            symbols.Add("MsgBox".ToFunctionSymbol("Global.MsgBox".Some(), 1, 4));
+            symbols.Add("CreateObject".ToFunctionSymbol("Global.CreateObject".Some(), SymbolCategories.com));
             symbols.Add("Now".ToFunctionSymbol("Global.Now".Some()));
-            symbols.Add("Oct".ToFunctionSymbol());
-            symbols.Add("Replace".ToFunctionSymbol("Global.Replace".Some()));
-            symbols.Add("RGB".ToFunctionSymbol("Global.RGB".Some()));
-            symbols.Add("Right".ToFunctionSymbol("Global.Right".Some()));
-            symbols.Add("Rnd".ToFunctionSymbol());
-            symbols.Add("Round".ToFunctionSymbol("Global.Round".Some()));
-            symbols.Add("RTrim".ToFunctionSymbol("Global.RTrim".Some()));
+            symbols.Add("Oct".ToFunctionSymbol("Global.Oct".Some(), 1, 0));
+            symbols.Add("Replace".ToFunctionSymbol("Global.Replace".Some(), 3, 3));
+            symbols.Add("RGB".ToFunctionSymbol("Global.RGB".Some(), 3, 0));
+            symbols.Add("Right".ToFunctionSymbol("Global.Right".Some(), 2, 0));
+            symbols.Add("Rnd".ToFunctionSymbol("Global.Rnd".Some(), 1, 0));
+            symbols.Add("Round".ToFunctionSymbol("Global.Round".Some(), 1, 1));
+            symbols.Add("RTrim".ToFunctionSymbol("Global.RTrim".Some(), 1, 0));
             symbols.Add("ScriptEngine".ToFunctionSymbol());
             symbols.Add("ScriptEngineBuildVersion".ToFunctionSymbol());
             symbols.Add("ScriptEngineMajorVersion".ToFunctionSymbol());
             symbols.Add("ScriptEngineMinorVersion".ToFunctionSymbol());
-            symbols.Add("Second".ToFunctionSymbol("Global.Second".Some()));
-            symbols.Add("SetLocale".ToFunctionSymbol());
-            symbols.Add("Sgn".ToFunctionSymbol());
-            symbols.Add("Sin".ToFunctionSymbol());
-            symbols.Add("Space".ToFunctionSymbol("Global.Space".Some()));
-            symbols.Add("Split".ToFunctionSymbol("Global.Split".Some()));
-            symbols.Add("Sqr".ToFunctionSymbol());
-            symbols.Add("StrComp".ToFunctionSymbol("Global.StrComp".Some()));
-            symbols.Add("String".ToFunctionSymbol("Global.String".Some()));
-            symbols.Add("StrReverse".ToFunctionSymbol("Global.StrReverse".Some()));
-            symbols.Add("Tan".ToFunctionSymbol());
+            symbols.Add("Second".ToFunctionSymbol("Global.Second".Some(), 1, 0));
+            symbols.Add("SetLocale".ToFunctionSymbol("Global.SetLocale".Some(), 1, 0));
+            symbols.Add("Sgn".ToFunctionSymbol("Global.Sgn".Some(), 1, 0));
+            symbols.Add("Sin".ToFunctionSymbol("Global.Sin".Some(), 1, 0));
+            symbols.Add("Space".ToFunctionSymbol("Global.Space".Some(), 1, 0));
+            symbols.Add("Split".ToFunctionSymbol("Global.Split".Some(), 1, 3));
+            symbols.Add("Sqr".ToFunctionSymbol("Global.Sqr".Some(), 1, 0));
+            symbols.Add("StrComp".ToFunctionSymbol("Global.StrComp".Some(), 2, 1));
+            symbols.Add("String".ToFunctionSymbol("Global.String".Some(), 2, 0));
+            symbols.Add("StrReverse".ToFunctionSymbol("Global.StrReverse".Some(), 1, 0));
+            symbols.Add("Tan".ToFunctionSymbol("Global.Tan".Some(), 1, 0));
             symbols.Add("Time".ToFunctionSymbol());
             symbols.Add("Timer".ToFunctionSymbol());
             symbols.Add("TimeSerial".ToFunctionSymbol());
             symbols.Add("TimeValue".ToFunctionSymbol());
-            symbols.Add("Trim".ToFunctionSymbol("Global.Trim".Some()));
+            symbols.Add("Trim".ToFunctionSymbol("Global.Trim".Some(), 1, 0));
             symbols.Add("TypeName".ToErrFunctionSymbol("TypeName has no equivalent translation."));
-            symbols.Add("UBound".ToFunctionSymbol("Global.UBound".Some()));
-            symbols.Add("UCase".ToFunctionSymbol("Global.UCase".Some()));
+            symbols.Add("UBound".ToFunctionSymbol("Global.UBound".Some(), 1, 1));
+            symbols.Add("UCase".ToFunctionSymbol("Global.UCase".Some(), 1, 0));
             symbols.Add("VarType".ToErrFunctionSymbol("VarType has no equivalent translation."));
             symbols.Add("Weekday".ToFunctionSymbol());
             symbols.Add("WeekdayName".ToFunctionSymbol());
-            symbols.Add("Year".ToFunctionSymbol("Global.Year".Some()));
+            symbols.Add("Year".ToFunctionSymbol("Global.Year".Some(), 1, 0));
             symbols.Add("Randomize".ToFunctionSymbol());
             symbols.Add("vbObjectError".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbObjectError"));
             symbols.Add("vbTrue".ToConstantSymbol(LiteralValueTypes.Integer, "Global.vbTrue"));
@@ -665,14 +665,15 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, params String[] tags)
             => new FunctionSymbol(@this, newName, Option.None, true, Option.None, _NoMembers, tags);
 
-        private static IEnumerable<ArgumentSymbol> ArgPlaceholders(this Int32 @this)
-            => Enumerable.Range(0, @this).Select(i => new ArgumentSymbol(String.Concat('_', (Char)('a' + i)), Option.None, Option.None, false));
+        private static IEnumerable<ArgumentSymbol> CreateArgPlaceHolders(Int32 required, Int32 optional)
+            => Enumerable.Range(0, (required + optional))
+                         .Select(i => new ArgumentSymbol(String.Concat('_', (Char)('a' + i)), Option.None, Option.None, false, !(i < required)));
 
-        public static FunctionSymbol ToFunctionSymbol(this String @this, Int32 argCount, params String[] tags)
-            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, argCount.ArgPlaceholders(), tags);
+        public static FunctionSymbol ToFunctionSymbol(this String @this, Int32 requiredArgs, Int32 optionalArgs, params String[] tags)
+            => new FunctionSymbol(@this, Option.None, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, 0), tags);
 
-        public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, Int32 argCount, params String[] tags)
-            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, argCount.ArgPlaceholders(), tags);
+        public static FunctionSymbol ToFunctionSymbol(this String @this, Option<String> newName, Int32 requiredArgs, Int32 optionalArgs, params String[] tags)
+            => new FunctionSymbol(@this, newName, Option.None, true, Option.None, CreateArgPlaceHolders(requiredArgs, 0), tags);
 
 
         public static FunctionSymbol ToErrFunctionSymbol(this String @this, String errorMessage)
