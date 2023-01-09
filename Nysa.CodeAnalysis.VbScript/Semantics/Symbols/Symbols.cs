@@ -51,7 +51,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             symbols.Add("FormatDateTime".ToFunctionSymbol());
             symbols.Add("FormatNumber".ToFunctionSymbol("Global.FormatNumber".Some(), 1, 4));
             symbols.Add("FormatPercent".ToFunctionSymbol());
-            symbols.Add("GetLocale".ToFunctionSymbol());
+            symbols.Add("GetLocale".ToFunctionSymbol("Global.GetLocale".Some()));
             symbols.Add("GetObject".ToFunctionSymbol());
             symbols.Add("GetRef".ToFunctionSymbol("Global.GetRef".Some(), 1, 0));
             symbols.Add("Hex".ToFunctionSymbol("Global.Hex".Some(), 1, 0));
