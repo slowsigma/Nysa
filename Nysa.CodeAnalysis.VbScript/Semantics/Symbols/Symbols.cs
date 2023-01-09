@@ -197,7 +197,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                                                               "Number".ToReadOnlyPropertySymbol(),
                                                               "Source".ToReadOnlyPropertySymbol(),
                                                               "Clear".ToFunctionSymbol(),
-                                                              "Raise".ToFunctionSymbol()),
+                                                              "Raise".ToFunctionSymbol(1, 0)),
                                               SymbolCategories.vb);
             
             symbols.Add(vbsErrClass);
