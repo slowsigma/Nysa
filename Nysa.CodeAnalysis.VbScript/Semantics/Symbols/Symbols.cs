@@ -63,7 +63,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
             symbols.Add("Int".ToFunctionSymbol("Global.Int".Some()));
             symbols.Add("IsArray".ToFunctionSymbol("Global.IsArray".Some()));
             symbols.Add("IsDate".ToFunctionSymbol("Global.IsDate".Some()));
-            symbols.Add("IsEmpty".ToFunctionSymbol("Global.IsEmpty".Some()));
+            symbols.Add("IsEmpty".ToFunctionSymbol("Global.IsUndefinedOrNull".Some()));
             symbols.Add("IsNull".ToFunctionSymbol("Global.IsNullOrUndefined".Some()));
             symbols.Add("IsNumeric".ToFunctionSymbol("Global.IsNumeric".Some()));
             symbols.Add("IsObject".ToFunctionSymbol("Global.IsObject".Some()));
