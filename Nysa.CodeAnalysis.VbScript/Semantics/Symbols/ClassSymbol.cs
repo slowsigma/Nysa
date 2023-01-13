@@ -15,7 +15,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IDictionary<String, Symbol>  Index   { get; private set; }
         public Option<Symbol>               Default { get; private set; }
 
-        private ClassSymbol(String name, Option<String> newName, Option<String> message, IEnumerable<Symbol> members, Option<Symbol> @default, IReadOnlySet<String> tags)
+        public ClassSymbol(String name, Option<String> newName, Option<String> message, IEnumerable<Symbol> members, Option<Symbol> @default, IReadOnlySet<String> tags)
             : base(name, newName, message, tags)
         {
             if (members.Any(s => s is ArgumentSymbol || s is ClassSymbol))

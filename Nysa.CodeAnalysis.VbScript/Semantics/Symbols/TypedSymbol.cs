@@ -12,7 +12,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Option<String> TypeName { get; private set; }
 
-        private protected TypedSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, IReadOnlySet<String> tags)
+        protected TypedSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, IReadOnlySet<String> tags)
             : base(name, newName, message, tags)
         {
             this.TypeName = typeName;

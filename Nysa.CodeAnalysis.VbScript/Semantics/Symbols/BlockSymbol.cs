@@ -8,7 +8,7 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record BlockSymbol : Symbol, ISymbolScope
+    public sealed record BlockSymbol : Symbol, ISymbolScope
     {
         public IReadOnlySet<String>        Tags     { get; private set; }
         public IReadOnlyList<Symbol>       Members  { get; private set; }

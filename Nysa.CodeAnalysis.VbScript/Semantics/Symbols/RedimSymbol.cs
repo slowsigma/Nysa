@@ -8,7 +8,7 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record RedimSymbol : MemberSymbol
+    public sealed record RedimSymbol : MemberSymbol
     {
         public RedimSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName)
             : base(name, newName, message, true, typeName)

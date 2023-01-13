@@ -8,7 +8,7 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record ConstantSymbol : MemberSymbol
+    public sealed record ConstantSymbol : MemberSymbol
     {
         public LiteralValueTypes Type { get; private set; }
 

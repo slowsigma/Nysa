@@ -12,7 +12,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
     {
         public Boolean IsLet { get; private set; }
 
-        private PropertySetSymbol(String name, Option<String> message, Boolean isPublic, Option<String> typeName, Boolean isLet, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
+        public PropertySetSymbol(String name, Option<String> message, Boolean isPublic, Option<String> typeName, Boolean isLet, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
             : base(name, Option.None, message, isPublic, typeName, members, tags)
         {
             this.IsLet = isLet;

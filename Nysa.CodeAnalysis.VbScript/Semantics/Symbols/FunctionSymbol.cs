@@ -15,7 +15,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public IDictionary<String, Symbol>      Index     { get; init; }
         public IReadOnlyList<ArgumentSymbol>    Arguments { get; init; }
 
-        private protected FunctionSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
+        public FunctionSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IEnumerable<Symbol> members, IReadOnlySet<String> tags)
             : base(name, newName, message, isPublic, typeName, tags)
         {
             var parts = Symbols.Distinct(members);

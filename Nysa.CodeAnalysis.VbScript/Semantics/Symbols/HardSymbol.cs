@@ -19,7 +19,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         public Option<String>       Message     { get; private set; }
         public IReadOnlySet<String> Tags        { get;  private set; }
 
-        private protected HardSymbol(String name, Option<String> newName, Option<String> message, IReadOnlySet<String> tags)
+        protected HardSymbol(String name, Option<String> newName, Option<String> message, IReadOnlySet<String> tags)
             : base(name)
         {
             this.NewName = newName;

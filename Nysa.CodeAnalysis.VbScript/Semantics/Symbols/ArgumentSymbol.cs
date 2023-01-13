@@ -8,12 +8,12 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record ArgumentSymbol : TypedSymbol
+    public sealed record ArgumentSymbol : TypedSymbol
     {
         public Boolean IsByRef { get; init; }
         public Boolean IsOptional { get; init; }
 
-        private ArgumentSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, Boolean isByRef, Boolean isOptional, IReadOnlySet<String> tags)
+        public ArgumentSymbol(String name, Option<String> newName, Option<String> message, Option<String> typeName, Boolean isByRef, Boolean isOptional, IReadOnlySet<String> tags)
             : base(name, newName, message, typeName, tags)
         {
             this.IsByRef    = isByRef;

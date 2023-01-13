@@ -8,7 +8,7 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
-    public record PropertySymbol : Symbol
+    public sealed record PropertySymbol : Symbol
     {
         public Option<FunctionSymbol> Getter    { get; private set; }
         public Option<FunctionSymbol> Setter    { get; private set; }

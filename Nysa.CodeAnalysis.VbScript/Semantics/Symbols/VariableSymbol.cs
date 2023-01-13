@@ -10,7 +10,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
     public sealed record VariableSymbol : MemberSymbol
     {
-        private VariableSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IReadOnlySet<String> tags)
+        public VariableSymbol(String name, Option<String> newName, Option<String> message, Boolean isPublic, Option<String> typeName, IReadOnlySet<String> tags)
             : base(name, newName, message, isPublic, typeName, tags)
         {
         }
