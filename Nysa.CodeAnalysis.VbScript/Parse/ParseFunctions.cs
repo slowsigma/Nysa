@@ -226,9 +226,6 @@ namespace Nysa.CodeAnalysis.VbScript
         private static Boolean IsXslElement(this XmlElement @this, String elementName)
             => @this.NamespaceURI.DataEquals(_xsl_namespace_uri) && @this.LocalName.DataEquals(elementName);
 
-        private static Boolean IsXslElement(this XmlNode @this, String elementName)
-            => @this is XmlElement elem && elem.NamespaceURI.DataEquals(_xsl_namespace_uri) && elem.LocalName.DataEquals(elementName);
-
         private static (Int32 XslTextCount, Int32 ValueOfCount, Int32 OthersCount) ChildXslCounts(this XmlElement @this)
         {
             var xslTexts    = 0;
@@ -248,33 +245,7 @@ namespace Nysa.CodeAnalysis.VbScript
             return (xslTexts, xslValueOfs, xslOthers);
         }
 
-        // Gets parses for descendant elements that could have 'vbscript:...' text for parsing.
-        // This is only intended for xsl:attribute elements that are event handlers where the
-        // element children are not text, xsl:text, and xsl:value-of only.
-        private static IReadOnlyList<XslVbScriptParse> DescendantParses(this XmlElement @this)
-        {
-            var results = new List<XslVbScriptParse>();
-
-            foreach (var child in @this.ChildNodes)
-            {
-                if (child is XmlElement elem)
-                    results.AddRange(elem.DescendantParses());
-                else if (child is XmlText text && !String.IsNullOrWhiteSpace(text.Value))
-                {
-                    var vbsHead = text.Value.DataStartsWith(_vbscript_colon);
-                    var rawText = String.Concat((vbsHead ? text.Value.Substring(_vbscript_colon.Length) : text.Value), "\r\n");
-                    var section = new VbScriptSection(@this.Path(), rawText);
-                    var vbParse = section.Parse();
-
-                    if (vbsHead || vbParse.SyntaxRoot is Confirmed<ParseNode>)
-                        results.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, null));
-                }
-            }
-
-            return results;
-        }
-
-        private static Option<XslVbScriptParse> XslAttributeParse(this XmlElement @this, Int32 xslTextsCount, XmlDocument document)
+        private static Option<XslVbScriptParse> XslContentParse(this XmlElement @this, Int32 xslTextsCount, XmlDocument document)
         {
             var build    = new StringBuilder();
             var contents = new List<(XmlNode TextOrPlaceholder, XmlElement? xslValueOf)>();
@@ -306,13 +277,50 @@ namespace Nysa.CodeAnalysis.VbScript
             }
 
             var rawText = String.Concat(build.ToString().Replace("'", "\""), "\r\n");
-            var vbsHead = rawText.DataStartsWith(_vbscript_colon);
-            var section = new VbScriptSection(@this.Path(), vbsHead ? rawText.Substring(_vbscript_colon.Length) : rawText);
+            var vbsPrfx = rawText.DataStartsWith(_vbscript_colon);
+
+            var section = new VbScriptSection(@this.Path(), vbsPrfx ? rawText.Substring(_vbscript_colon.Length) : rawText);
             var vbParse = section.Parse();
 
-            return (vbsHead || vbParse.SyntaxRoot is Confirmed<ParseNode>)
-                   ? (new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, contents)).Some()
-                   : Option.None;
+            if (vbsPrfx || vbParse.SyntaxRoot is Confirmed<ParseNode>)
+                return (new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, contents)).Some();
+
+            return Option.None;
+        }
+
+        private static IReadOnlyList<XslVbScriptParse> XslChildParses(this XmlElement @this, XmlDocument document)
+        {
+            var results = new List<XslVbScriptParse>();
+
+            foreach (var child in @this.ChildNodes)
+                if (child is XmlElement elem && elem.NamespaceURI.DataEquals(_xsl_namespace_uri))
+                    results.AddRange(elem.XslElementParse(document));
+
+            return results;
+        }
+
+        // for now, this method is only being called inside an xsl:attribute element or the descendant of an xsl:attribute element
+        private static IReadOnlyList<XslVbScriptParse> XslElementParse(this XmlElement @this, XmlDocument document)
+        {
+            var parses          = new List<XslVbScriptParse>();
+            var (xslTexts,
+                 xslValueOfs,
+                 xslOthers   )  = @this.ChildXslCounts();
+
+            // all possibilities
+            //   xslTexts | xslValueOfs | xslOthers | ???
+            //       0    |      0      |     0     | parse element.innerText
+            //      !0    |      0      |     0     | parse concatenation of all xsl:text
+            //       0    |     !0      |     0     | parse a concatenation of all xmlText with placeholder for each value-of
+            //      !0    |     !0      |     0     | parse a concatenation of all xsl:text with placeholder for each value-of
+            //       x    |      x      |    !0     | parse each descendent with text starting with "vbscript:"
+
+            if (xslOthers > 0)
+                parses.AddRange(@this.XslChildParses(document));
+            else if (@this.XslContentParse(xslTexts, document) is Some<XslVbScriptParse> someParse)
+                parses.Add(someParse.Value);
+
+            return parses;
         }
 
         public static Suspect<XslParse> Parse(this XslContent xslContent, IReadOnlySet<String>? eventAttributes = null)
@@ -348,24 +356,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var nameAttr = element.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("name"));
 
                                 if (nameAttr is Some<XmlAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
-                                {
-                                    var (xslTexts,
-                                         xslValueOfs,
-                                         xslOthers   ) = element.ChildXslCounts();
-
-                                    // all possibilities
-                                    //   xslTexts | xslValueOfs | xslOthers | ???
-                                    //       0    |      0      |     0     | parse element.innerText
-                                    //      !0    |      0      |     0     | parse concatenation of all xsl:text
-                                    //       0    |     !0      |     0     | parse a concatenation of all xmlText with placeholder for each value-of
-                                    //      !0    |     !0      |     0     | parse a concatenation of all xsl:text with placeholder for each value-of
-                                    //       x    |      x      |    !0     | parse each descendent with text starting with "vbscript:"
-
-                                    if (xslOthers > 0)
-                                        parses.AddRange(element.DescendantParses());
-                                    else if (element.XslAttributeParse(xslTexts, document) is Some<XslVbScriptParse> someParse)
-                                        parses.Add(someParse.Value);
-                                }
+                                    parses.AddRange(element.XslElementParse(document));
                             }
                             else if (   element.IsXslElement("include")
                                      || element.IsXslElement("import"))
