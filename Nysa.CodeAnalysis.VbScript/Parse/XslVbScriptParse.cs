@@ -17,8 +17,8 @@ namespace Nysa.CodeAnalysis.VbScript
         public XmlElement       Element     { get; private set; }
         public XmlAttribute?    Attribute   { get; private set; }
 
-        // When XslValueOf is not null, XNode is disconnected XText with placeholder name,
-        // otherwise TextOrPlaceholder contains original XText or XElement of <xsl.text/>
+        // When XslValueOf is not null, TextOrPlaceholder is disconnected XmlText with placeholder name,
+        // otherwise TextOrPlaceholder contains original XmlText or XmlElement of type 'xsl:text'
         public IReadOnlyList<(XmlNode TextOrPlaceholder, XmlElement? XslValueOf)> Contents { get; private set; }
 
         public XslVbScriptParse(VbScriptSection content, Suspect<SyntaxNode> syntaxRoot, Suspect<Program> semanticRoot, Option<String> prefix, XmlElement element, XmlAttribute? attribute, IEnumerable<(XmlNode textOrPlaceholder, XmlElement? xslValueOf)>? contents)

@@ -62,7 +62,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var section = new VbScriptSection(element.Path(), script);
                         var vbParse = section.Parse();
 
-                        parses.Add(new XmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), element, attribute));
+                        parses.Add(new XmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, element, attribute));
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var section = new VbScriptSection(script.Path(), script.InnerText);
                                 var vbParse = section.Parse();
 
-                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), script));
+                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, script));
                             }
                         }
                     }
@@ -130,7 +130,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                 var section   = new VbScriptSection(element.Path(attribute), vbString);
                                 var vbParse   = section.Parse();
 
-                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), element, attribute));
+                                parses.Add(new XHtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, element, attribute));
                             }
                         }
                     }
@@ -177,7 +177,7 @@ namespace Nysa.CodeAnalysis.VbScript
                             var section = new VbScriptSection(script.XPath, script.InnerText);
                             var vbParse = section.Parse();
 
-                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), script));
+                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, script));
                         }
                     }
                 }
@@ -197,7 +197,7 @@ namespace Nysa.CodeAnalysis.VbScript
                             var section   = new VbScriptSection(attribute.XPath, vbString);
                             var vbParse   = section.Parse();
 
-                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), node, attribute));
+                            parses.Add(new HtmlVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, node, attribute));
                         }
                     }
                 }
@@ -223,6 +223,98 @@ namespace Nysa.CodeAnalysis.VbScript
                     .Match(xp => xp.Confirmed<Parse>(),
                            e => @this.ParseHtml(eventAttributes).Bind(hp => hp.Confirmed<Parse>()));
 
+        private static Boolean IsXslElement(this XmlElement @this, String elementName)
+            => @this.NamespaceURI.DataEquals(_xsl_namespace_uri) && @this.LocalName.DataEquals(elementName);
+
+        private static Boolean IsXslElement(this XmlNode @this, String elementName)
+            => @this is XmlElement elem && elem.NamespaceURI.DataEquals(_xsl_namespace_uri) && elem.LocalName.DataEquals(elementName);
+
+        private static (Int32 XslTextCount, Int32 ValueOfCount, Int32 OthersCount) ChildXslCounts(this XmlElement @this)
+        {
+            var xslTexts    = 0;
+            var xslValueOfs = 0;
+            var xslOthers   = 0;
+
+            foreach (var elem in @this.ChildNodes.Cast<XmlNode>().Select(n => n is XmlElement elem ? elem.Some() : Option<XmlElement>.None).SomeOnly())
+            {
+                if (elem.IsXslElement("text"))
+                    xslTexts++;
+                else if (elem.IsXslElement("value-of"))
+                    xslValueOfs++;
+                else if (elem.NamespaceURI.DataEquals(_xsl_namespace_uri))
+                    xslOthers++;
+            }
+
+            return (xslTexts, xslValueOfs, xslOthers);
+        }
+
+        // Gets parses for descendant elements that could have 'vbscript:...' text for parsing.
+        // This is only intended for xsl:attribute elements that are event handlers where the
+        // element children are not text, xsl:text, and xsl:value-of only.
+        private static IReadOnlyList<XslVbScriptParse> DescendantParses(this XmlElement @this)
+        {
+            var results = new List<XslVbScriptParse>();
+
+            foreach (var child in @this.ChildNodes)
+            {
+                if (child is XmlElement elem)
+                    results.AddRange(elem.DescendantParses());
+                else if (child is XmlText text && !String.IsNullOrWhiteSpace(text.Value))
+                {
+                    var vbsHead = text.Value.DataStartsWith(_vbscript_colon);
+                    var rawText = String.Concat((vbsHead ? text.Value.Substring(_vbscript_colon.Length) : text.Value), "\r\n");
+                    var section = new VbScriptSection(@this.Path(), rawText);
+                    var vbParse = section.Parse();
+
+                    if (vbsHead || vbParse.SyntaxRoot is Confirmed<ParseNode>)
+                        results.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, null));
+                }
+            }
+
+            return results;
+        }
+
+        private static Option<XslVbScriptParse> XslAttributeParse(this XmlElement @this, Int32 xslTextsCount, XmlDocument document)
+        {
+            var build    = new StringBuilder();
+            var contents = new List<(XmlNode TextOrPlaceholder, XmlElement? xslValueOf)>();
+            var placeNum = 0;
+
+            foreach (var node in @this.ChildNodes.Cast<XmlNode>())
+            {
+                if (xslTextsCount == 0 && node is XmlText xText) // ignore all XmlText nodes if we have xslText elements
+                {
+                    build.Append(xText.Value);
+                    contents.Add((node, null));
+                }
+                else if (node is XmlElement xslText && xslText.IsXslElement("text"))
+                {
+                    build.Append(xslText.InnerText);
+                    contents.Add((node, null));
+                }
+                else if (node is XmlElement xslValueOf && xslValueOf.IsXslElement("value-of"))
+                {
+                    var subName = $"{XSL_VALUE_PLACEHOLDER_PREFIX}{++placeNum}";
+                    build.Append(subName);
+                    
+                    contents.Add((document.CreateTextNode(subName), xslValueOf));
+                }
+                else if (node is XmlElement xOther)
+                {
+                    return Option.None;
+                }
+            }
+
+            var rawText = String.Concat(build.ToString().Replace("'", "\""), "\r\n");
+            var vbsHead = rawText.DataStartsWith(_vbscript_colon);
+            var section = new VbScriptSection(@this.Path(), vbsHead ? rawText.Substring(_vbscript_colon.Length) : rawText);
+            var vbParse = section.Parse();
+
+            return (vbsHead || vbParse.SyntaxRoot is Confirmed<ParseNode>)
+                   ? (new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, contents)).Some()
+                   : Option.None;
+        }
+
         public static Suspect<XslParse> Parse(this XslContent xslContent, IReadOnlySet<String>? eventAttributes = null)
         {
             (IEnumerable<XslIncludeItem> Includes, IEnumerable<XslVbScriptParse> Parses) FromDocument(XmlDocument document)
@@ -243,7 +335,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var parse   = section.Parse();
 
                         if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                            parses.Add(new XslVbScriptParse(section, parse.SyntaxRoot, parse.SyntaxRoot.ToProgram(), pref.Map(a => a.Value), script, null, null));
+                            parses.Add(new XslVbScriptParse(section, parse.SyntaxRoot, parse.SemanticRoot, pref.Map(a => a.Value), script, null, null));
                     }
 
                     if (eventAttributes != null)
@@ -251,71 +343,32 @@ namespace Nysa.CodeAnalysis.VbScript
                         foreach (var element in descendants.Cast<XmlNode>().Where(n => n is XmlElement).Cast<XmlElement>())
                         {
 
-                            if (element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("attribute"))
+                            if (element.IsXslElement("attribute"))
                             {
                                 var nameAttr = element.Attributes.Cast<XmlAttribute>().FirstOrNone(a => a.LocalName.DataEquals("name"));
 
                                 if (nameAttr is Some<XmlAttribute> someNameAttr && eventAttributes.Contains(someNameAttr.Value.Value))
                                 {
-                                    // at this point we have several possibilities
-                                    //   1. element contains all text with no sub-elements
-                                    //   2. element contains a mix of text and sub-elements and sub-elements are only xsl:value
-                                    //   3. element contains a mix of text and sub-elements and sub-elements are only xsl:value and xsl:text
-                                    //      if we know there is no text outside of xsl:text elements, then we might be able to take a translation
-                                    //      of the vbscript that contains substitutions (placeholders), and break that back down to xsl:text
-                                    //      using the substitution markers to know where to split up the translation
+                                    var (xslTexts,
+                                         xslValueOfs,
+                                         xslOthers   ) = element.ChildXslCounts();
 
-                                    var build = new StringBuilder();
-                                    var conts = new List<(XmlNode TextOrPlaceholder, XmlElement? xslValueOf)>();
-                                    var xsTxt = element.ChildNodes
-                                                       .Cast<XmlNode>()
-                                                       .Where(n => n is XmlElement elem && elem.NamespaceURI.DataEquals(_xsl_namespace_uri) && elem.LocalName.DataEquals("text"))
-                                                       .Count();
-                                    var plhNo = 0;
-                                    var bail  = false;
+                                    // all possibilities
+                                    //   xslTexts | xslValueOfs | xslOthers | ???
+                                    //       0    |      0      |     0     | parse element.innerText
+                                    //      !0    |      0      |     0     | parse concatenation of all xsl:text
+                                    //       0    |     !0      |     0     | parse a concatenation of all xmlText with placeholder for each value-of
+                                    //      !0    |     !0      |     0     | parse a concatenation of all xsl:text with placeholder for each value-of
+                                    //       x    |      x      |    !0     | parse each descendent with text starting with "vbscript:"
 
-                                    foreach (var node in element.ChildNodes.Cast<XmlNode>())
-                                    {
-                                        if (xsTxt == 0 && node is XmlText xText) // ignore all XmlText nodes if we have xslText elements
-                                        {
-                                            build.Append(xText.Value);
-                                            conts.Add((node, null));
-                                        }
-                                        else if (node is XmlElement xslText && xslText.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslText.LocalName.DataEquals("text"))
-                                        {
-                                            build.Append(xslText.InnerText);
-                                            conts.Add((node, null));
-                                        }
-                                        else if (node is XmlElement xslValueOf && xslValueOf.NamespaceURI.DataEquals(_xsl_namespace_uri) && xslValueOf.LocalName.DataEquals("value-of"))
-                                        {
-                                            var subName = $"{XSL_VALUE_PLACEHOLDER_PREFIX}{++plhNo}";
-                                            build.Append(subName);
-                                            
-                                            conts.Add((document.CreateTextNode(subName), xslValueOf));
-                                        }
-                                        else if (node is XmlElement xOther)
-                                        {
-                                            bail = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!bail)
-                                    {
-                                        var parseText = build.ToString();
-
-                                        if (parseText.DataStartsWith(_vbscript_colon))
-                                        {
-                                            var vbString = String.Concat(parseText.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n");
-                                            var section  = new VbScriptSection(element.Path(), vbString);
-                                            var vbParse  = section.Parse();
-                                            parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, null, conts));
-                                        }
-                                    }
+                                    if (xslOthers > 0)
+                                        parses.AddRange(element.DescendantParses());
+                                    else if (element.XslAttributeParse(xslTexts, document) is Some<XslVbScriptParse> someParse)
+                                        parses.Add(someParse.Value);
                                 }
                             }
-                            else if (   element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("include")
-                                     || element.NamespaceURI.DataEquals(_xsl_namespace_uri) && element.LocalName.DataEquals("import"))
+                            else if (   element.IsXslElement("include")
+                                     || element.IsXslElement("import"))
                             {
                                 var href = element.GetAttribute("href");
 
@@ -327,7 +380,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                         includes.Add(hrefValue, element);
                                 }
                             }
-                            else
+                            else // check element for actual event attributes (i.e., not xsl:attribute)
                             {
                                 foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
                                 {
@@ -338,7 +391,7 @@ namespace Nysa.CodeAnalysis.VbScript
                                     var section   = new VbScriptSection(element.Path(attribute), vbString);
                                     var vbParse   = section.Parse();
 
-                                    parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SyntaxRoot.ToProgram(), Option.None, element, attribute, null));
+                                    parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, element, attribute, null));
                                 }
                             }
                         }
