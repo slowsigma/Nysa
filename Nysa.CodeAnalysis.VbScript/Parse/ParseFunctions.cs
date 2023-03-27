@@ -245,7 +245,7 @@ namespace Nysa.CodeAnalysis.VbScript
             return (xslTexts, xslValueOfs, xslOthers);
         }
 
-        private static Option<XslVbScriptParse> XslContentParse(this XmlElement @this, Int32 xslTextsCount, XmlDocument document)
+        private static Option<XslVbScriptParseElement> XslContentParse(this XmlElement @this, Int32 xslTextsCount, XmlDocument document)
         {
             var build    = new StringBuilder();
             var contents = new List<(XmlNode TextOrPlaceholder, XmlElement? xslValueOf)>();
@@ -283,7 +283,7 @@ namespace Nysa.CodeAnalysis.VbScript
             var vbParse = section.Parse();
 
             if (vbsPrfx || vbParse.SyntaxRoot is Confirmed<ParseNode>)
-                return (new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, @this, null, contents)).Some();
+                return (new XslVbScriptParseElement(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, @this, contents)).Some();
 
             return Option.None;
         }
@@ -317,10 +317,94 @@ namespace Nysa.CodeAnalysis.VbScript
 
             if (xslOthers > 0)
                 parses.AddRange(@this.XslChildParses(document));
-            else if (@this.XslContentParse(xslTexts, document) is Some<XslVbScriptParse> someParse)
+            else if (@this.XslContentParse(xslTexts, document) is Some<XslVbScriptParseElement> someParse)
                 parses.Add(someParse.Value);
 
             return parses;
+        }
+
+        public static List<(String Value, Boolean IsTemplateArg)> GetAttributeParts(this String @this)
+        {
+            var cur = 0;
+            var pos = 0;
+            var len = 0;
+            var arg = 0; // 0 = no brace; 1 = open check; 2 = in arg; 3 = close check
+            var pts = new List<(String Value, Boolean IsTemplateArg)>();
+
+            while (cur < @this.Length)
+            {
+                if (@this[cur].Equals('{') && arg == 0)
+                    arg = 1;
+                else if (@this[cur].Equals('{') && arg == 1)
+                {
+                    arg = 0;
+                    len += 2; // take this plus previous
+                }
+                else if (@this[cur].Equals('}') && arg == 2)
+                    arg = 3;
+                else if (@this[cur].Equals('}') && arg == 3)
+                {
+                    arg = 2;
+                    len += 2; // take this plus previous
+                }
+                else if (arg == 1 || arg == 3)
+                {
+                    if (len > 0)
+                        pts.Add((@this.Substring(pos, len), arg == 3));
+
+                    pos = cur;
+                    len = 1;
+
+                    arg = arg == 1 ? 2 : 0;
+                }
+                else // arg is 0 or 2
+                    len++;
+
+                cur++;
+            }
+
+            if (arg == 1)
+                len++;
+
+            if (len > 0)
+                pts.Add((@this.Substring(pos, len), arg == 3));
+
+            return pts;
+        }
+
+        private static XslVbScriptParse EventAttributeParse(this XmlElement element, XmlAttribute attribute)
+        {
+            var attrValue = HtmlEntity.DeEntitize(attribute.Value);
+            var vbString  = attrValue.DataStartsWith(_vbscript_colon)
+                            ? String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n")
+                            : String.Concat(attrValue.Replace("'", "\""), "\r\n");
+            var parts     = vbString.GetAttributeParts();
+            var placehlds = new List<(String Placeholder, String Original)>();
+
+            if (parts.Count > 1)
+            {
+                var build     = new StringBuilder();
+                var placeNum  = 0;
+
+                foreach (var part in parts)
+                {
+                    if (part.IsTemplateArg)
+                    {
+                        var name = $"{XSL_VALUE_PLACEHOLDER_PREFIX}{++placeNum}";
+                        placehlds.Add((name, part.Value));
+                        build.Append(name);
+                    }
+                    else
+                        build.Append(part.Value);
+                }
+
+                vbString = build.ToString();
+            }
+
+            var section   = new VbScriptSection(element.Path(attribute), vbString);
+            var vbParse   = section.Parse();
+
+            return new XslVbScriptParseAttribute(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, element, attribute, placehlds);
         }
 
         public static Suspect<XslParse> Parse(this XslContent xslContent, IReadOnlySet<String>? eventAttributes = null)
@@ -343,7 +427,7 @@ namespace Nysa.CodeAnalysis.VbScript
                         var parse   = section.Parse();
 
                         if (lang.Map(a => a.Value.DataEquals("vbscript")).Or(false))
-                            parses.Add(new XslVbScriptParse(section, parse.SyntaxRoot, parse.SemanticRoot, pref.Map(a => a.Value), script, null, null));
+                            parses.Add(new XslVbScriptParseScript(section, parse.SyntaxRoot, parse.SemanticRoot, pref.Map(a => a.Value), script));
                     }
 
                     if (eventAttributes != null)
@@ -373,17 +457,10 @@ namespace Nysa.CodeAnalysis.VbScript
                             }
                             else // check element for actual event attributes (i.e., not xsl:attribute)
                             {
-                                foreach (var attribute in element.Attributes.Cast<XmlAttribute>().Where(a => eventAttributes.Contains(a.LocalName)))
-                                {
-                                    var attrValue = HtmlEntity.DeEntitize(attribute.Value);
-                                    var vbString  = attrValue.DataStartsWith(_vbscript_colon)
-                                                    ? String.Concat(attrValue.Substring(_vbscript_colon.Length).Replace("'", "\""), "\r\n")
-                                                    : String.Concat(attrValue.Replace("'", "\""), "\r\n");
-                                    var section   = new VbScriptSection(element.Path(attribute), vbString);
-                                    var vbParse   = section.Parse();
-
-                                    parses.Add(new XslVbScriptParse(section, vbParse.SyntaxRoot, vbParse.SemanticRoot, Option.None, element, attribute, null));
-                                }
+                                parses.AddRange(element.Attributes
+                                                       .Cast<XmlAttribute>()
+                                                       .Where(a => eventAttributes.Contains(a.LocalName))
+                                                       .Select(a => element.EventAttributeParse(a)));
                             }
                         }
                     }
