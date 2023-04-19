@@ -47,6 +47,8 @@ namespace Nysa.CodeAnalysis.VbScript
                : content is VbScriptContent  vbScript ? vbScript.Parse().Confirmed().Map(s => (Parse)s)
                : content is XslContent       xsl      ? xsl.Parse(eventAttributes).Map(s => (Parse)s)
                : content is XmlContent       xml      ? xml.AsHtmlContent().Parse(eventAttributes).Map(s => (Parse)s)
+               : content is AspxContent      aspx     ? aspx.Parse().Map(s => (Parse)s)
+               : content is UnknownContent   unk      ? unk.Parse().Map(s => (Parse)s)
                :                                        throw new ArgumentException("Parse does not accept content of this type.");
 
         public static Suspect<XmlParse> Parse(this XmlContent content, Func<XmlDocument, IEnumerable<(XmlElement Element, XmlAttribute? Attribute, String Script)>> selector)
@@ -149,6 +151,16 @@ namespace Nysa.CodeAnalysis.VbScript
                                });
         }
 
+        private static Suspect<XmlParse> Parse(this UnknownContent @this)
+            => Return.Try(() =>
+            {
+                var doc = new XmlDocument();
+                doc.PreserveWhitespace = true;
+                doc.LoadXml(@this.Value);
+
+                return new XmlParse(new XmlContent(@this.Source, @this.Hash, @this.Value), doc, None<XmlVbScriptParse>.Enumerable());
+            });
+
         private static Suspect<HtmlParse> ParseHtml(this HtmlContent htmlContent, IReadOnlySet<String>? eventAttributes)
         {
             (IEnumerable<HtmlIncludeItem> Includes, List<HtmlVbScriptParse> Parses) FromDocument(HtmlDocument document)
@@ -212,6 +224,14 @@ namespace Nysa.CodeAnalysis.VbScript
                                    return FromDocument(doc).Make(t => new HtmlParse(htmlContent, doc, t.Includes, t.Parses));
                                });
         }
+
+        private static Suspect<AspxParse> Parse(this AspxContent @this)
+            => Return.Try(() =>
+            {
+                var doc = new HtmlDocument();
+                doc.LoadHtml(@this.Value);
+                return new AspxParse(@this, doc);
+            });
 
         public static VbScriptParse Parse(this VbScriptContent @this)
             => @this.Value

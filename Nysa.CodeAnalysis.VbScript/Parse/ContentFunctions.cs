@@ -42,7 +42,8 @@ namespace Nysa.CodeAnalysis.VbScript
                                 : e.DataEquals(".html") ? file.Read().Make(t => (new HtmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
                                 : e.DataEquals(".vbs")  ? file.Read().Make(t => (new VbScriptContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
                                 : e.DataEquals(".xml")  ? file.Read().Make(t => (new XmlContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
-                                : (new InvalidOperationException()).Failed<Content>());
+                                : e.DataEquals(".aspx") ? file.Read().Make(t => (new AspxContent(file.FullName.Normalized(), t.Hash, t.Value)).Confirmed<Content>())
+                                :                         file.Read().Make(t => (new UnknownContent(file.FullName.Normalize(), t.Hash, t.Value)).Confirmed<Content>()));
 
         public static Suspect<Content> ToContent(this String filePath, IReadOnlyDictionary<String, String>? extMappings = null)
             => (new FileInfo(filePath)).ToContent(extMappings);
