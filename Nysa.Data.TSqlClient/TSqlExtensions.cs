@@ -200,6 +200,38 @@ namespace Nysa.Data.TSqlClient
                 return result;
             };
 
+        public static Func<T> ExecuteOn<T>(this Func<SqlConnection, T> query, String connectionString, Action<SqlErrorCollection> messageListener, Boolean? sendUserErrorsToListener = false)
+            => () =>
+            {
+                T result;
+
+                var handler = new SqlInfoMessageEventHandler((o, a) => { messageListener(a.Errors); });
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    if (sendUserErrorsToListener.GetValueOrDefault(false))
+                        connection.FireInfoMessageEventOnUserErrors = true;
+
+                    connection.InfoMessage += handler;
+
+                    try
+                    {
+                        connection.Open();
+
+                        result = query(connection);
+
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
+                    finally
+                    {
+                        connection.InfoMessage -= handler;
+                    }
+                }
+
+                return result;
+            };
+
         public static Func<Unit> ExecuteOn(this TSqlScript script, String connectionString, Int32? batchTimeout = null)
             => () =>
             {
@@ -217,12 +249,54 @@ namespace Nysa.Data.TSqlClient
                             if (batchTimeout != null)
                                 command.CommandTimeout = batchTimeout.Value;
 
-                            command.ExecuteNonQuery();
+                           command.ExecuteNonQuery();
                         }
                     }
 
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
+                }
+
+                return Unit.Value;
+            };
+
+        public static Func<Unit> ExecuteOn(this TSqlScript script, String connectionString, Action<SqlErrorCollection> messageListener, Boolean? sendUserErrorsToListener = false, Int32? batchTimeout = null)
+            => () =>
+            {
+                var handler = new SqlInfoMessageEventHandler((o, a) => { messageListener(a.Errors); });
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    if (sendUserErrorsToListener.GetValueOrDefault(false))
+                        connection.FireInfoMessageEventOnUserErrors = true;
+
+                    connection.InfoMessage += handler;
+
+                    try
+                    {
+                        connection.Open();
+
+                        foreach (var batch in script.Batches())
+                        {
+                            using (var command = connection.CreateCommand())
+                            {
+                                command.CommandText = batch;
+                                command.CommandType = CommandType.Text;
+
+                                if (batchTimeout != null)
+                                    command.CommandTimeout = batchTimeout.Value;
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                    }
+                    finally
+                    {
+                        connection.InfoMessage -= handler;
+                    }
                 }
 
                 return Unit.Value;
