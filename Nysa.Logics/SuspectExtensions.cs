@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Nysa.Logics
         private static readonly String MatchAsyncUsageErrorString   = String.Format(UsageErrorTemplate, nameof(MatchAsync));
         private static readonly String AffectUsageErrorString       = String.Format(UsageErrorTemplate, nameof(Affect));
         private static readonly String AffectAsyncUsageErrorString  = String.Format(UsageErrorTemplate, nameof(AffectAsync));
+        private static readonly String CombineUsageErrorString      = String.Format(UsageErrorTemplate, nameof(Combine));
 
         public static Suspect<R> Map<T, R>(this Suspect<T> @this, Func<T, R> transform)
             =>   (@this is Confirmed<T> confirmed) ? transform(confirmed.Value).Confirmed()
@@ -110,26 +112,60 @@ namespace Nysa.Logics
         }
 
 
-/*
-        // Ideas for possible shortcuts?
+        /*
+                // Ideas for possible shortcuts?
 
-        private static Suspect<R> BindTry<T, R>(this Suspect<T> @this, Func<T, R> volatileTransform)
-        {
-            return @this.Bind(t =>
+                private static Suspect<R> BindTry<T, R>(this Suspect<T> @this, Func<T, R> volatileTransform)
+                {
+                    return @this.Bind(t =>
+                    {
+                        try
+                        {
+                            return volatileTransform(t).Confirmed();
+                        }
+                        catch (Exception except)
+                        {
+                            return except.Failed<R>();
+                        }
+                    });
+                }
+
+                var susA = someFunc();
+                var susB = otherFunc();
+                var susC = yetAnotherFunc();
+
+                // if all three results above may provide independent errors and you want to
+                // accumulate them as apposed to only encountering one error at a time
+
+                var combined = susA.Combine(susB, (a, b) => (First: a, Second: b))
+                                   .Combine(susC, (p, c) => (p.First, p.Second, Third: c));
+
+
+
+        */
+
+        /// <summary>
+        /// Combines two Suspect values using a given combine function when both values are
+        /// of the Confirmed type.  If both values are of the Failed type, the returned
+        /// value is Failed using an AggregateException for the Failed value.  If only one
+        /// value is Failed, then that Failed value is returned.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="this"></param>
+        /// <param name="other"></param>
+        /// <param name="combine"></param>
+        /// <returns></returns>
+        public static Suspect<R> Combine<T, U, R>(this Suspect<T> @this, Suspect<U> other, Func<T, U, R> combine)
+            => @this switch
             {
-                try
-                {
-                    return volatileTransform(t).Confirmed();
-                }
-                catch (Exception except)
-                {
-                    return except.Failed<R>();
-                }
-            });
-        }
-
-*/
-
+                Confirmed<T> goodThis when (other is Confirmed<U> goodOther) => combine(goodThis.Value, goodOther.Value).Confirmed(),
+                Confirmed<T> goodThis when (other is Failed<U>    badOther ) => Return.Failed<R>(badOther.Value),
+                Failed<T>    badThis  when (other is Confirmed<U> goodOther) => Return.Failed<R>(badThis.Value),
+                Failed<T>    badThis  when (other is Failed<U>    badOther ) => Return.Failed<R>(new AggregateException(badThis.Value, badOther.Value)),
+                _                                                            => Return.Failed<R>(new InvalidProgramException(CombineUsageErrorString))
+            };
 
     }
 

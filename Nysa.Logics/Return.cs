@@ -130,6 +130,20 @@ namespace Nysa.Logics
                     yield return failed.Value;
         }
 
+        public static (IReadOnlyList<T> Confirmed, IReadOnlyList<Exception> Failed) Split<T>(this IEnumerable<Suspect<T>> @this)
+        {
+            var confirmed = new List<T>();
+            var failed    = new List<Exception>();
+
+            foreach (var item in @this)
+                if (item is Confirmed<T> good)
+                    confirmed.Add(good.Value);
+                else if (item is Failed<T> bad)
+                    failed.Add(bad.Value);
+
+            return (confirmed, failed);
+        }
+
         public static Suspect<R> Switch<T, R>(this T value, params (T ifValue, R thenValue)[] options)
             where T : IEquatable<T>
         {

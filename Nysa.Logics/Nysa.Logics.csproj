@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <PackageId>Nysa.Logics</PackageId>
