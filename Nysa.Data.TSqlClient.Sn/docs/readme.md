@@ -1,0 +1,3 @@
+## Nysa.Data.TSqlClient (The 'strong named' edition.)
+A combinator library over the Microsoft.Data.SqlClient package designed to simplify database communication.  To see an example of this, check out the 'Before' and 'After' class files [here](https://github.com/slowsigma/CombinatorLibraries/tree/master/Nysa.Data.SqlClientDemo "github").  The source code is [here](https://github.com/slowsigma/Nysa/tree/master/Nysa.Data.TSqlClient "github").
+License: [MIT](https://mit-license.org/ "MIT")

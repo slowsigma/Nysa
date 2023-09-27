@@ -6,7 +6,7 @@
     <Company>slowsigma</Company>
     <Nullable>enable</Nullable>
     <LangVersion>9.0</LangVersion>
-    <PackageId>Nysa.Data.TSqlClient</PackageId>
+    <PackageId>Nysa.Data.TSqlClient.Sn</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
@@ -14,11 +14,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.6" />
+    <PackageReference Include="Nysa.Logics.Sn" Version="1.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="docs\readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Nysa.Data.TSqlClient\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Nysa.Data.TSqlClient\Text\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 
 </Project>

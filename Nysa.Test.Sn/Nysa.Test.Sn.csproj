@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nysa.CodeAnalysis.TSql.Sn\Nysa.CodeAnalysis.TSql.Sn.csproj" />
+    <ProjectReference Include="..\Nysa.Data.TSqlClient.Sn\Nysa.Data.TSqlClient.Sn.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Nysa.Data.TSqlClient;
 using Nysa.CodeAnalysis.TSql;
 using Nysa.Logics;
 using Nysa.Text;
@@ -24,7 +25,9 @@ public static class Program
         if (isequal)
             Console.WriteLine("data is equal");
 
-
+        var q = With.Row(Of.Int32, Of.String)
+                    .Make((i, s) => (Number: i, Value: s))
+                    .ReadRecords();
     }
 
 }
