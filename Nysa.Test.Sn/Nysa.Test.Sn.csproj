@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Nysa.Logics.Sn\Nysa.Logics.Sn.csproj" />
-    <ProjectReference Include="..\Nysa.Text.Sn\Nysa.Text.Sn.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis.TSql.Sn\Nysa.CodeAnalysis.TSql.Sn.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nysa.Logics.Sn" Version="1.0.6" />
+    <PackageReference Include="Nysa.Text.Sn" Version="1.0.2" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Nysa.CodeAnalysis.TSql;
 using Nysa.Logics;
 using Nysa.Text;
 
