@@ -9,9 +9,9 @@ public static class Program
 
     public static void Main(string[] args)
     {
-        SuspectTests.TestCombine();
+        //SuspectTests.TestCombine();
 
-        //ArgsTests.ArgsTest_Alpha();
+        ArgsTests.ArgsTest_Alpha();
     }
 
 }
