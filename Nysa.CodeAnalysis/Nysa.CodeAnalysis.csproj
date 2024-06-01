@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,8 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.8" />
+    <PackageReference Include="Nysa.Text" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

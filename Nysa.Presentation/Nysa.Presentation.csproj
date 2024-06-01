@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFrameworks>net7.0-windows;net8.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <PackageId>Nysa.Presentation</PackageId>
@@ -13,9 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.IO" Version="1.0.1" />
-    <PackageReference Include="Nysa.Logics" Version="1.0.5" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+    <PackageReference Include="Nysa.IO" Version="1.0.3" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.8" />
+    <PackageReference Include="Nysa.Text" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
