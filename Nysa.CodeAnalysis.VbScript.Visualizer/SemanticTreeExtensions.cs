@@ -214,11 +214,14 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         public static ViewInfo ToViewInfo(this InlineCallStatement @this)
             => @this.TypedInfo(Properties(@this.AccessExpression.ToViewInfo().AsProperty(nameof(InlineCallStatement.AccessExpression))));
 
+        public static ViewInfo ToViewInfo(this ArgumentDefinition @this)
+            => new ViewInfo(@this.Name.Value, @this, _NoMore);
+
         public static ViewInfo ToViewInfo(this FunctionDeclaration @this)
             => @this.TypedInfo(Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
                                           @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
                                           @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => a.ToViewInfo())),
                                           @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this PropertyDeclaration @this)
@@ -226,14 +229,14 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                                          @this.ValueProperty(nameof(PropertyDeclaration.Access), @this.Access.ToString()),
                                          @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
                                          @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                         new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                         new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => a.ToViewInfo())),
                                          @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this SubroutineDeclaration @this)
             => @this.TypedInfo(Properties(@this.Visibility.Map(v => @this.ValueProperty(nameof(MethodDeclaration.Visibility), v.ToString())).OrNull(),
                                           @this.IsDefault ? @this.ValueProperty(nameof(MethodDeclaration.IsDefault), @this.IsDefault.ToString()) : null,
                                           @this.ValueProperty(nameof(MethodDeclaration.Name), @this.Name.Value),
-                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => new ViewInfo(a.Name.Value, @this, _NoMore))),
+                                          new ViewInfo(nameof(MethodDeclaration.Arguments), @this, () => @this.Arguments.Select(a => a.ToViewInfo())),
                                           @this.Statements.TypedInfo(() => @this.Statements.Select(s => s.ToViewInfo())).AsProperty(nameof(MethodDeclaration.Statements))));
 
         public static ViewInfo ToViewInfo(this RedimVariable @this)
