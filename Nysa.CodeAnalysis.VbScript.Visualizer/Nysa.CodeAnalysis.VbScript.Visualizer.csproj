@@ -7,8 +7,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nysa.Logics" Version="1.0.3" />
-    <PackageReference Include="Nysa.Text" Version="1.0.2" />
+    <PackageReference Include="Nysa.Logics" Version="1.0.8" />
+    <PackageReference Include="Nysa.Text" Version="1.0.3" />
   </ItemGroup>
 
   <PropertyGroup>

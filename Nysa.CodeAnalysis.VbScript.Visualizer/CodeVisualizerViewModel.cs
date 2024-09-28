@@ -83,50 +83,53 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         //     }
         // }
 
-        // public void HighlightNode(NodeViewModel node)
-        // {
-        //     if (this.Selection != null)
-        //         this.Selection.ClearAllProperties();
+        public void HighlightNode(NodeViewModel node)
+        {
+            if (this.Selection != null)
+                this.Selection.ClearAllProperties();
 
-        //     if (node.Position.IsSome && node.Length.IsSome)
-        //     {
-        //         var start = this.Window._SourceText.Document.ContentStart;
+            if (node.Position is Some<Int32> somePosition && node.Length is Some<Int32> someLength)
+            {
+                var start = this.Window._SourceText.Document.ContentStart;
 
-        //         while (start.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
-        //             start = start.GetNextContextPosition(LogicalDirection.Forward);
+                while (start.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
+                    start = start.GetNextContextPosition(LogicalDirection.Forward);
 
-        //         var startPos = start.GetPositionAtOffset(node.Position.Value, LogicalDirection.Forward);
-        //         var endPos = startPos.GetPositionAtOffset(node.Length.Value, LogicalDirection.Forward);
+                var startPos = start.GetPositionAtOffset(somePosition.Value, LogicalDirection.Forward);
+                var endPos = startPos.GetPositionAtOffset(someLength.Value, LogicalDirection.Forward);
 
-        //         this.Selection = new TextRange(startPos, endPos);
-        //         this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
-        //     }
-        //     else if (node.Members.Count > 0)
-        //     {
-        //         var first = node.Members.FirstOrNone(m => m.Position.IsSome);
-        //         var last  = node.Members.LastOrNone(m => m.Position.IsSome && m.Length.IsSome);
+                this.Selection = new TextRange(startPos, endPos);
+                this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
+            }
+            else if (node.Members.Count > 0)
+            {
+                var first = node.Members.FirstOrNone(m => m.Position is Some<Int32>);
+                var last  = node.Members.LastOrNone(m => m.Position is Some<Int32> && m.Length is Some<Int32>);
 
-        //         if (first is Some<NodeViewModel> firstVm &&
-        //             last  is Some<NodeViewModel> lastVm    )
-        //         {
-        //             var length = (lastVm.Value.Position.Value + lastVm.Value.Length.Value) - firstVm.Value.Position.Value;
+                if (   first                  is Some<NodeViewModel> firstVm
+                    && firstVm.Value.Position is Some<Int32>         someFirstPos
+                    && last                   is Some<NodeViewModel> lastVm
+                    && lastVm.Value.Position  is Some<Int32>         someLastPos
+                    && lastVm.Value.Length    is Some<Int32>         someLastLen )
+                {
+                    var length = (someLastPos.Value + someLastLen.Value) - someFirstPos.Value;
 
-        //             var start = this.Window._SourceText.Document.ContentStart;
+                    var start = this.Window._SourceText.Document.ContentStart;
 
-        //             while (start.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
-        //                 start = start.GetNextContextPosition(LogicalDirection.Forward);
+                    while (start.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
+                        start = start.GetNextContextPosition(LogicalDirection.Forward);
 
-        //             var startPos = start.GetPositionAtOffset(firstVm.Value.Position.Value, LogicalDirection.Forward);
-        //             var endPos = startPos.GetPositionAtOffset(length, LogicalDirection.Forward);
+                    var startPos = start.GetPositionAtOffset(someFirstPos.Value, LogicalDirection.Forward);
+                    var endPos = startPos.GetPositionAtOffset(length, LogicalDirection.Forward);
 
-        //             this.Selection = new TextRange(startPos, endPos);
-        //             this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
-        //         }
-        //     }
+                    this.Selection = new TextRange(startPos, endPos);
+                    this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
+                }
+            }
 
-        //     var offset = this.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
-        //     this.Window._SourceScroll.ScrollToVerticalOffset(offset.Top);
-        // }
+            //var offset = this.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
+            //this.Window._SourceScroll.ScrollToVerticalOffset(offset.Top);
+        }
 
     }
 

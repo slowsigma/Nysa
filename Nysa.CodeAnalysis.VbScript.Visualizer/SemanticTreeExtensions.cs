@@ -10,8 +10,6 @@ using Nysa.Logics;
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
-    public record ViewInfo(String Title, CodeNode Node, Func<IEnumerable<ViewInfo>> Children);
-
     public static class SemanticTreeExtensions
     {
         public static readonly Func<IEnumerable<ViewInfo>> _NoMore = () => None<ViewInfo>.Enumerable();

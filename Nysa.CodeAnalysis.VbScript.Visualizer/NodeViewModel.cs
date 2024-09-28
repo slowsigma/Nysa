@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using Nysa.CodeAnalysis.VbScript.Semantics;
 using Nysa.Logics;
+using Nysa.Text.Lexing;
 
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
@@ -33,32 +34,34 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             get { return this._IsSelected; }
             set
             {
-                this.UpdateValueProperty(ref this._IsSelected, value, nameof(IsSelected));
-                // if (this.UpdateValueProperty(ref this._IsSelected, value, nameof(IsSelected)))
-                //     this.Parent.HighlightNode(this);
+                //this.UpdateValueProperty(ref this._IsSelected, value, nameof(IsSelected));
+
+                if (this.UpdateValueProperty(ref this._IsSelected, value, nameof(IsSelected)))
+                    this.Parent.HighlightNode(this);
             }
         }
 
         public NodeViewModel(CodeVisualizerViewModel parent, ViewInfo basis)
             : base(parent)
         {
-            this.Basis = basis;
+            this.Basis    = basis;
             this.Position = Option.None;
-            this.Length = Option.None;
+            this.Length   = Option.None;
 
             this.Members = new ObservableCollection<NodeViewModel>();
 
             foreach (var member in this.Basis.Children())
                 this.Members.Add(new NodeViewModel(this.Parent, member));
 
-            // var first = this.Basis.Select(node => node.First(), token => token.Span);
-            // var last = this.Basis.Select(node => node.Last(), token => token.Span);
+            var bounds = this.Basis.Node.TokenBounds();
 
-            // this.Position = first.Select(f => f.Position);
-            // this.Length = first.Select(f => last.Select(l => (l.Position - f.Position) + l.Length));
+            if (bounds.Start.HasValue)
+            {
+                this.Position = bounds.Start.Value.Span.Position.Some();
 
-            //foreach (var member in this.Basis.Select(node => node.Members, token => new NodeOrToken[] { }))
-            //    this.Members.Add(new NodeViewModel(this.Parent, member));
+                if (bounds.End.HasValue)
+                    this.Length = ((bounds.End.Value.Span.Position + bounds.End.Value.Span.Length) - bounds.Start.Value.Span.Position).Some();
+            }
         }
     }
 
