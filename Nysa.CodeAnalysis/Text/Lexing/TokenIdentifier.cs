@@ -18,4 +18,9 @@ public sealed class TokenIdentifier
         this.This   = @this;
         this.Next   = next;
     }
+
+    public override String ToString()
+        => this.Next == null
+           ? this.This.ToString()
+           : String.Concat(this.This.ToString(), ", ", this.Next.ToString());
 }

@@ -29,6 +29,8 @@ namespace Nysa.Text
 
         public Boolean IsNone { get => this.Number == 0; }
         public Boolean IsTrivia { get => this.Number == Int32.MinValue; }
+
+        public override String ToString() => this.Number.ToString();
     }
 
 }
