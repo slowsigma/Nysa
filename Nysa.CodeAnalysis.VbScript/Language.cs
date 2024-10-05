@@ -657,7 +657,7 @@ public static partial class Language
         Language.Seek = Take.Seek(all);
     }
 
-    public static Suspect<Node> Parse(String source)
+    public static Token[] Lex(String source)
     {
         var lastChar = source[source.Length - 1];
 
@@ -669,7 +669,14 @@ public static partial class Language
                            .Where(t => !t.Id.IsEqual(Identifier.Trivia))
                            .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
                            .ToArray();
-        var chart    =  Language.Grammar.CreateChart(tokens);
+
+        return tokens;
+    }
+
+    public static Suspect<Node> Parse(String source)
+    {
+        var tokens  = Language.Lex(source);
+        var chart   =  Language.Grammar.CreateChart(Language.Lex(source));
 
         if (!chart.IsIncomplete())
         {
