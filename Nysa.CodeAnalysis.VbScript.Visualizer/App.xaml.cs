@@ -27,7 +27,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
         {
             //var someFunc = "aFunc".ToFunctionSymbol(Option.None, 4);
 
-            //var visualizerVVM = (new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw));
+            //var visualizerVVM = (new ParseVisualizer()).Bound(vw => new ParseVisualizerViewModel(vw));
 
             //visualizerVVM.View.Show();
 

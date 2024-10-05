@@ -20,7 +20,7 @@ using Nysa.Text.Lexing;
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
-    public class NodeViewModel : ViewModelObject<CodeVisualizerViewModel>
+    public class NodeViewModel : ViewModelObject<ParseVisualizerViewModel>
     {
         public ViewInfo Basis { get; private set; }
         public ObservableCollection<NodeViewModel> Members { get; private set; }
@@ -41,7 +41,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             }
         }
 
-        public NodeViewModel(CodeVisualizerViewModel parent, ViewInfo basis)
+        public NodeViewModel(ParseVisualizerViewModel parent, ViewInfo basis)
             : base(parent)
         {
             this.Basis    = basis;

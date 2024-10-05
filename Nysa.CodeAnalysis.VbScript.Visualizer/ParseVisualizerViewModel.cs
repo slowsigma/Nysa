@@ -15,18 +15,18 @@ using Nysa.Windows.Input;
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
-    public class CodeVisualizerViewModel : NormalWindowViewModel
+    public class ParseVisualizerViewModel : NormalWindowViewModel
     {
         public String Source { get; private set; }
         public String Content { get; private set; }
 
         public ObservableCollection<NodeViewModel> Root { get; private set; }
 
-        public new CodeVisualizer Window => (CodeVisualizer)base.Window;
+        public new ParseVisualizer Window => (ParseVisualizer)base.Window;
 
         private TextRange? Selection;
 
-        public CodeVisualizerViewModel(CodeVisualizer view, String source, String text, Suspect<Program> rootOrError)
+        public ParseVisualizerViewModel(ParseVisualizer view, String source, String text, Suspect<Program> rootOrError)
             : base(view)
         {
             this.Source = source;
@@ -48,9 +48,6 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                 view._SourceText.Document.PageWidth = 2000;
                 view._SourceText.Document.Blocks.Add(paragraph);
             }
-
-            //if (nvm != null)
-            //    this.Colorize(nvm);
         }
 
         // private void Colorize(NodeViewModel node)
@@ -88,7 +85,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             if (this.Selection != null)
                 this.Selection.ClearAllProperties();
 
-            if (node.Position is Some<Int32> somePosition && node.Length is Some<Int32> someLength)
+            if (node.Position is Some<Int32> somePosition && node.Length is Some<Int32> someLength && !node.Basis.ChildrenHighlight)
             {
                 var start = this.Window._SourceText.Document.ContentStart;
 

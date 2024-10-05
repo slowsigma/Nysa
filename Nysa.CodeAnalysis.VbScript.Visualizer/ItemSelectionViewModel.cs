@@ -12,8 +12,11 @@ using System.Windows.Input;
 
 using Nysa.CodeAnalysis.VbScript;
 using Nysa.CodeAnalysis.VbScript.Semantics;
+
 using Nysa.Logics;
 using Nysa.Windows.Input;
+
+using VBScript = Nysa.CodeAnalysis.VbScript.Language;
 
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
@@ -28,6 +31,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
         public String _Folder;
         private Content? _SelectedScriptItem;
+
         public Content? SelectedScriptItem
         {
             get { return this._SelectedScriptItem; }
@@ -73,12 +77,24 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
             this._SelectedScriptItem = null;
 
             this.Window.Loaded += Window_Loaded;
+            this.Window._ShowLex.Click += _ShowLex_Click;
             this.Window._ShowParse.Click += _ShowParse_Click;
+        }
+
+        private void _ShowLex_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.SelectedScriptItem is VbScriptContent content)
+            {
+                var tokens = VBScript.Lex(content.Value);
+
+                var view = (new LexVisualizer()).Bound(vw => new LexVisualizerViewModel(vw, content.Source, content.Value, tokens)).View;
+                view.Show();
+            }
         }
 
         private void _ShowParse_Click(object sender, RoutedEventArgs e)
         {
-            var views = new List<CodeVisualizer>();
+            var views = new List<ParseVisualizer>();
 
             if (this.SelectedScriptItem is Content content)
             {
@@ -87,9 +103,9 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
                 if (parse is Confirmed<Parse> goodParse)
                 {
                     if (goodParse.Value is HtmlParse html)
-                        html.VbsParses.Affect(p => views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.SemanticRoot)).View));
+                        html.VbsParses.Affect(p => views.Add((new ParseVisualizer()).Bound(vw => new ParseVisualizerViewModel(vw, html.Content.Source, p.Content.Value, p.SemanticRoot)).View));
                     else if (goodParse.Value is VbScriptParse vbs)
-                        views.Add((new CodeVisualizer()).Bound(vw => new CodeVisualizerViewModel(vw, content.Source, content.Value, vbs.SemanticRoot)).View);
+                        views.Add((new ParseVisualizer()).Bound(vw => new ParseVisualizerViewModel(vw, content.Source, content.Value, vbs.SemanticRoot)).View);
                 }
             }
 

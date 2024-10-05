@@ -10,6 +10,6 @@ using Nysa.Logics;
 namespace Nysa.CodeAnalysis.VbScript.Visualizer
 {
 
-    public record ViewInfo(String Title, CodeNode Node, Func<IEnumerable<ViewInfo>> Children);
+    public record ViewInfo(String Title, CodeNode Node, Func<IEnumerable<ViewInfo>> Children, Boolean ChildrenHighlight = false);
 
 }

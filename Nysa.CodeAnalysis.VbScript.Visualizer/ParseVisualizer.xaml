@@ -1,4 +1,4 @@
-﻿<local:NormalWindow x:Class="Nysa.CodeAnalysis.VbScript.Visualizer.CodeVisualizer"
+﻿<local:NormalWindow x:Class="Nysa.CodeAnalysis.VbScript.Visualizer.ParseVisualizer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Nysa.CodeAnalysis.VbScript.Visualizer"
         mc:Ignorable="d"
         Style="{DynamicResource NormalWindowStyle}"
-        Title="Code Analysis Visualizer" Height="500" Width="700">
+        Title="Parse Visualizer" Height="500" Width="700">
 
    <Window.Resources>
       <ResourceDictionary>

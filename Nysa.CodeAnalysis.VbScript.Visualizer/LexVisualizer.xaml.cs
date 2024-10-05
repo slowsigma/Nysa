@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,9 +18,9 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class CodeVisualizer : NormalWindow
+    public partial class LexVisualizer : NormalWindow
     {
-        public CodeVisualizer()
+        public LexVisualizer()
         {
             InitializeComponent();
         }

@@ -14,7 +14,7 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
     public static class ParseItemsLoader
     {
         // private static readonly String SCRIPT_SELECT    = "SELECT [ScriptID], CONVERT(VARCHAR(MAX), [ScriptCode]) FROM [Operations].[dbo].[sScript] WHERE NOT [ScriptCode] IS NULL;";
-        // private static readonly String PRIMARY_SQL      = @"Data Source=PLADVSVNEO\NEO;Initial Catalog=Operations;Integrated Security=True;Application Name=CodeVisualizer";
+        // private static readonly String PRIMARY_SQL      = @"Data Source=PLADVSVNEO\NEO;Initial Catalog=Operations;Integrated Security=True;Application Name=VbScript.Visualizer";
         private static readonly String[] EXTENSIONS     = { "*.vbs", "*.htm" };
 
         public static async Task<List<Suspect<Content>>> GetSourcesAsync(String folder)
