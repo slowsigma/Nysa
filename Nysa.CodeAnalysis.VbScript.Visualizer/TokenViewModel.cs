@@ -23,7 +23,8 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
     public class TokenViewModel : ViewModelObject<LexVisualizerViewModel>
     {
         public Token Basis { get; private set; }
-        public String Title => String.Concat(this.Basis.Span.ToString(), " - ", this.Basis.Id);
+        public String Text => this.Basis.Span.ToString();
+        public String Id => this.Basis.Id.ToString();
         public Int32 Position => this.Basis.Span.Position;
         public Int32 Length => this.Basis.Span.Length;
 

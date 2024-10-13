@@ -34,7 +34,7 @@
                   <ColumnDefinition Width="*"/>
                </Grid.ColumnDefinitions>
             
-               <TreeView Grid.Column="0" ItemsSource="{Binding Path=Items}" VirtualizingStackPanel.VirtualizationMode="Recycling" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.IsDeferredScrollingEnabled="True">
+               <TreeView Grid.Column="0" ItemsSource="{Binding Path=Items}" VirtualizingStackPanel.VirtualizationMode="Recycling" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.IsDeferredScrollingEnabled="True" Grid.IsSharedSizeScope="true">
                   <TreeView.ItemsPanel>
                      <ItemsPanelTemplate>
                         <VirtualizingStackPanel IsItemsHost="True"/>
@@ -48,7 +48,20 @@
                   </TreeView.ItemContainerStyle>
                   <TreeView.ItemTemplate>
                      <HierarchicalDataTemplate ItemsSource="{Binding Path=Members}">
-                        <TextBlock Text="{Binding Path=Title}"/>
+                        <Grid>
+                           <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                              <ColumnDefinition Width="Auto" SharedSizeGroup="B"/>
+                              <ColumnDefinition Width="2*"   SharedSizeGroup="C"/>
+                              <ColumnDefinition Width="2*"   SharedSizeGroup="D"/>
+
+                           </Grid.ColumnDefinitions>
+
+                           <TextBlock Grid.Column="0" Text="{Binding Path=Text, Mode=OneWay}"/>
+                           <TextBlock Grid.Column="1" Text="{Binding Path=Id, Mode=OneWay}"/>
+                           <TextBlock Grid.Column="2" Text="{Binding Path=Position, Mode=OneWay}"/>
+                           <TextBlock Grid.Column="3" Text="{Binding Path=Length, Mode=OneWay}"/>
+                        </Grid>
                      </HierarchicalDataTemplate>
                   </TreeView.ItemTemplate>
                </TreeView>

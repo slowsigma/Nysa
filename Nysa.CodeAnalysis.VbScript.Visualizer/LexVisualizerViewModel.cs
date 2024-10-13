@@ -65,31 +65,6 @@ namespace Nysa.CodeAnalysis.VbScript.Visualizer
 
             this.Selection = new TextRange(startPos, endPos);
             this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
-            // else if (node.Members.Count > 0)
-            // {
-            //     var first = node.Members.FirstOrNone(m => m.Position is Some<Int32>);
-            //     var last  = node.Members.LastOrNone(m => m.Position is Some<Int32> && m.Length is Some<Int32>);
-
-            //     if (   first                  is Some<TokenViewModel> firstVm
-            //         && firstVm.Value.Position is Some<Int32>         someFirstPos
-            //         && last                   is Some<TokenViewModel> lastVm
-            //         && lastVm.Value.Position  is Some<Int32>         someLastPos
-            //         && lastVm.Value.Length    is Some<Int32>         someLastLen )
-            //     {
-            //         var length = (someLastPos.Value + someLastLen.Value) - someFirstPos.Value;
-
-            //         var start = this.Window._SourceText.Document.ContentStart;
-
-            //         while (start.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
-            //             start = start.GetNextContextPosition(LogicalDirection.Forward);
-
-            //         var startPos = start.GetPositionAtOffset(someFirstPos.Value, LogicalDirection.Forward);
-            //         var endPos = startPos.GetPositionAtOffset(length, LogicalDirection.Forward);
-
-            //         this.Selection = new TextRange(startPos, endPos);
-            //         this.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.Yellow));
-            //     }
-            // }
         }
 
     }
