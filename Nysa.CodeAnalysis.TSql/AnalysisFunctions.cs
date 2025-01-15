@@ -15,12 +15,13 @@ public static class AnalysisFunctions
     internal static ObjectIdentifierPart ToObjectIdentifierPart(this Identifier @this)
         => new ObjectIdentifierPart(@this.StartOffset, @this.Value.Length == 0 ? 0 : @this.FragmentLength, (Int32)@this.QuoteType, @this.Value);
 
-    internal static ObjectIdentifier ToObjectIdentifier(this MultiPartIdentifier @this, Boolean canAlias)
+    internal static ObjectIdentifier ToObjectIdentifier(this MultiPartIdentifier @this, Boolean canAlias, Boolean isSelectInto = false)
         => new ObjectIdentifier(@this.StartOffset,
                                 @this.FragmentLength,
                                 @this.StartLine,
                                 @this.StartColumn,
                                 canAlias,
+                                isSelectInto,
                                 @this.Identifiers
                                      .Select(i => i.ToObjectIdentifierPart())
                                      .ToList());
@@ -31,6 +32,7 @@ public static class AnalysisFunctions
                                 @this.StartLine,
                                 @this.StartColumn,
                                 canAlias,
+                                false,
                                 multi.MultiPartIdentifier
                                      .Identifiers
                                      .Select(i => i.ToObjectIdentifierPart())

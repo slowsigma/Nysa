@@ -43,6 +43,17 @@ internal class TSqlCollector : TSqlFragmentVisitor
         this._CanAlias =    !((node as StatementWithCtesAndXmlNamespaces) is null)
                          || (node is SetVariableStatement);
 
+        if (node is SelectStatement select && select.Into != null && !this._Included.Contains(select.Into.StartOffset))
+        {
+            var into = select.Into.ToObjectIdentifier(this._CanAlias, true);
+
+            if (this._CollectIdentifier(into))
+            {
+                this.Items.Add(into);
+                this._Included.Add(select.Into.StartOffset);
+            }
+        }
+
         base.Visit(node);
     }
 
