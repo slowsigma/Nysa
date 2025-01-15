@@ -609,12 +609,12 @@ public static partial class Language
         var hexDigit        = Take.Set("0123456789ABCDEF");
         //var newLine         = Find.Longest(realNewLine, Find.One(':')).Value.Then(VBScriptX.Grammar.Id("{new-line}"));
         var newLine         = realNewLine.Then(Language.Grammar.Id("{new-line}"));
-        var intLiteral      = digit.Then(Take.While(digit)).Then(Language.Grammar.Id("{intliteral}"));
-        var dateLiteral     = '#'.One().Then(dateChar.Then(Take.While(dateChar))).Then('#'.One()).Then(Language.Grammar.Id("{dateliteral}"));
-        var hexLiteral      = "&H".Sequence().Then(hexDigit.Then(Take.While(hexDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{hexliteral}"));
-        var octLiteral      = '&'.One().Then(octDigit.Then(Take.While(octDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{octliteral}"));
-        //var stringLiteral   = '"'.One().Then(Find.Until("\"\"".Sequence().Maybe().Then('"'.One()))).Then("\"\"\"".Sequence().Or('"'.One())).Then(Language.Grammar.Id("{stringliteral}"));
-        var stringLiteral   = '"'.One().Then(Take.While("\"\"".Sequence().Or(Take.Not('"'.One())))).Then('"'.One()).Then(Language.Grammar.Id("{stringliteral}"));
+        var intLiteral      = digit.Then(Take.While(digit)).Then(Language.Grammar.Id("{IntLiteral}"));
+        var dateLiteral     = '#'.One().Then(dateChar.Then(Take.While(dateChar))).Then('#'.One()).Then(Language.Grammar.Id("{DateLiteral}"));
+        var hexLiteral      = "&H".Sequence().Then(hexDigit.Then(Take.While(hexDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{HexLiteral}"));
+        var octLiteral      = '&'.One().Then(octDigit.Then(Take.While(octDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{OctLiteral}"));
+        //var stringLiteral   = '"'.One().Then(Find.Until("\"\"".Sequence().Maybe().Then('"'.One()))).Then("\"\"\"".Sequence().Or('"'.One())).Then(Language.Grammar.Id("{StringLiteral}"));
+        var stringLiteral   = '"'.One().Then(Take.While("\"\"".Sequence().Or(Take.Not('"'.One())))).Then('"'.One()).Then(Language.Grammar.Id("{StringLiteral}"));
 
         var digitOneToN     = digit.Then(Take.While(digit));
         var exponent        = 'E'.One().Then(Take.Maybe("+-".Set())).Then(digitOneToN);
@@ -622,15 +622,15 @@ public static partial class Language
         var floatFull       = digitOneToN.Then(floatPeriod);
         var floatExp        = digitOneToN.Then(exponent);
 
-        var floatLiteral    = Take.Longest(floatPeriod, floatFull, floatExp).Then(Language.Grammar.Id("{floatliteral}"));
+        var floatLiteral    = Take.Longest(floatPeriod, floatFull, floatExp).Then(Language.Grammar.Id("{FloatLiteral}"));
 
         var idBaseOne       = letter.Then(Take.While(idTail));
         var idBaseTwo       = '['.One().Then(Take.While(idNameChar)).Then(']'.One());
 
-        var id              = Take.Longest(idBaseOne, idBaseTwo).NotEqual(reserved).Then(Language.Grammar.Id("{id}"));
-        var idDot           = Take.Longest(idBaseOne, idBaseTwo).Then('.'.One()).Then(Language.Grammar.Id("{iddot}"));
-        var dotId           = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then(Language.Grammar.Id("{dotid}"));
-        var dotIdDot        = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then('.'.One()).Then(Language.Grammar.Id("{dotiddot}"));
+        var id              = Take.Longest(idBaseOne, idBaseTwo).NotEqual(reserved).Then(Language.Grammar.Id("{ID}"));
+        var idDot           = Take.Longest(idBaseOne, idBaseTwo).Then('.'.One()).Then(Language.Grammar.Id("{IDDot}"));
+        var dotId           = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then(Language.Grammar.Id("{DotID}"));
+        var dotIdDot        = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then('.'.One()).Then(Language.Grammar.Id("{DotIDDot}"));
 
         var commentOne      = '\''.One().Then(Take.Until(realNewLine)).Then(Identifier.Trivia);
         var commentTwo      = "REM".Sequence().Then(Take.Longest(realNewLine, space.Set().Then(Take.While(String.Concat(space, printable).Set())))).Then(Identifier.Trivia);
@@ -676,7 +676,7 @@ public static partial class Language
     public static Suspect<Node> Parse(String source)
     {
         var tokens  = Language.Lex(source);
-        var chart   =  Language.Grammar.CreateChart(Language.Lex(source));
+        var chart   = Language.Grammar.CreateChart(Language.Lex(source));
 
         if (!chart.IsIncomplete())
         {
