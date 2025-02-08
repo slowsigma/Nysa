@@ -14,7 +14,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
         public static (Token? Start, Token? End, Token? StartPlusOne, Token? EndMinusOne) TokenBounds(this CodeNode @this)
         {
-            var tokens = @this.Node.Match(n => n.OrderedTokens().ToArray(), () => new Token[] {});
+            var tokens = @this.Node.Match(n => n.OrderedTokens().ToArray(), () => @this.Token.Match(t => new Token[] { t }, () => new Token[] { }));
             var length = tokens.Length;
 
             return length > 0
