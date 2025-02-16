@@ -205,11 +205,12 @@ public static partial class Language
         // new
         builder.Rule("<InlineIfStmt>").Is("If", "<Expr>", "Then", "<InlineStmtList>", "<ElseOpt>", "<EndIfOpt>");
 
-        builder.Rule("<ElseStmtList>").Is("ElseIf", "<Expr>", "Then", "<NL>", "<BlockStmtList>", "<ElseStmtList>")
-                                      .Or("ElseIf", "<Expr>", "Then", "<InlineStmt>", "<NL>", "<ElseStmtList>")
-                                      .Or("Else", "<InlineStmt>", "<NL>")
-                                      .Or("Else", "<NL>", "<BlockStmtList>")
-                                      .OrOptional();
+        builder.Rule("<ElseStmtList>", NodePolicy.RollupSiblings)
+               .Is("ElseIf", "<Expr>", "Then", "<NL>", "<BlockStmtList>", "<ElseStmtList>")
+               .Or("ElseIf", "<Expr>", "Then", "<InlineStmt>", "<NL>", "<ElseStmtList>")
+               .Or("Else", "<InlineStmt>", "<NL>")
+               .Or("Else", "<NL>", "<BlockStmtList>")
+               .OrOptional();
 
         builder.Rule("<ElseOpt>").Is("Else", "<InlineStmtList>")
                                  .OrOptional();
@@ -221,9 +222,10 @@ public static partial class Language
 
         builder.Rule("<SelectStmt>").Is("Select", "Case", "<Expr>", "<NL>", "<CaseStmtList>", "End", "Select", "<NL>");
 
-        builder.Rule("<CaseStmtList>").Is("Case", "<ExprList>", "<NLOpt>", "<BlockStmtList>", "<CaseStmtList>")
-                                      .Or("Case", "Else", "<NLOpt>", "<BlockStmtList>")
-                                      .OrOptional();
+        builder.Rule("<CaseStmtList>", NodePolicy.RollupSiblings)
+               .Is("Case", "<ExprList>", "<NLOpt>", "<BlockStmtList>", "<CaseStmtList>")
+               .Or("Case", "Else", "<NLOpt>", "<BlockStmtList>")
+               .OrOptional();
 
         builder.Rule("<ExprList>").Is("<Expr>", ",", "<ExprList>")
                                   .Or("<Expr>");

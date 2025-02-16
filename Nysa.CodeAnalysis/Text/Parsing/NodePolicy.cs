@@ -32,23 +32,19 @@ public enum NodePolicy : Int32
     RemoveEmpty,                // remove parse node when empty
     /// <summary>
     /// Give the contents of a node of this type to its parent in place
-    /// of it maintaining all content position relative to siblings.
+    /// of it but maintain all content position relative to siblings.
     /// </summary>
     Collapse,                   // collapse content to parent
     /// <summary>
     /// For any node of this type with only one child node, give that
-    /// child node to the parent in place of it maintaining all content
+    /// child node to the parent in place of it but maintain content
     /// position relative to siblings.
     /// </summary>
     CollapseSingle,             // collapse content to parent when content is a single child
     /// <summary>
-    /// For any node of this type with a parent of the same type, give
-    /// the content to that parent in place of it maintaining all
-    /// content position relative to siblings. Note, it is possible
-    /// for the final tree to have a node with rollup policy as a
-    /// child of a node of the same type. This can happen if the child
-    /// node with the rollup policy was collapsed to the parent from a
-    /// different type of node with a collapse style policy.
+    /// For any node of this type with children of the same type, give
+    /// those children to this node's parent. The order of those children
+    /// moved up will be maintained as siblings that follow this node.
     /// </summary>
-    Rollup                      // collapse content to parent of the same type
+    RollupSiblings              // collapse children of the same type to the parent
 }

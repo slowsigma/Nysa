@@ -139,9 +139,9 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
         private static (IEnumerable<Constant> Items, Index Remainder) BuildConstants(TransformItem[] members, Index start)
         {
             var current = start;
-            var id      = (Identifier?)null;
-            var def     = Option<ConstantExpression>.None;
-            var items   = new List<Constant>();
+            var id = (Identifier?)null;
+            var def = Option<ConstantExpression>.None;
+            var items = new List<Constant>();
 
             while (current.Value < members.Length)
             {
@@ -174,6 +174,12 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
 
             return (items, current);
         }
+
+        // private static (IEnumerable<SelectCase> Items, Index Remainder) BuildCases(TransformItem[] members, Index start)
+        // {
+        //     var current = start;
+            
+        // }
 
 
         private enum PathTransitionActions : Int32
@@ -434,7 +440,7 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                : id.IsEqual(Id.Symbol.NEQ)    ? OperationTypes.NotEqual.Some()
                : id.IsEqual(Id.Symbol.Equals) ? OperationTypes.Equal.Some()
                : id.IsEqual(Id.Symbol.Is)     ? next.Match(cn => OperationTypes.Is, st => OperationTypes.IsNot).Some()
-               :                          Option<OperationTypes>.None;
+               :                                Option<OperationTypes>.None;
 
         private static readonly Transform CompareOpTransform
             = (c, i) => i.Length > 2

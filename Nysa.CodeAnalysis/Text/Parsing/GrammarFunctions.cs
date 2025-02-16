@@ -20,7 +20,6 @@ public static class GrammarFunctions
         if (startId == Identifier.None)
             throw new Exception($"Cannot find start symbol '{@this.StartSymbol}' in the grammar's definition.");
 
-
         var definitions = @this.Rules()
                                .ToDictionary(rk => rk.Symbol, 
                                              rv => SymbolDefinition.Create(symbolIndex, rv.Symbol, rv.NodePolicy, rv.Definitions),
@@ -31,6 +30,9 @@ public static class GrammarFunctions
                                                     ? definitions[kvp.Symbol]
                                                     : SymbolDefinition.CreateTerminal(kvp.Symbol))
                                      .ToDictionary(dk => symbolIndex.Id(dk.Name));
+
+        if (definitions[@this.StartSymbol].NodePolicy != NodePolicy.Default)
+            throw new Exception($"The start symbol '{@this.StartSymbol}' cannot have a node policy other than Default.");
 
         var known       = new HashSet<Identifier>(rules.Where(r => r.Value.IsTerminal).Select(t => t.Key));
         var nullable    = new HashSet<Identifier>(rules.Where(r => !r.Value.IsTerminal && r.Value.Variants.Any(v => v.IsEmpty)).Select(n => n.Key));

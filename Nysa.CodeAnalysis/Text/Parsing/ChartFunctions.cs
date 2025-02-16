@@ -213,34 +213,54 @@ public static class ChartFunctions
                                   errRules);
     }
 
-    private static IEnumerable<NodeOrToken> CollapsedMembers(this IEnumerable<NodeOrToken> members, Grammar grammar)
+    // Given a set of node members and the identifier that has the RollupSiblings policy,
+    // yield all the direct descendents having that same identifier.
+    private static IEnumerable<Node> RolledUpSiblings(this Node sibling)
+    {
+        yield return sibling;
+
+        foreach (var member in sibling.Members.Where(m => m.AsNode != null && m.AsNode.Id.Equals(sibling.Id)))
+            foreach (var descendent in member.AsNode.RolledUpSiblings())
+                yield return descendent;
+    }
+
+    private static IEnumerable<NodeOrToken> CollapsedMembers(this IEnumerable<NodeOrToken> members, NodePolicy parentPolicy, Grammar grammar)
     {
         foreach (var member in members)
         {
             if (member.AsNode != null)
             {
-                var policy = grammar.NodePolicy(member.AsNode.Id);
+                var node   = member.AsNode;
+                var policy = grammar.NodePolicy(node.Id);
 
                 if (policy == NodePolicy.Remove)
                     continue;
-                if (policy == NodePolicy.Collapse)
-                    foreach (var sub in member.AsNode.Members.CollapsedMembers(grammar))
+                else if (policy == NodePolicy.Collapse)
+                    foreach (var sub in member.AsNode.Members.CollapsedMembers(policy, grammar))
                         yield return sub;
                 else if (policy == NodePolicy.CollapseSingle && member.AsNode.Members.Count == 1)
-                    foreach (var sub in member.AsNode.Members.CollapsedMembers(grammar))
+                    foreach (var sub in member.AsNode.Members.CollapsedMembers(policy, grammar))
                         yield return sub;
                 else if (policy == NodePolicy.RemoveEmpty && member.AsNode.Members.Count == 0)
                     continue;
-                else
-                    yield return member.AsNode.Collapsed(grammar);
+                else if (policy == NodePolicy.RollupSiblings)
+                {
+                    if (parentPolicy == NodePolicy.RollupSiblings)
+                        continue; // don't return any of these under a parent with RollupSiblings
+
+                    foreach (var sibling in node.RolledUpSiblings())
+                        yield return sibling.Collapsed(grammar);
+                }
+                else // NodePolicy.Default
+                    yield return node.Collapsed(grammar);
             }
             else
-                yield return member; // terminals always have the Default policy (they may be removed as a result of a parent policy)
+                yield return member; // terminals always have the Default policy (they're only removed as a result of parent removal)
         }
     }
 
     private static Node Collapsed(this Node node, Grammar grammar)
-        => new Node(node.Id, node.Symbol, node.Members.CollapsedMembers(grammar));
+        => new Node(node.Id, node.Symbol, node.Members.CollapsedMembers(grammar.NodePolicy(node.Id), grammar));
 
     public static Option<Node> ToSyntaxTree(this InverseChart @this, Token[] tokens)
     {
