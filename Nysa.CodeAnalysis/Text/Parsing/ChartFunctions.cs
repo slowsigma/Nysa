@@ -82,6 +82,7 @@ public static class ChartFunctions
 
     public static ParseChart CreateChart(this Grammar grammar, Token[] input)
     {
+        // NOTE: The chart is always one position greater than the length of the input.
         var data = new List<ChartEntry>?[input.Length + 1];
 
         if (grammar.IsTerminal(grammar.StartId))
@@ -126,6 +127,70 @@ public static class ChartFunctions
         } // foreach position in input/chart
 
         return new ParseChart(grammar, data);
+    }
+
+    public static ParseChart CreateChart(this Grammar grammar, Token[] input, ICreateChartListener listener)
+    {
+        // NOTE: The chart is always one position greater than the length of the input.
+        var data = new List<ChartEntry>?[input.Length + 1];
+
+        var chart = new ParseChart(grammar, data);
+
+        if (grammar.IsTerminal(grammar.StartId))
+            return new ParseChart(grammar, data);
+
+        foreach (var rule in grammar.Rules(grammar.StartId))
+        {
+            data.AddRaw(0, new ChartEntry(rule, 0, 0));
+            listener.ChartChanged(0, chart);
+        }
+
+        for (Int32 p = 0; p < input.Length; p++)
+        {
+            for (Int32 e = 0; e < data[p]?.Count; e++)
+            {
+                var entry       = data[p][e];
+                var symbolId    = entry.NextRuleId;
+
+                if (symbolId.IsNone) // test for completion
+                {
+                    var entries = data[entry.Number] ?? _EmptyEntries;
+
+                    for (Int32 i = 0; i < entries.Count; i++)
+                    {
+                        if (!entries[i].NextRuleId.IsNone && entries[i].NextRuleId == entry.Rule.Id)
+                        {
+                            data.AddUnique(p, entries[i].AsNextEntry());
+                            listener.ChartChanged(p, chart);
+                        }
+                    }
+                }
+                else if (grammar.IsTerminal(symbolId)) // test for terminal
+                {
+                    if (input[p].Id.IsEqual(symbolId))
+                    {
+                        data.AddRaw(p + 1, entry.AsNextEntry());
+                        listener.ChartChanged(p + 1, chart);
+                    }
+                }
+                else // use rules to anticipate input and completion
+                {
+                    foreach (var rule in grammar.Rules(symbolId))
+                    {
+                        data.AddUnique(p, new ChartEntry(rule, p, 0));
+                        listener.ChartChanged(p, chart);
+
+                        if (grammar.NullableIds.Contains(symbolId))
+                        {
+                            data.AddUnique(p, entry.AsNextEntry());
+                            listener.ChartChanged(p, chart);
+                        }
+                    }
+                }
+            } // foreach entry in position
+        } // foreach position in input/chart
+
+        return chart;
     }
 
     public static InverseChart InverseChart(this ParseChart @this)
