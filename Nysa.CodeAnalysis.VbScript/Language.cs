@@ -11,7 +11,7 @@ using Nysa.Text.Parsing;
 
 namespace Nysa.CodeAnalysis.VbScript;
 
-public static partial class Language
+public static class Language
 {
     public static readonly String END_OF_INPUT = "{EOI}";
 
@@ -685,6 +685,29 @@ public static partial class Language
             var inverse = chart.InverseChart();
 
             if (   !inverse.IsIncomplete()
+                && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
+            {
+                return someTree.Value.Confirmed();
+            }
+        }
+
+        return chart.CreateError(source, tokens).Failed<Node>();
+    }
+
+    public static Suspect<Node> Parse(String source, IParseListener listener)
+    {
+        var tokens  = Language.Lex(source);
+        var chart   = Language.Grammar.CreateChart(Language.Lex(source), listener);
+        
+        listener.CreateChartEnded(Language.Grammar, chart);
+
+        if (!chart.IsIncomplete())
+        {
+            var inverse = chart.InverseChart();
+
+            listener.ChartInverted(Language.Grammar, inverse);
+            
+            if (!inverse.IsIncomplete()
                 && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
                 return someTree.Value.Confirmed();
