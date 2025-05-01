@@ -9,7 +9,7 @@ namespace Nysa.ComponentModel
 
     public abstract class ModelObject : INotifyPropertyChanged, IModelObject
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Provides a method to assist in updating the fields backing the public properties of
@@ -136,7 +136,7 @@ namespace Nysa.ComponentModel
         /// <param name="affectedPropertyNames"></param>
         protected void NotifyChanged(IEnumerable<INotifyPropertyChanged> constituents, params String[] affectedPropertyNames)
         {
-            Action<Object, PropertyChangedEventArgs> handler =
+            Action<Object?, PropertyChangedEventArgs> handler =
                 (sender, e) =>
                 {
                     if (this.PropertyChanged != null) affectedPropertyNames.Affect(p => this.PropertyChanged(this, new PropertyChangedEventArgs(p)));

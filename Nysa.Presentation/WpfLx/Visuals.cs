@@ -133,9 +133,11 @@ namespace Nysa.WpfLx
         public static PasswordBox PasswordBox(this String? content, Action<String>? onChange = null)
             => (new PasswordBox()).Affected(b =>
             {
-                b.Password = content;
+                b.Password = content ?? String.Empty;
+
                 if (onChange != null)
                     b.PasswordChanged += (s, e) => { onChange(b.Password); };
+                    
             }).Styled(ViewResources.Items["PasswordBox"]);
 
         public static TextBlock TextBlock(this String content, Boolean wrapText)
@@ -223,7 +225,11 @@ namespace Nysa.WpfLx
 
         public static T WithChildren<T>(this T @this, params UIElement[]? children)
             where T : Panel
-            => @this.Affected(p => children.Affect(c => { p.Children.Add(c); }));
+            => @this.Affected(p =>
+            {
+                if (children != null)
+                    children.Affect(c => { p.Children.Add(c); });
+            });
 
         private static Style IconButtonStyle(String iconName)
             => typeof(Button).StyleTarget()

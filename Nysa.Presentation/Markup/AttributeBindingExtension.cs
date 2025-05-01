@@ -15,9 +15,9 @@ namespace Nysa.Windows.Markup
         public AttributeBindingExtension(String path) { this.Path = path; }
 
         [ConstructorArgument(@"path")]
-        public String           Path            { get; set; }
-        public Object           Source          { get; set; }
-        public RelativeSource   RelativeSource  { get; set; }
+        public String?          Path            { get; set; }
+        public Object?          Source          { get; set; }
+        public RelativeSource?  RelativeSource  { get; set; }
 
         private String GetAttributePropertyName()
         {
@@ -51,7 +51,7 @@ namespace Nysa.Windows.Markup
         object IValueConverter.Convert(Object value, Type targetType, Object parameter, CultureInfo culture)
         {
             String[] path = this.Path.Split('.');
-            PropertyInfo property = null;
+            PropertyInfo? property = null;
 
             // resolve path down to the next to last value as the last value will actually be the name of an attribute of the next to last property
             for (Int32 i = 0; i < (path.Length - 1); i++)
@@ -62,11 +62,11 @@ namespace Nysa.Windows.Markup
                 value = property.GetValue(value, null);
             }
 
-            Object attribute = property.GetCustomAttributes(false).FirstOrDefault(n => (n.GetType().Name.StartsWith(path[path.Length - 1], StringComparison.InvariantCultureIgnoreCase)));
+            Object? attribute = property.GetCustomAttributes(false).FirstOrDefault(n => (n.GetType().Name.StartsWith(path[path.Length - 1], StringComparison.InvariantCultureIgnoreCase)));
 
             if (attribute == null) return Binding.DoNothing;
 
-            PropertyInfo attributeProperty = attribute.GetType().GetProperty(this.GetAttributePropertyName());
+            PropertyInfo? attributeProperty = attribute.GetType().GetProperty(this.GetAttributePropertyName());
 
             if (attributeProperty == null) return Binding.DoNothing;
 
