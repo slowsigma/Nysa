@@ -3,7 +3,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
-    <Version>1.1.1</Version>
+    <Version>1.1.0</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <PackageId>Nysa.Presentation</PackageId>
