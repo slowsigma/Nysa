@@ -139,10 +139,13 @@ public static class ChartFunctions
         if (grammar.IsTerminal(grammar.StartId))
             return new ParseChart(grammar, data);
 
+        var entryIndex = 0;
+
         foreach (var rule in grammar.Rules(grammar.StartId))
         {
             data.AddRaw(0, new ChartEntry(rule, 0, 0));
-            listener.ChartChanged(0, chart);
+            listener.ChartChanged(0, entryIndex, chart, 0);
+            entryIndex++;
         }
 
         for (Int32 p = 0; p < input.Length; p++)
@@ -161,7 +164,7 @@ public static class ChartFunctions
                         if (!entries[i].NextRuleId.IsNone && entries[i].NextRuleId == entry.Rule.Id)
                         {
                             data.AddUnique(p, entries[i].AsNextEntry());
-                            listener.ChartChanged(p, chart);
+                            listener.ChartChanged(p, e, chart, p);
                         }
                     }
                 }
@@ -170,7 +173,7 @@ public static class ChartFunctions
                     if (input[p].Id.IsEqual(symbolId))
                     {
                         data.AddRaw(p + 1, entry.AsNextEntry());
-                        listener.ChartChanged(p + 1, chart);
+                        listener.ChartChanged(p, e, chart, p + 1);
                     }
                 }
                 else // use rules to anticipate input and completion
@@ -178,12 +181,12 @@ public static class ChartFunctions
                     foreach (var rule in grammar.Rules(symbolId))
                     {
                         data.AddUnique(p, new ChartEntry(rule, p, 0));
-                        listener.ChartChanged(p, chart);
+                        listener.ChartChanged(p, e, chart, p);
 
                         if (grammar.NullableIds.Contains(symbolId))
                         {
                             data.AddUnique(p, entry.AsNextEntry());
-                            listener.ChartChanged(p, chart);
+                            listener.ChartChanged(p, e, chart, p);
                         }
                     }
                 }
