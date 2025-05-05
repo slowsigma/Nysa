@@ -6,8 +6,6 @@ namespace Nysa.CodeAnalysis.VbScript;
 
 public interface IParseListener : ICreateChartListener
 {
-    // void ICreateChartListener.ChartChanged(int changeIndex, ParseChart chart);
-
     void CreateChartEnded(Grammar grammar, ParseChart chart);
     void ChartInverted(Grammar grammar, InverseChart chart);
 }
