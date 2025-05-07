@@ -14,8 +14,10 @@ public static class ChartFunctions
 {
     private static IReadOnlyList<ChartEntry> _EmptyEntries = new List<ChartEntry>();
 
-    private static void AddUnique(this List<ChartEntry>?[] chart, Int32 index, ChartEntry entry)
+    private static Boolean AddUnique(this List<ChartEntry>?[] chart, Int32 index, ChartEntry entry)
     {
+        var added = false;
+
         if (chart[index] == null)
         {
             chart[index] = new List<ChartEntry>();
@@ -23,14 +25,20 @@ public static class ChartFunctions
             #pragma warning disable CS8602
             chart[index].Add(entry);
             #pragma warning restore CS8602
+
+            added = true;
         }
         // primary if above protects against null at chart[index]
         #pragma warning disable CS8602
         else if (chart[index].IndexOf(entry) < 0)
         {
             chart[index].Add(entry);
+
+            added = true;
         }
         #pragma warning restore CS8602
+
+        return added;
     }
 
     private static void AddRaw(this List<ChartEntry>?[] chart, Int32 index, ChartEntry entry)
@@ -163,8 +171,8 @@ public static class ChartFunctions
                     {
                         if (!entries[i].NextRuleId.IsNone && entries[i].NextRuleId == entry.Rule.Id)
                         {
-                            data.AddUnique(p, entries[i].AsNextEntry());
-                            listener.ChartChanged(p, e, chart, p);
+                            if (data.AddUnique(p, entries[i].AsNextEntry()))
+                                listener.ChartChanged(p, e, chart, p);
                         }
                     }
                 }
@@ -180,13 +188,13 @@ public static class ChartFunctions
                 {
                     foreach (var rule in grammar.Rules(symbolId))
                     {
-                        data.AddUnique(p, new ChartEntry(rule, p, 0));
-                        listener.ChartChanged(p, e, chart, p);
+                        if (data.AddUnique(p, new ChartEntry(rule, p, 0)))
+                            listener.ChartChanged(p, e, chart, p);
 
                         if (grammar.NullableIds.Contains(symbolId))
                         {
-                            data.AddUnique(p, entry.AsNextEntry());
-                            listener.ChartChanged(p, e, chart, p);
+                            if (data.AddUnique(p, entry.AsNextEntry()))
+                                listener.ChartChanged(p, e, chart, p);
                         }
                     }
                 }
