@@ -37,7 +37,7 @@ public struct ChartEntry : IEquatable<ChartEntry>
     public bool Equals(ChartEntry other) => (this.Rule == other.Rule) && (this.Number == other.Number) && (this.Next == other.Next);
     public override int GetHashCode() => this.Rule.HashWithOther(this.Number, this.Next);
 
-    private IEnumerable<String> RuleState()
+    public IEnumerable<String> RuleState()
     {
         Int32 dot = this.Next;
         foreach (var symbol in this.Rule.DefinitionSymbols())
@@ -53,7 +53,8 @@ public struct ChartEntry : IEquatable<ChartEntry>
     public override string ToString()
     {
         var state = string.Join(" ", RuleState().ToArray());
-        return $"{this.Rule.Symbol} [{this.Number}:{this.Next}] ::= {state}";
+
+        return $"{this.Rule.Symbol} [{this.Number}] ::= {state}";
     }
 
 }
