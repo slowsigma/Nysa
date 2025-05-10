@@ -16,42 +16,46 @@ public static class ChartFunctions
 
     private static Boolean AddUnique(this List<ChartEntry>?[] chart, Int32 index, ChartEntry entry)
     {
-        var added = false;
+        var added    = false;
+        var position = chart[index];
 
-        if (chart[index] == null)
+        if (position == null)
         {
-            chart[index] = new List<ChartEntry>();
-            // line above protects against null at chart[index]
-            #pragma warning disable CS8602
-            chart[index].Add(entry);
-            #pragma warning restore CS8602
+            position     = new List<ChartEntry>();
+            chart[index] = position;
+
+            position.Add(entry);
 
             added = true;
         }
-        // primary if above protects against null at chart[index]
-        #pragma warning disable CS8602
-        else if (chart[index].IndexOf(entry) < 0)
+        else if (position.IndexOf(entry) < 0)
         {
-            chart[index].Add(entry);
+            position.Add(entry);
 
             added = true;
         }
-        #pragma warning restore CS8602
 
         return added;
     }
 
     private static void AddRaw(this List<ChartEntry>?[] chart, Int32 index, ChartEntry entry)
     {
-        if (chart[index] == null)
-            chart[index] = new List<ChartEntry>();
+        var position = chart[index] ?? new List<ChartEntry>();
 
-        // if above protects against null at chart[index]
-        #pragma warning disable CS8602
-        chart[index].Add(entry);
-        #pragma warning restore CS8602
+        position.Add(entry);
+
+        if (chart[index] == null)
+            chart[index] = position;
     }
 
+    /// <summary>
+    /// Returns either a read only list of chart entries for the given chart and position or
+    /// an empty list if the position is empty or the index is outside the valid range of the
+    /// chart.
+    /// </summary>
+    /// <param name="this"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public static IReadOnlyList<ChartEntry> Entries(this BasicChart @this, Int32 index)
         => index >= 0 && index <= @this.Data.Count
            ? @this.Data[index] ?? _EmptyEntries

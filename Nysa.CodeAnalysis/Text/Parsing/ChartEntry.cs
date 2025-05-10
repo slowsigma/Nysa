@@ -48,6 +48,9 @@ public struct ChartEntry : IEquatable<ChartEntry>
             if (!String.IsNullOrEmpty(symbol))
                 yield return symbol;
         }
+
+        if (dot == 0)
+            yield return "¤";
     }
 
     public override string ToString()

@@ -306,13 +306,11 @@ internal static class Build
 
     public static Option<Node> Create(InverseChart chart, Token[] input)
     {
-        var id = chart.Grammar.StartId;
-        var symbol = chart.Grammar.StartSymbol;
-        var result = Option<Node>.None;
+        var startId = chart.Grammar.StartId;
 
         if (chart.Data.Count > 0)
         {
-            foreach (var entry in chart.Entries(0).Where(e => e.Rule.Id == id))
+            foreach (var entry in chart.Entries(0).Where(e => e.Rule.Id == startId))
             {
                 if (entry.Rule.IsEmpty && entry.Number == 0)
                     continue;
@@ -321,13 +319,10 @@ internal static class Build
 
                 if (check is Some<AcrossItem> someAcross)
                     return someAcross.Value.AsNode().Some();
-
-                if (result is Some<Node>)
-                    break;
             }
         }
 
-        return result;
+        return Option<Node>.None;
     }
 
 }
