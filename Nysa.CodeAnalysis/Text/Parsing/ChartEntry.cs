@@ -51,6 +51,9 @@ public struct ChartEntry : IEquatable<ChartEntry>
     }
 
     public override string ToString()
-        => String.Concat(this.Rule.Symbol, " [", this.Number, "] ::= ", String.Join(" ", this.RuleState().ToArray()));
+    {
+        var state = string.Join(" ", RuleState().ToArray());
+        return $"{this.Rule.Symbol} [{this.Number}:{this.Next}] ::= {state}";
+    }
 
 }
