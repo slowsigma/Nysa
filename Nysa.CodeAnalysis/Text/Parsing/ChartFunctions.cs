@@ -254,9 +254,8 @@ public static class ChartFunctions
         var position = 0;
         var lineIdx  = 0;
         var startIdx = 0;
-        var endIdx   = @this.Span.Position + @this.Span.Length;
 
-        while (position <= @this.Span.Position)
+        while (position < @this.Span.Position && position < source.Length)
         {
             var newLineNext = source[position] == '\n';
 
@@ -269,7 +268,9 @@ public static class ChartFunctions
             } 
         }
 
-        return (lineIdx + 1, startIdx, (position - startIdx) + @this.Span.Length);
+        var isNewLine = @this.Span.ToString().Make(s => s.DataEquals("\r\n") || s.DataEquals("\r") || s.DataEquals("\n"));
+
+        return (lineIdx + 1, startIdx, isNewLine ? (position - startIdx) : (position - startIdx) + @this.Span.Length);
     }
 
     private static String ErrorMessage(this ParseChart @this, Token[] tokens, Int32 errorIndex)
