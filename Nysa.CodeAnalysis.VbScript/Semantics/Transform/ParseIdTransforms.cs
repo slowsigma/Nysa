@@ -309,7 +309,10 @@ namespace Nysa.CodeAnalysis.VbScript.Semantics
                     else if (item is SemanticItem checkStart && checkStart.Value is SubroutineArgumentStart start)
                     {
                         if (start.Argument is Some<Expression> some)
+                        {
+                            celToken = some.Value.Node.Bind(n => n.OrderedTokens().FirstOrNone()).Or(celToken);
                             args.Add(some.Value);
+                        }
 
                         state = Id.Rule.CommaExprList;
                     }

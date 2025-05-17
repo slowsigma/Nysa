@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net7.0;net8.0;net9.0</TargetFrameworks>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Authors>Philip Fucich</Authors>
     <Company>slowsigma</Company>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,9 +14,15 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
-    <PackageReference Include="Nysa.CodeAnalysis" Version="1.1.1" />
+    <PackageReference Include="Nysa.CodeAnalysis" Version="1.1.6" />
     <PackageReference Include="Nysa.Logics" Version="1.0.8" />
     <PackageReference Include="Nysa.Text" Version="1.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
+    -->
   </ItemGroup>
 
   <ItemGroup>
