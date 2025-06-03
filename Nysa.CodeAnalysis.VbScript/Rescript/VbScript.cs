@@ -180,7 +180,6 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
             }
 
             appendLine(String.Concat("End", " ", "Class"));
-            appendLine(String.Empty);
 
             return Unit.Value;
         }
@@ -341,7 +340,6 @@ namespace Nysa.CodeAnalysis.VbScript.Rescript
                 stmt.ToVbScript(indented);
 
             appendLine(String.Concat("End", " ", methodTypeName));
-            appendLine(String.Empty);
 
             return Unit.Value;
         }
