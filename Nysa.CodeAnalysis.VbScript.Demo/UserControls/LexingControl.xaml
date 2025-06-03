@@ -1,0 +1,64 @@
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.LexingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d">
+
+   <UserControl.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="../Presentation/CodeAnalysisStyles.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+   </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Visible">
+            <TextBox
+                AcceptsReturn="true"
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Auto"
+                Text="{Binding Path=Source, UpdateSourceTrigger=PropertyChanged}"
+                FontSize="16"
+                FontFamily="Courier New" />
+        </ScrollViewer>
+
+        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True"/>
+
+        <ListView
+            Grid.Column="2"
+            ItemsSource="{Binding Path=Items}"
+            SelectionMode="Single"
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
+            VirtualizingStackPanel.IsVirtualizing="True"
+            ScrollViewer.IsDeferredScrollingEnabled="True">
+
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView AllowsColumnReorder="false" ColumnHeaderToolTip="Token Data">
+                    <GridViewColumn Header="Text" Width="130">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Text}" FontFamily="Courier New"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Id}" Header="Id"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Position}" Header="Position"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Length}" Header="Length"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

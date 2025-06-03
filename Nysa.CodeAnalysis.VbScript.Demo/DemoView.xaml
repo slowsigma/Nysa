@@ -1,0 +1,51 @@
+<local:NormalWindow x:Class="Nysa.CodeAnalysis.VbScript.Demo.DemoView"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:local="clr-namespace:Nysa.CodeAnalysis.VbScript.Demo"
+                    mc:Ignorable="d"
+                    Title="A Transpiler Story"
+                    Height="1000"
+                    Width="1600"
+                    Style="{DynamicResource NormalWindowStyle}"
+                    WindowStartupLocation="CenterScreen">
+
+   <Window.Resources>
+      <ResourceDictionary>
+         <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Presentation/CodeAnalysisStyles.xaml"/>
+         </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+   </Window.Resources>
+
+   <DockPanel Style="{StaticResource WindowContentBlock}">
+      <DockPanel Style="{StaticResource WindowContentAreaBlock}" LastChildFill="True">
+         <Grid DockPanel.Dock="Top">
+            <Label Visibility="{Binding Path=PageTitleVisibility}" Content="{Binding Path=PageTitle, Mode=OneWay}" FontSize="14"/>
+         </Grid>
+         <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="*"/>
+               <ColumnDefinition Width="Auto"/>
+               <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1" Content="&lt;&lt;" Command="{Binding PrevCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=PreviousEnabled}" />
+            <Button Grid.Column="2" Content="&gt;&gt;" Command="{Binding NextCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=NextEnabled}" />
+         </Grid>
+
+         <Grid>
+            <Image Stretch="Uniform" Source="{Binding Path=Image}" Visibility="{Binding Path=ImageVisibility}"/>
+
+            <ContentControl Grid.Column="0" Content="{Binding Path=Control}" Visibility="{Binding Path=ControlVisibility}" HorizontalAlignment="Stretch"/>
+
+            <ScrollViewer Visibility="{Binding Path=TextVisibility}" VerticalScrollBarVisibility="Visible">
+               <StackPanel Name="_StackPanel">
+               </StackPanel>
+            </ScrollViewer>
+         </Grid>
+
+      </DockPanel>
+   </DockPanel>
+</local:NormalWindow>

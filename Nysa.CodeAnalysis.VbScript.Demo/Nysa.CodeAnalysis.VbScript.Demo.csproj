@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.12.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+
+    <!--
+    <PackageReference Include="Nysa.CodeAnalysis" Version="1.1.5" />
+    <PackageReference Include="Nysa.CodeAnalysis.VbScript" Version="1.2.0" />
+    -->
+    <PackageReference Include="Nysa.Logics" Version="1.0.8" />
+    <PackageReference Include="Nysa.Presentation" Version="1.0.3" />
+    <PackageReference Include="Nysa.Text" Version="1.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="OtherCode\**\*.*" CopyToOutputDirectory="Always" />
+    <None Update="VbScripts\**\*.*" CopyToOutputDirectory="Always" />
+    <None Update="Backgrounds\**\*.*" CopyToOutputDirectory="Always" />
+    <None Update="Grammar\**\*.*" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nysa.CodeAnalysis.VbScript\Nysa.CodeAnalysis.VbScript.csproj" />
+    <ProjectReference Include="..\Nysa.CodeAnalysis\Nysa.CodeAnalysis.csproj" />
+    <!--
+    -->
+  </ItemGroup>
+
+</Project>

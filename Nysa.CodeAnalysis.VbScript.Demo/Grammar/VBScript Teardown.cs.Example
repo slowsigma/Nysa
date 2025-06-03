@@ -1,0 +1,569 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Dorata.Collections;
+using Dorata.Logics;
+using Dorata.Text;
+using Dorata.Text.Lexing;
+using Dorata.Text.Parsing;
+
+namespace Dorata.Text.Parsing
+{
+
+    public static class VBScript
+    {
+        public static Grammar.Symbol EndOfInput { get; private set; }
+
+        public static readonly Grammar Grammar;
+        public static readonly Take.SeekNode Seek;
+
+        static VBScript()
+        {
+            var factory         = new Grammar.Factory("<Program>");
+            var define          = factory.Define;
+            var self            = factory.SelfSymbol;
+            var repeat          = factory.Repeat;
+            var either          = factory.Either;
+            var rollup          = NodeRetentionType.Rollup;                 // -u
+            var remove          = NodeRetentionType.Remove;                 // -x
+            var removeEmpty     = NodeRetentionType.RemoveEmpty;            // -e
+            var collapse        = NodeRetentionType.Collapse;               // -c
+            var collapseSingle  = NodeRetentionType.CollapseSingle;         // -s
+
+            VBScript.EndOfInput = factory.EndSymbol;
+
+            define("<Program>").Is("<NLOpt>", "<GlobalStmtList>", VBScript.EndOfInput);
+
+            define("<InlineNL>").Is(":", "<InlineNL>")
+                                .Or(":");
+
+            define("<NL>", remove).Is("{new-line}", "<NL>")
+                                  .Or("{new-line}")
+                                  .Or("<InlineNL>", "<NL>")
+                                  .Or("<InlineNL>");
+
+            define("<NLOpt>", remove).Is("<NL>")
+                                     .OrOptional();
+
+            define("<GlobalStmtList>", collapse).Is("<GlobalStmt>", "<GlobalStmtList>")
+                                                .OrOptional();
+
+            define("<GlobalStmt>", collapse).Is("<OptionExplicit>")
+                                            .Or("<ClassDecl>")
+                                            .Or("<FieldDecl>")
+                                            .Or("<ConstDecl>")
+                                            .Or("<SubDecl>")
+                                            .Or("<FunctionDecl>")
+                                            .Or("<BlockStmt>");
+
+            define("<OptionExplicit>").Is("Option", "Explicit", "<NL>");
+
+            define("<ClassDecl>").Is("Class", "<ExtendedID>", "<NL>", "<MemberDeclList>", "End", "Class", "<NL>");
+
+            
+
+            
+
+            define("<SubDecl>").Is("<MethodAccessOpt>", "Sub", "<ExtendedID>", "<MethodArgList>", "<NL>", "<MethodStmtList>", "End", "Sub", "<NL>")
+                               .Or("<MethodAccessOpt>", "Sub", "<ExtendedID>", "<MethodArgList>", "<InlineStmt>", "End", "Sub", "<NL>");
+
+            define("<FunctionDecl>").Is("<MethodAccessOpt>", "Function", "<ExtendedID>", "<MethodArgList>", "<NL>", "<MethodStmtList>", "End", "Function", "<NL>")
+                                    .Or("<MethodAccessOpt>", "Function", "<ExtendedID>", "<MethodArgList>", "<InlineStmt>", "End", "Function", "<NL>");
+
+            define("<BlockStmt>", collapse).Is("<VarDecl>")
+                                           .Or("<RedimStmt>")
+                                           .Or("<IfStmt>")
+                                           .Or("<WithStmt>")
+                                           .Or("<SelectStmt>")
+                                           .Or("<LoopStmt>")
+                                           .Or("<ForStmt>")
+                                           .Or("<BlockConstDecl>")                          // new
+                                           .Or("<InlineStmt>", "<NL>");
+
+            define("<ExtendedID>").Is("<SafeKeywordID>")
+                                  .Or("{ID}");
+
+            define("<MemberDeclList>", collapse).Is("<MemberDecl>", "<MemberDeclList>")
+                                                .OrOptional();
+
+
+            
+
+            define("<AccessModifierOpt>").Is("Public")
+                                         .Or("Private")
+                                         .OrOptional();
+
+            
+
+            define("<MethodAccessOpt>").Is("Public", "Default")
+                                       .Or("<AccessModifierOpt>");
+
+            define("<MethodArgList>").Is("(", "<ArgList>", ")")
+                                     .Or("(", ")")
+                                     .OrOptional();
+
+            define("<MethodStmtList>", collapse).Is("<MethodStmt>", "<MethodStmtList>")
+                                                .OrOptional();
+
+            define("<InlineStmtList>", collapse).Is("<InlineStmt>", "<InlineNL>", "<InlineStmtList>")
+                                                .Or("<InlineStmt>", "<InlineNL>")
+                                                .Or("<InlineStmt>");
+
+            define("<InlineStmt>").Is("<AssignStmt>")
+                                  .Or("<CallStmt>")
+                                  .Or("<SubCallStmt>")
+                                  .Or("<ErrorStmt>")
+                                  .Or("<ExitStmt>")
+                                  .Or("<InlineIfStmt>")
+                                  .Or("Erase", "<ExtendedID>");
+
+            define("<SafeKeywordID>").Is("Default")
+                                     .Or("Erase")
+                                     .Or("Error")
+                                     .Or("Explicit")
+                                     .Or("Property")
+                                     .Or("Step");
+
+            define("<MemberDecl>", collapse).Is("<FieldDecl>")
+                                            .Or("<VarDecl>")
+                                            .Or("<ConstDecl>")
+                                            .Or("<SubDecl>")
+                                            .Or("<FunctionDecl>")
+                                            .Or("<PropertyDecl>");
+
+
+            
+
+
+            define("<ArgList>", collapse).Is("<Arg>", ",", "<ArgList>")
+                                         .Or("<Arg>");
+
+            //define("<MethodStmt>").Is("<ConstDecl>")
+            //                      .Or("<BlockStmt>");
+            define("<MethodStmt>", collapse).Is("<BlockStmt>");                     // new
+
+            define("<AssignStmt>").Is("<LeftExpr>", "=", "<Expr>")
+                                  .Or("Set", "<LeftExpr>", "=", "<Expr>");
+            //.Or("Set", "<LeftExpr>", "=", "New", "<LeftExpr>"); // object instatiation now in <Expr>
+
+            define("<CallStmt>").Is("Call", "<LeftExpr>");
+
+            define("<SubCallStmt>").Is("<QualifiedID>", "<SubSafeExprOpt>", "<CommaExprList>")
+                                   .Or("<QualifiedID>", "<SubSafeExprOpt>")
+                                   .Or("<QualifiedID>", "(", "<Expr>", ")", "<CommaExprList>")
+                                   .Or("<QualifiedID>", "(", "<Expr>", ")")
+                                   .Or("<QualifiedID>", "(", ")")
+                                   .Or("<QualifiedID>", "<IndexOrParamsList>", ".", "<LeftExprTail>", "<SubSafeExprOpt>", "<CommaExprList>")
+                                   .Or("<QualifiedID>", "<IndexOrParamsListDot>", "<LeftExprTail>", "<SubSafeExprOpt>", "<CommaExprList>")
+                                   .Or("<QualifiedID>", "<IndexOrParamsList>", ".", "<LeftExprTail>", "<SubSafeExprOpt>")
+                                   .Or("<QualifiedID>", "<IndexOrParamsListDot>", "<LeftExprTail>", "<SubSafeExprOpt>");
+
+            define("<ErrorStmt>").Is("On", "Error", "Resume", "Next")
+                                 .Or("On", "Error", "GoTo", "{IntLiteral}");
+
+            define("<ExitStmt>").Is("Exit", "Do")
+                                .Or("Exit", "For")
+                                .Or("Exit", "Function")
+                                .Or("Exit", "Property")
+                                .Or("Exit", "Sub");
+
+            
+
+            define("<RedimStmt>").Is("Redim", "<RedimDeclList>", "<NL>")
+                                 .Or("Redim", "Preserve", "<RedimDeclList>", "<NL>");
+
+            define("<RedimDeclList>").Is("<RedimDecl>", ",", "<RedimDeclList>")
+                                     .Or("<RedimDecl>");
+
+            define("<RedimDecl>").Is("<ExtendedID>", "(", "<ExprList>", ")");
+
+            define("<IfStmt>").Is("If", "<Expr>", "Then", "<NL>", "<BlockStmtList>", "<ElseStmtList>", "End", "If", "<NL>");
+            //                .Or("If", "<Expr>", "Then", "<InlineStmt>", "<ElseOpt>", "<EndIfOpt>", "<NL>");
+
+            // new
+            define("<InlineIfStmt>").Is("If", "<Expr>", "Then", "<InlineStmtList>", "<ElseOpt>", "<EndIfOpt>");
+
+            define("<ElseStmtList>").Is("ElseIf", "<Expr>", "Then", "<NL>", "<BlockStmtList>", "<ElseStmtList>")
+                                    .Or("ElseIf", "<Expr>", "Then", "<InlineStmt>", "<NL>", "<ElseStmtList>")
+                                    .Or("Else", "<InlineStmt>", "<NL>")
+                                    .Or("Else", "<NL>", "<BlockStmtList>")
+                                    .OrOptional();
+
+            define("<ElseOpt>").Is("Else", "<InlineStmtList>")
+                               .OrOptional();
+
+            define("<EndIfOpt>").Is("End", "If")
+                                .OrOptional();
+
+            
+
+            define("<SelectStmt>").Is("Select", "Case", "<Expr>", "<NL>", "<CaseStmtList>", "End", "Select", "<NL>");
+
+            define("<CaseStmt>").Is("Case", "<ExprList>", "<NLOpt>", "<BlockStmtList>");
+
+            define("<CaseElseStmt>").Is("Case", "Else", "<NLOpt>", "<BlockStmtList>");
+
+            define("<CaseStmtList>", collapse).Is("<CaseStmt>", "<CaseStmtList>")
+                                              .Or("<CaseElseStmt>")
+                                              .OrOptional();
+
+            define("<ExprList>").Is("<Expr>", ",", "<ExprList>")
+                                .Or("<Expr>");
+
+            define("<LoopStmt>").Is("Do", "<LoopType>", "<Expr>", "<NL>", "<BlockStmtList>", "Loop", "<NL>")
+                                .Or("Do", "<NL>", "<BlockStmtList>", "Loop", "<LoopType>", "<Expr>", "<NL>")
+                                .Or("Do", "<NL>", "<BlockStmtList>", "Loop", "<NL>")
+                                .Or("While", "<Expr>", "<NL>", "<BlockStmtList>", "WEnd", "<NL>");
+
+            
+
+            define("<BlockStmtList>", collapse).Is("<BlockStmt>", "<BlockStmtList>")
+                                               .OrOptional();
+
+            define("<StepOpt>").Is("Step", "<Expr>")
+                               .OrOptional();
+
+            define("<PropertyDecl>").Is("<MethodAccessOpt>", "Property", "<PropertyAccessType>", "<ExtendedID>", "<MethodArgList>", "<NL>", "<MethodStmtList>", "End", "Property", "<NL>");
+           
+
+            define("<Arg>", collapse).Is("<ArgModifierOpt>", "<ExtendedID>", "(", ")")
+                                     .Or("<ArgModifierOpt>", "<ExtendedID>");
+
+            define("<NewObjectExpr>").Is("New", "<LeftExpr>");
+
+            define("<LeftExpr>").Is("<QualifiedID>", "<IndexOrParamsList>", ".", "<LeftExprTail>")
+                                .Or("<QualifiedID>", "<IndexOrParamsListDot>", "<LeftExprTail>")
+                                .Or("<QualifiedID>", "<IndexOrParamsList>")
+                                .Or("<QualifiedID>")
+                                .Or("<NewObjectExpr>")
+                                .Or("<SafeKeywordID>");
+
+            define("<Expr>").Is("<ImpExpr>");
+
+            define("<ImpExpr>", collapseSingle).Is("<ImpExpr>", "Imp", "<EqvExpr>")
+                                               .Or("<EqvExpr>");
+
+            define("<EqvExpr>", collapseSingle).Is("<EqvExpr>", "Eqv", "<XorExpr>")
+                                               .Or("<XorExpr>");
+
+            define("<XorExpr>", collapseSingle).Is("<XorExpr>", "Xor", "<OrExpr>")
+                                               .Or("<OrExpr>");
+
+            define("<OrExpr>", collapseSingle).Is("<OrExpr>", "Or", "<AndExpr>")
+                                              .Or("<AndExpr>");
+
+            define("<AndExpr>", collapseSingle).Is("<AndExpr>", "And", "<NotExpr>")
+                                               .Or("<NotExpr>");
+
+            define("<NotExpr>", collapseSingle).Is("Not", "<NotExpr>")
+                                               .Or("<CompareExpr>");
+
+            define("<CompareExpr>", collapseSingle).Is("<CompareExpr>", "Is", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "Is", "Not", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", ">=", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "=>", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "<=", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "=<", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", ">", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "<", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "<>", "<ConcatExpr>")
+                                                   .Or("<CompareExpr>", "=", "<ConcatExpr>")
+                                                   .Or("<ConcatExpr>");
+
+            define("<ConcatExpr>", collapseSingle).Is("<ConcatExpr>", "&", "<AddExpr>")
+                                                  .Or("<AddExpr>");
+
+            define("<AddExpr>", collapseSingle).Is("<AddExpr>", "+", "<ModExpr>")
+                                               .Or("<AddExpr>", "-", "<ModExpr>")
+                                               .Or("<ModExpr>");
+
+            define("<ModExpr>", collapseSingle).Is("<ModExpr>", "Mod", "<IntDivExpr>")
+                                               .Or("<IntDivExpr>");
+
+            define("<IntDivExpr>", collapseSingle).Is("<IntDivExpr>", @"\", "<MultExpr>")
+                                                  .Or("<MultExpr>");
+
+            define("<MultExpr>", collapseSingle).Is("<MultExpr>", "*", "<UnaryExpr>")
+                                                .Or("<MultExpr>", "/", "<UnaryExpr>")
+                                                .Or("<UnaryExpr>");
+
+            define("<UnaryExpr>", collapseSingle).Is("-", "<UnaryExpr>")
+                                                 .Or("+", "<UnaryExpr>")
+                                                 .Or("<ExpExpr>");
+
+            define("<ExpExpr>", collapseSingle).Is("<Value>", "^", "<ExpExpr>")
+                                               .Or("<Value>");
+
+
+            define("<QualifiedID>").Is("{IDDot}", "<QualifiedIDTail>")
+                                   .Or("{DotIDDot}", "<QualifiedIDTail>")
+                                   .Or("{ID}")
+                                   .Or("{DotID}");
+
+            define("<SubSafeExprOpt>").Is("<SubSafeExpr>")
+                                      .OrOptional();
+
+            define("<QualifiedIDTail>").Is("{IDDot}", "<QualifiedIDTail>")
+                                       .Or("{ID}")
+                                       .Or("<KeywordID>");
+
+            define("<CommaExprList>", collapse).Is(",", "<Expr>", "<CommaExprList>")
+                                               .Or(",", "<CommaExprList>")
+                                               .Or(",", "<Expr>")
+                                               .Or(",");
+
+            define("<IndexOrParamsList>").Is("<IndexOrParams>", "<IndexOrParamsList>")
+                                         .Or("<IndexOrParams>");
+
+            define("<LeftExprTail>").Is("<QualifiedIDTail>", "<IndexOrParamsList>", ".", "<LeftExprTail>")
+                                    .Or("<QualifiedIDTail>", "<IndexOrParamsListDot>", "<LeftExprTail>")
+                                    .Or("<QualifiedIDTail>", "<IndexOrParamsList>")
+                                    .Or("<QualifiedIDTail>");
+
+            define("<IndexOrParamsListDot>").Is("<IndexOrParams>", "<IndexOrParamsListDot>")
+                                            .Or("<IndexOrParamsDot>");
+
+            define("<IndexOrParams>").Is("(", "<Expr>", "<CommaExprList>", ")")
+                                     .Or("(", "<CommaExprList>", ")")
+                                     .Or("(", "<Expr>", ")")
+                                     .Or("(", ")");
+
+            define("<IndexOrParamsDot>").Is("(", "<Expr>", "<CommaExprList>", ").")
+                                        .Or("(", "<CommaExprList>", ").")
+                                        .Or("(", "<Expr>", ").")
+                                        .Or("(", ").");
+
+            define("<PropertyAccessType>").Is("Get")
+                                          .Or("Let")
+                                          .Or("Set");
+
+            define("<IntLiteral>").Is("{IntLiteral}")
+                                  .Or("{HexLiteral}")
+                                  .Or("{OctLiteral}");
+
+            define("<BoolLiteral>").Is("True")
+                                   .Or("False");
+
+            
+
+            define("<ArgModifierOpt>", removeEmpty).Is("ByVal")
+                                                   .Or("ByRef")
+                                                   .OrOptional();
+
+            define("<Value>").Is("<ConstExpr>")
+                             .Or("<LeftExpr>")
+                             .Or("(", "<Expr>", ")")
+                             .Or("(", "<Expr>", ").", "<LeftExprTail>");
+
+            define("<SubSafeExpr>", collapseSingle).Is("<SubSafeImpExpr>");
+
+            define("<SubSafeImpExpr>", collapseSingle).Is("<SubSafeImpExpr>", "Imp", "<EqvExpr>")
+                                                      .Or("<SubSafeEqvExpr>");
+
+            define("<SubSafeEqvExpr>", collapseSingle).Is("<SubSafeEqvExpr>", "Eqv", "<XorExpr>")
+                                                      .Or("<SubSafeXorExpr>");
+
+            define("<SubSafeXorExpr>", collapseSingle).Is("<SubSafeXorExpr>", "Xor", "<OrExpr>")
+                                                      .Or("<SubSafeOrExpr>");
+
+            define("<SubSafeOrExpr>", collapseSingle).Is("<SubSafeOrExpr>", "Or", "<AndExpr>")
+                                                     .Or("<SubSafeAndExpr>");
+
+            define("<SubSafeAndExpr>", collapseSingle).Is("<SubSafeAndExpr>", "And", "<NotExpr>")
+                                                      .Or("<SubSafeNotExpr>");
+
+            define("<SubSafeNotExpr>", collapseSingle).Is("Not", "<NotExpr>")
+                                                      .Or("<SubSafeCompareExpr>");
+
+            define("<SubSafeCompareExpr>", collapseSingle).Is("<SubSafeCompareExpr>", "Is", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "Is", "Not", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", ">=", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "=>", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "<=", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "=<", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", ">", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "<", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "<>", "<ConcatExpr>")
+                                                          .Or("<SubSafeCompareExpr>", "=", "<ConcatExpr>")
+                                                          .Or("<SubSafeConcatExpr>");
+
+            define("<SubSafeConcatExpr>", collapseSingle).Is("<SubSafeConcatExpr>", "&", "<AddExpr>")
+                                                         .Or("<SubSafeAddExpr>");
+
+            define("<SubSafeAddExpr>", collapseSingle).Is("<SubSafeAddExpr>", "+", "<ModExpr>")
+                                                      .Or("<SubSafeAddExpr>", "-", "<ModExpr>")
+                                                      .Or("<SubSafeModExpr>");
+
+            define("<SubSafeModExpr>", collapseSingle).Is("<SubSafeModExpr>", "Mod", "<IntDivExpr>")
+                                                      .Or("<SubSafeIntDivExpr>");
+
+            define("<SubSafeIntDivExpr>", collapseSingle).Is("<SubSafeIntDivExpr>", @"\", "<MultExpr>")
+                                                         .Or("<SubSafeMultExpr>");
+
+            define("<SubSafeMultExpr>", collapseSingle).Is("<SubSafeMultExpr>", "*", "<UnaryExpr>")
+                                                       .Or("<SubSafeMultExpr>", "/", "<UnaryExpr>")
+                                                       .Or("<SubSafeUnaryExpr>");
+
+            define("<SubSafeUnaryExpr>", collapseSingle).Is("-", "<UnaryExpr>")
+                                                        .Or("+", "<UnaryExpr>")
+                                                        .Or("<SubSafeExpExpr>");
+
+            define("<SubSafeExpExpr>", collapseSingle).Is("<SubSafeValue>", "^", "<ExpExpr>")
+                                                      .Or("<SubSafeValue>");
+
+            define("<SubSafeValue>").Is("<ConstExpr>")
+                                    .Or("<LeftExpr>");
+
+            define("<KeywordID>").Is("<SafeKeywordID>")
+                                 .Or("And")
+                                 .Or("ByRef")
+                                 .Or("ByVal")
+                                 .Or("Call")
+                                 .Or("Case")
+                                 .Or("Class")
+                                 .Or("Const")
+                                 .Or("Dim")
+                                 .Or("Do")
+                                 .Or("Each")
+                                 .Or("Else")
+                                 .Or("ElseIf")
+                                 .Or("Empty")
+                                 .Or("End")
+                                 .Or("Eqv")
+                                 .Or("Exit")
+                                 .Or("False")
+                                 .Or("For")
+                                 .Or("Function")
+                                 .Or("Get")
+                                 .Or("GoTo")
+                                 .Or("If")
+                                 .Or("Imp")
+                                 .Or("In")
+                                 .Or("Is")
+                                 .Or("Let")
+                                 .Or("Loop")
+                                 .Or("Mod")
+                                 .Or("New")
+                                 .Or("Next")
+                                 .Or("Not")
+                                 .Or("Nothing")
+                                 .Or("Null")
+                                 .Or("On")
+                                 .Or("Option")
+                                 .Or("Or")
+                                 .Or("Preserve")
+                                 .Or("Private")
+                                 .Or("Public")
+                                 .Or("Redim")
+                                 .Or("Resume")
+                                 .Or("Select")
+                                 .Or("Set")
+                                 .Or("Sub")
+                                 .Or("Then")
+                                 .Or("To")
+                                 .Or("True")
+                                 .Or("Until")
+                                 .Or("WEnd")
+                                 .Or("While")
+                                 .Or("With")
+                                 .Or("Xor");
+
+
+            var grammarOrErr = factory.ToGrammar();
+
+            if (grammarOrErr.IsError)
+                throw grammarOrErr.Error;
+
+            VBScript.Grammar = grammarOrErr.Value;
+
+            Take.IgnoreCase     = true;
+
+            var realNewLine     = Take.Longest('\r'.One(), '\n'.One(), Take.Sequence("\r\n")).Value;
+            var printable       = String.Concat(@"!", "\"", @"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~");
+            var space           = String.Concat("\t", " ");
+            //var spacePlus       = space.AnyOne().Value.Then('_'.One()).Then(Take.While(space.AnyOne().Value)).Then(Take.Maybe(realNewLine));
+            var spacePlus       = '_'.One().Then(Take.While(space.AnyOne().Value)).Then(realNewLine);
+
+            var stringChar      = Take.AnyOne(printable.Replace("\"", String.Empty)).Value;
+            var dateChar        = Take.AnyOne(printable.Replace("#", String.Empty)).Value;
+            var idNameChar      = Take.AnyOne(printable.Replace("[", String.Empty).Replace("]", String.Empty)).Value;
+            var idTail          = Take.AnyOne("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_").Value;
+
+            var letter          = Take.AnyOne("ABCDEFGHIJKLMNOPQRSTUVWXYZ").Value;
+            var digit           = Take.AnyOne("0123456789").Value;
+            var octDigit        = Take.AnyOne("01234567").Value;
+            var hexDigit        = Take.AnyOne("0123456789ABCDEF").Value;
+            //var newLine         = Take.Longest(realNewLine, Take.One(':')).Value.Then(VBScript.Grammar.Id("{new-line}"));
+            var newLine         = realNewLine.Then(VBScript.Grammar.GetId("{new-line}"));
+            var intLiteral      = digit.Then(Take.While(digit)).Then(VBScript.Grammar.GetId("{intliteral}"));
+            var dateLiteral     = '#'.One().Then(dateChar.Then(Take.While(dateChar))).Then('#'.One()).Then(VBScript.Grammar.GetId("{dateliteral}"));
+            var hexLiteral      = "&H".Sequence().Then(hexDigit.Then(Take.While(hexDigit))).Then(Take.Maybe('&'.One())).Then(VBScript.Grammar.GetId("{hexliteral}"));
+            var octLiteral      = '&'.One().Then(octDigit.Then(Take.While(octDigit))).Then(Take.Maybe('&'.One())).Then(VBScript.Grammar.GetId("{octliteral}"));
+            //var stringLiteral   = '"'.One().Then(Take.Until("\"\"".Sequence().Maybe().Then('"'.One()))).Then("\"\"\"".Sequence().Or('"'.One())).Then(VBScript.Grammar.Id("{stringliteral}"));
+            var stringLiteral   = '"'.One().Then(Take.While("\"\"".Sequence().Or(Take.Not('"'.One())))).Then('"'.One()).Then(VBScript.Grammar.GetId("{stringliteral}"));
+
+            var digitOneToN     = digit.Then(Take.While(digit));
+            var exponent        = 'E'.One().Then(Take.Maybe("+-".AnyOne().Value)).Then(digitOneToN);
+            var floatPeriod     = '.'.One().Then(digitOneToN).Then(Take.Maybe(exponent));
+            var floatFull       = digitOneToN.Then(floatPeriod);
+            var floatExp        = digitOneToN.Then(exponent);
+
+            var floatLiteral    = Take.Longest(floatPeriod, floatFull, floatExp).Value.Then(VBScript.Grammar.GetId("{floatliteral}"));
+
+            var idBaseOne       = letter.Then(Take.While(idTail));
+            var idBaseTwo       = '['.One().Then(Take.While(idNameChar)).Then(']'.One());
+
+            var id              = Take.Longest(idBaseOne, idBaseTwo).Value.Then(VBScript.Grammar.GetId("{id}"));
+            var idDot           = Take.Longest(idBaseOne, idBaseTwo).Value.Then('.'.One()).Then(VBScript.Grammar.GetId("{iddot}"));
+            var dotId           = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo).Value).Then(VBScript.Grammar.GetId("{dotid}"));
+            var dotIdDot        = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo).Value).Then('.'.One()).Then(VBScript.Grammar.GetId("{dotiddot}"));
+
+            var commentOne      = '\''.One().Then(Take.Until(realNewLine)).Then(Identifier.Trivia);
+            var commentTwo      = "REM".Sequence().Then(Take.Longest(realNewLine, space.AnyOne().Value.Then(Take.While(String.Concat(space, printable).AnyOne().Value))).Value).Then(Identifier.Trivia);
+
+            var takeBuilder = new Take.Builder(true);
+
+            takeBuilder.AddRange(VBScript.Grammar.LiteralSymbols().Select(l => (l, VBScript.Grammar.GetId(l))));
+
+            takeBuilder.Add(commentOne);
+            takeBuilder.Add(commentTwo);
+            takeBuilder.Add(id);
+            takeBuilder.Add(idDot);
+            takeBuilder.Add(dotId);
+            takeBuilder.Add(dotIdDot);
+            takeBuilder.Add(floatLiteral);
+            takeBuilder.Add(stringLiteral);
+            takeBuilder.Add(octLiteral);
+            takeBuilder.Add(hexLiteral);
+            takeBuilder.Add(dateLiteral);
+            takeBuilder.Add(intLiteral);
+            takeBuilder.Add(newLine);
+            takeBuilder.Add(space.AnyOne().Value.Then(Identifier.Trivia));
+            takeBuilder.Add(spacePlus.Then(Identifier.Trivia));
+
+            VBScript.Seek = Take.Seek(takeBuilder.ToTake().Value);
+        }
+
+        public static Either<Node, ParseError> Parse(String source, String sourceIdentifier)
+        {
+            var lastChar = source[source.Length - 1];
+
+            if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
+                source = String.Concat(source, "\r\n");
+
+            var hits    = VBScript.Seek.Repeat(source, false, VBScript.Grammar.GetId(VBScript.EndOfInput)).Where(h => h.Id != Identifier.Trivia).ToArray();
+            var tokens  = hits.Select(h => new Token(h.Span, h.Id)).ToArray();
+
+            var parseTry = VBScript.Grammar.Parse(source, tokens);
+
+            return parseTry.Select(rootNode => rootNode.AsEither<Node, ParseError>(),
+                                   chart => (new ParseError(chart, source, sourceIdentifier, Grammar.GetId("{new-line}"), tokens)).AsEither<Node, ParseError>()
+                                  );
+        }
+
+    }
+
+}

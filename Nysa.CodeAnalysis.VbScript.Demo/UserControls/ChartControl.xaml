@@ -1,0 +1,103 @@
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ChartControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d">
+
+   <UserControl.Resources>
+      <ResourceDictionary>
+         <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="../Presentation/CodeAnalysisStyles.xaml"/>
+         </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+   </UserControl.Resources>
+
+   <Grid>
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0">
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+         </Grid.ColumnDefinitions>
+
+         <Button Grid.Column="0" Command="{Binding Path=RewindCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaRewindButton}" />
+         <Button Grid.Column="1" Command="{Binding Path=StepCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaStepButton}" />
+         <Button Grid.Column="2" Command="{Binding Path=PauseCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Visibility="{Binding PauseVisibility}" Style="{StaticResource MediaPauseButton}" />
+         <Button Grid.Column="3" Command="{Binding Path=PlayCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Visibility="{Binding PlayVisibility}" Style="{StaticResource MediaPlayButton}" />
+         <Button Grid.Column="4" Command="{Binding Path=ForwardCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaForwardButton}" />
+         <Button Grid.Column="5" Command="{Binding Path=StopCommand}" IsEnabled="{Binding Path=CanParse}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaStopButton}" />
+
+         <Grid Grid.Column="6" Margin="10,0,0,0">
+            <CheckBox IsEnabled="{Binding Path=IsInverseOptionEnabled}" IsChecked="{Binding Path=ShowInverse, Mode=TwoWay}" Content="Inverse" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+         </Grid>
+      </Grid>
+
+
+      <Grid Grid.Row="1" DataContext="{Binding Chart}">
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="*"/>
+         </Grid.ColumnDefinitions>
+
+         <ListView Grid.Column="0"
+                  ItemsSource="{Binding Path=Positions}"
+                  SelectionMode="Single"
+                  SelectedItem="{Binding Path=CurrentPosition}"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  ScrollViewer.IsDeferredScrollingEnabled="True">
+            <ListView.Resources>
+               <Style TargetType="{x:Type ListViewItem}">
+                  <Setter Property="IsSelected" Value="{Binding IsCurrent}"/>
+               </Style>
+            </ListView.Resources>
+            <ListView.View>
+               <GridView AllowsColumnReorder="false" ColumnHeaderToolTip="Token Data">
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=Position}"   Header="#"    Width="40"/>
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=TokenText}"  Header="Text" Width="120"/>
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=TokenId}"    Header="Id"/>
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=RuleCount}"  Header="Rules"/>
+               </GridView>
+            </ListView.View>
+         </ListView>
+
+         <GridSplitter Grid.Column="1"
+               Width="3"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Stretch"
+               ShowsPreview="True"/>
+
+         <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+               <RowDefinition Height="Auto"/>
+               <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0">Current Position Rules</Label>
+
+            <ListView Name="_CurrentEntries" Grid.Row="1" ItemsSource="{Binding Path=CurrentPosition.Entries}">
+               <ListView.View>
+                  <GridView AllowsColumnReorder="false">
+                     <GridViewColumn DisplayMemberBinding="{Binding Path=Index}" Width="34"/>
+                     <GridViewColumn DisplayMemberBinding="{Binding Path=State}" Width="600"/>
+                  </GridView>
+               </ListView.View>
+            </ListView>
+         </Grid>
+      </Grid>
+
+   </Grid>
+
+</UserControl>
