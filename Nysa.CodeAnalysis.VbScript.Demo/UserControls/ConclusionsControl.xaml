@@ -1,0 +1,28 @@
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ConclusionsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             HorizontalAlignment="Stretch">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+    
+        <Label>Over 2.1 million lines of code translated.</Label>
+
+        <Label>What was the cause of this success?</Label>
+        <Label>The answer is: believing...</Label>
+        <Label>But believing in what?</Label>
+        <Label>Myself? My talent/intellect? NO!</Label>
+        <Label>First grade remedial reading/spelling.</Label>
+        <Label>Below average high school GPA.</Label>
+        <Label>Bachelors degree in: nothing.</Label>
+        <Label>Initially failed USAF exam for programming.</Label>
+        <Label></Label>
+        <Label>Believing in good</Label>
+        <Label>Believing in God.</Label>
+    </Grid>
+</UserControl>
