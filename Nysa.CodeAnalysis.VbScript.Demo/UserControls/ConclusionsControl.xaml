@@ -13,15 +13,68 @@
     
         <Label>Over 2.1 million lines of code translated.</Label>
 
-        <Label>What was the cause of this success?</Label>
+        <Label>To what do I attribute my success?</Label>
+        <Label>Foresight?</Label>
+
+        <TextBlock>
+            It's helpful, but not difficult.
+
+            How may technologies have died in the last 30 years...
+               Sony's Betamax
+               U.S. DoD Ada Programming Language
+               LaserDisc
+               Netscape
+               BlackBerry
+               Segway
+               Pagers
+               Microsoft SilverLight
+               Microsoft Zune
+               Apple Lisa
+               NeXT Computer
+               Iomega
+               Napster
+               ...
+
+            By 2015, JavaScript was the clear winner.
+        </TextBlock>
+
+        <Label>Intelligence/Education?</Label>
+
+        <TextBlock>
+            Obviously, you must be capable of learning and reasoning, but how would I rank myself?
+
+            My background...
+                First grade remedial reading/spelling.
+                Below average high school GPA.
+                Bachelors degree in: nothing.
+                Initially failed USAF exam for programming aptitude.
+        </TextBlock>
+
+        <Label>I attribute my success to my belief system.</Label>
+
+        <TextBlock>
+            So what is that?
+
+            Life has meaning.
+            What I do has meaning.
+            How I do life matters.
+            Good exists outside and beyond my judgement.
+            My impact on others matters.
+            What I want and how I feel, while not trivial, but not as important as these things...
+        </TextBlock>
+
+        <Label>Sounds Religious.</Label>
+
+        <TextBlock>
+            That's what a belief system is.
+            It affects your life, what you do, and how you do it.
+
+            For me, if I don't believe in a higher power, then all I do
+            is just a means to an end, and that end doesn't matter.
+        </TextBlock>
         <Label>The answer is: believing...</Label>
         <Label>But believing in what?</Label>
         <Label>Myself? My talent/intellect? NO!</Label>
-        <Label>First grade remedial reading/spelling.</Label>
-        <Label>Below average high school GPA.</Label>
-        <Label>Bachelors degree in: nothing.</Label>
-        <Label>Initially failed USAF exam for programming.</Label>
-        <Label></Label>
         <Label>Believing in good</Label>
         <Label>Believing in God.</Label>
     </Grid>
