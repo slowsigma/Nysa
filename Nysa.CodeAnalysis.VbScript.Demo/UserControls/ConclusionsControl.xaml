@@ -11,9 +11,26 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
     
-        <Label>Over 2.1 million lines of code translated.</Label>
+        <Label>Over 2.1 million lines of VB Script translated (actual code, does not incluing comments and empty lines.</Label>
+        <Label>Translator also includes logic to fiv various elements of non-standard HTML to get to HTML5.</Label>
+        <Label>An attempt was made to see if A.I. might help find problems in the JavaScript output, but that did not bear fruit.</Label>
+        <Label>The remaining work was distilled to a list of known issues to fix by in-house and contractors.</Label>
+        <Label>VB Script execute and eval functions, passing COM objects, etc.</Label>
 
-        <Label>To what do I attribute my success?</Label>
+        <Label>VB Script features difficult to translate correctly:</Label>
+        <TextBlock>
+            Correctly picking property/method member where classes define the same name.
+            Default properties (can appear as array access or global function).
+            VB Script arrays access uses parenthesis just like a method call.
+            VB Script lacks asynchronous support.
+            Subtle differences in null, empty, and undefined.
+        </TextBlock>
+
+        <Label>The trouble with inspirational conclusions...</Label>
+        <Label>No amount of inspiration will make you successful.</Label>
+        <Label>It takes deciding to do the work every day and believing that it matters.</Label>
+
+        <Label>To what do I attribute this, or any other, success?</Label>
         <Label>Foresight?</Label>
 
         <TextBlock>
@@ -50,32 +67,25 @@
                 Initially failed USAF exam for programming aptitude.
         </TextBlock>
 
-        <Label>I attribute my success to my belief system.</Label>
+        <Label>I attribute my success to my beliefs.</Label>
 
         <TextBlock>
-            So what is that?
-
             Life has meaning.
             What I do has meaning.
             How I do life matters.
             Good exists outside and beyond my judgement.
             My impact on others matters.
-            What I want and how I feel, while not trivial, but not as important as these things...
+            What I want and how I feel, while not trivial, is not as important as these things...
         </TextBlock>
 
-        <Label>Sounds Religious.</Label>
+        <Label>Sounds Religious?</Label>
 
         <TextBlock>
             That's what a belief system is.
             It affects your life, what you do, and how you do it.
 
-            For me, if I don't believe in a higher power, then all I do
-            is just a means to an end, and that end doesn't matter.
+            So, if I don't believe in a higher power, then all I do is
+            just a means to an end for me, and that doesn't matter.
         </TextBlock>
-        <Label>The answer is: believing...</Label>
-        <Label>But believing in what?</Label>
-        <Label>Myself? My talent/intellect? NO!</Label>
-        <Label>Believing in good</Label>
-        <Label>Believing in God.</Label>
     </Grid>
 </UserControl>
