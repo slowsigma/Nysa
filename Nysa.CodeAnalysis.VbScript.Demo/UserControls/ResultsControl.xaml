@@ -1,0 +1,47 @@
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ResultsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             HorizontalAlignment="Stretch">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Vertical">
+
+
+            <RichTextBox>
+                <FlowDocument>
+                    <List MarkerStyle="Disc">
+                        <ListItem>
+                            <Paragraph>Over 2.1 million lines of VB Script translated.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Includes logic to fix non-standard HTML to get to HTML5.</Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </RichTextBox>
+
+    
+            <Label>An attempt was made to see if A.I. might help find problems in the JavaScript output, but that did not bear fruit.</Label>
+            <Label>The remaining work was distilled to a list of known issues to fix in-house and with contractors.</Label>
+            <Label>VB Script execute and eval functions, passing COM objects, etc.</Label>
+
+            <Label>VB Script features difficult to translate correctly:</Label>
+            <TextBlock>
+                Correctly picking property/method member where classes define the same name.
+                Default properties (can appear as array access or global function).
+                VB Script arrays access uses parenthesis just like a method call.
+                VB Script lacks asynchronous support.
+                Subtle differences in null, empty, and undefined.
+            </TextBlock>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>
