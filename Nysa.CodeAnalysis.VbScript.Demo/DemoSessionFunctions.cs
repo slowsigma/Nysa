@@ -211,7 +211,10 @@ public static class DemoSessionFunctions
 
         demoPages.Add(images.SlideTypeData);
 
-        demoPages.Add(new DemoPageControl("Results", new ResultsControl(), null, null));
+        demoPages.Add(new DemoPageControl(null, (new ChallengesControl()), null, null));
+
+        demoPages.Add(new DemoPageControl(null, new ResultsControl(), null, null));
+
 
         return new DemoContent(demoPages, sampleCode);
     }

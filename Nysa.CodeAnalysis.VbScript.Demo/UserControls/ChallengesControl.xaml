@@ -1,4 +1,4 @@
-<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ResultsControl"
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ChallengesControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,19 +13,25 @@
 
         <FlowDocumentScrollViewer>
             <FlowDocument>
-                <Paragraph FontSize="18">Results...</Paragraph>
+                <Paragraph FontSize="18">Translation challenges included:</Paragraph>
                 <List MarkerStyle="Disc">
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Over 2.1 million lines of VB Script translated.</Paragraph>
+                        <Paragraph FontSize="18">VB Script feeding into 'execute' and 'eval' not translated.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Included logic to fix non-standard HTML to get to HTML5.</Paragraph>
+                        <Paragraph FontSize="18">Correctly picking property/method member where classes define the same name.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">An attempt was made to see if A.I. might help with translation challenges, but that did not bear fruit.</Paragraph>
+                        <Paragraph FontSize="18">Default properties (can appear as array access or global function).</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">The remaining work was distilled to a list of known issues to fix in-house and with contractors.</Paragraph>
+                        <Paragraph FontSize="18">VB Script array access is identical to a method call.</Paragraph>
+                    </ListItem>
+                    <ListItem Margin="0,0,0,10">
+                        <Paragraph FontSize="18">Correctly fixing async call chains.</Paragraph>
+                    </ListItem>
+                    <ListItem Margin="0,0,0,10">
+                        <Paragraph FontSize="18">Subtle differences in null, empty, and undefined.</Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>
