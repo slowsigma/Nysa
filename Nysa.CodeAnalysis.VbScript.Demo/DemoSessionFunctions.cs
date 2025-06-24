@@ -215,6 +215,9 @@ public static class DemoSessionFunctions
 
         demoPages.Add(new DemoPageControl(null, new ResultsControl(), null, null));
 
+        demoPages.Add(new DemoPageControl(null, new IntroControl(), null, null));
+
+        demoPages.Add(new DemoPageControl(null, new ConclusionsControl(), null, null));
 
         return new DemoContent(demoPages, sampleCode);
     }

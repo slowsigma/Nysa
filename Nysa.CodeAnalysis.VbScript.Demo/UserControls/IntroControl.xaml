@@ -1,4 +1,4 @@
-<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.ConclusionsControl"
+<UserControl x:Class="Nysa.CodeAnalysis.VbScript.Demo.IntroControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,29 +13,22 @@
     
         <FlowDocumentScrollViewer>
             <FlowDocument>
-                <Paragraph FontSize="18">What I've found helpful to success...</Paragraph>
+                <Paragraph FontSize="18">My background...</Paragraph>
                 <List MarkerStyle="Disc">
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Knowing that I can be my own worst enemy.</Paragraph>
+                        <Paragraph FontSize="18">First grade remedial reading/spelling.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Recognizing how I might be sabotaging myself.</Paragraph>
+                        <Paragraph FontSize="18">Below average high school GPA.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Believing that what I do and how I do it has meaning.</Paragraph>
+                        <Paragraph FontSize="18">Bachelors degree in: nothing.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Believing that good exists outside of me.</Paragraph>
-                    </ListItem>
-                    <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Believing that what I want and how I feel, while not trivial, are not as important as what is true and good.</Paragraph>
-                    </ListItem>
-                    <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Dig in, heads down, and do the work.</Paragraph>
+                        <Paragraph FontSize="18">Initially failed USAF exam for programming aptitude.</Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>
         </FlowDocumentScrollViewer>
-
     </Grid>
 </UserControl>
