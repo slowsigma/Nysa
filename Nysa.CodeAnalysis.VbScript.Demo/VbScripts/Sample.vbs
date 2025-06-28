@@ -24,4 +24,4 @@ loop
 
 t = x * 10
 
-MsgBox GetMessage(t)
+MsgBox getmessage(t)

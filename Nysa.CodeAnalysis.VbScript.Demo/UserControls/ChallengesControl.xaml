@@ -11,27 +11,27 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <FlowDocumentScrollViewer>
+        <FlowDocumentScrollViewer Margin="30">
             <FlowDocument>
-                <Paragraph FontSize="18">Translation challenges included:</Paragraph>
+                <Paragraph FontSize="20">Translation challenges included:</Paragraph>
                 <List MarkerStyle="Disc">
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">VB Script feeding into 'execute' and 'eval' not translated.</Paragraph>
+                        <Paragraph FontSize="20">VB Script feeding into 'execute' and 'eval' not translated.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Correctly picking property/method member where classes define the same name.</Paragraph>
+                        <Paragraph FontSize="20">Correctly picking property/method member where classes define the same name.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Default properties (can appear as array access or global function).</Paragraph>
+                        <Paragraph FontSize="20">Default properties (can appear as array access or global function).</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">VB Script array access is identical to a method call.</Paragraph>
+                        <Paragraph FontSize="20">VB Script array access is identical to a method call.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Correctly fixing async call chains.</Paragraph>
+                        <Paragraph FontSize="20">Correctly fixing async call chains.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Subtle differences in null, empty, and undefined.</Paragraph>
+                        <Paragraph FontSize="20">Subtle differences in null, empty, and undefined.</Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>

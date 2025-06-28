@@ -203,6 +203,8 @@ public static class DemoSessionFunctions
 
         demoPages.Add(images.SlideCodeSymbols);
 
+        demoPages.Add(semanticTree.Page);
+
         demoPages.Add(images.SlideExternalSymbols);
 
         demoPages.Add(images.SlideJavaScript);
@@ -217,7 +219,7 @@ public static class DemoSessionFunctions
 
         demoPages.Add(new DemoPageControl(null, new IntroControl(), null, null));
 
-        demoPages.Add(new DemoPageControl(null, new ConclusionsControl(), null, null));
+        // demoPages.Add(new DemoPageControl(null, new ConclusionsControl(), null, null));
 
         return new DemoContent(demoPages, sampleCode);
     }

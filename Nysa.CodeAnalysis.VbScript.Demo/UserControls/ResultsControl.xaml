@@ -11,21 +11,27 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <FlowDocumentScrollViewer>
+        <FlowDocumentScrollViewer Margin="30">
             <FlowDocument>
-                <Paragraph FontSize="18">Results...</Paragraph>
+                <Paragraph FontSize="20">Results...</Paragraph>
                 <List MarkerStyle="Disc">
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Over 2.1 million lines of VB Script translated.</Paragraph>
+                        <Paragraph FontSize="20">Over 2.1 million lines of VB Script translated.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Included logic to fix non-standard HTML to get to HTML5.</Paragraph>
+                        <Paragraph FontSize="20">Included logic to fix non-standard HTML to get to HTML5.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">An attempt was made to see if A.I. might help with translation challenges, but that did not bear fruit.</Paragraph>
+                        <Paragraph FontSize="20">An attempt was made to see if A.I. might help with translation challenges, but that did not bear fruit.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">The remaining work was distilled to a list of known issues to fix in-house and with contractors.</Paragraph>
+                        <Paragraph FontSize="20">The remaining work was distilled to a list of known issues to fix in-house and with contractors.</Paragraph>
+                    </ListItem>
+                    <ListItem Margin="0,6,0,10">
+                        <Paragraph FontSize="24">Change the tech stack so Tyler can attract quality talent.</Paragraph>
+                    </ListItem>
+                    <ListItem Margin="0,6,0,10">
+                        <Paragraph FontSize="24">Saved the Enterprise Justice Suite from total collapse.</Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>

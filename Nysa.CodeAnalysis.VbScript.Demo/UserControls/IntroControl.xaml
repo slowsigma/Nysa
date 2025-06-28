@@ -11,21 +11,24 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
     
-        <FlowDocumentScrollViewer>
+        <FlowDocumentScrollViewer Margin="30">
             <FlowDocument>
-                <Paragraph FontSize="18">My background...</Paragraph>
+                <Paragraph FontSize="20">My background...</Paragraph>
                 <List MarkerStyle="Disc">
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">First grade remedial reading/spelling.</Paragraph>
+                        <Paragraph FontSize="20">Four older brothers.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Below average high school GPA.</Paragraph>
+                        <Paragraph FontSize="20">First grade remedial reading/spelling.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Bachelors degree in: nothing.</Paragraph>
+                        <Paragraph FontSize="20">Below average high school GPA.</Paragraph>
                     </ListItem>
                     <ListItem Margin="0,0,0,10">
-                        <Paragraph FontSize="18">Initially failed USAF exam for programming aptitude.</Paragraph>
+                        <Paragraph FontSize="20">Bachelors degree in: nothing.</Paragraph>
+                    </ListItem>
+                    <ListItem Margin="0,0,0,10">
+                        <Paragraph FontSize="20">Initially failed USAF exam for programming aptitude.</Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>
