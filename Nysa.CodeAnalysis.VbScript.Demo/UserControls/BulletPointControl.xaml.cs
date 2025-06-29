@@ -3,10 +3,10 @@ using System.Windows.Controls;
 
 namespace Nysa.CodeAnalysis.VbScript.Demo;
 
-public partial class IntroControl : UserControl
+public partial class BulletPointControl : UserControl
 {
 
-    public IntroControl()
+    public BulletPointControl()
     {
         InitializeComponent();
     }

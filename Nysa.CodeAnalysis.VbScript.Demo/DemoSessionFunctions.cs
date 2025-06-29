@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Media;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -116,6 +117,40 @@ public static class DemoSessionFunctions
         return new DemoPageControl("https://github.com/slowsigma/Nysa/blob/master/Nysa.CodeAnalysis.VbScript/Rescript/VbScript.cs", vbGenControl.Bound(vbGenViewModel), null, null);
     }
 
+    public static FlowDocument BulletPointDocument(String title, IReadOnlyList<BulletPoint> points, Int32 pointCount)
+    {
+        var document = new FlowDocument();
+        var paragraph = new Paragraph(new Run(title)) { FontSize = 20.0 };
+        var pointList = new System.Windows.Documents.List();
+
+        pointList.MarkerStyle = System.Windows.TextMarkerStyle.Disc;
+
+        document.Blocks.Add(paragraph);
+
+        for (var i = 0; i < pointCount; i++)
+        {
+            var bulletPara = new Paragraph(new Run(points[i].Text));
+            bulletPara.FontSize = points[i].IsImportant ? 24.0 : 20.0;
+
+            var bulletItem = new System.Windows.Documents.ListItem(bulletPara);
+            bulletItem.Margin = new System.Windows.Thickness(0, 0, 0, 10);
+
+            pointList.ListItems.Add(bulletItem);
+        }
+
+        document.Blocks.Add(pointList);
+
+        return document;
+    }
+
+    public static DemoPage BulletPointPage(this DemoSession @this, FlowDocument document)
+    {
+        var bulletControl = new BulletPointControl();
+        var bulletControlVM = new BulletPointControlViewModel((FlowDocumentScrollViewer)bulletControl.FindName("_ScrollViewer"), document);
+
+        return new DemoPageControl(null, bulletControl.Bound(bulletControlVM), null, null);
+    }
+
     public static (DemoPage Page, Listener<String> Listener) ChartBuildingPage(this DemoSession @this)
     {
         var chartControl = new ChartControl();
@@ -213,12 +248,93 @@ public static class DemoSessionFunctions
 
         demoPages.Add(images.SlideTypeData);
 
-        demoPages.Add(new DemoPageControl(null, (new ChallengesControl()), null, null));
+        // Callenges
+        var challengePoints = new List<BulletPoint>
+        {
+            new BulletPoint("VB Script feeding into 'execute' and 'eval' not translated."),
+            new BulletPoint("Correctly picking property/method member where classes define the same name."),
+            new BulletPoint("Default properties (can appear as array access or global function)."),
+            new BulletPoint("VB Script array access is identical to a method call."),
+            new BulletPoint("Correctly fixing async call chains."),
+            new BulletPoint("Subtle differences in null, empty, and undefined.")
+        };
 
-        demoPages.Add(new DemoPageControl(null, new ResultsControl(), null, null));
+        var challengeZer = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 0));
+        var challengeOne = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 1));
+        var challengeTwo = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 2));
+        var challengeThr = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 3));
+        var challengeFou = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 4));
+        var challengeFiv = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 5));
+        var challengeSix = @this.BulletPointPage(BulletPointDocument("Translation challenges included...", challengePoints, 6));
+        
+        demoPages.Add(challengeZer);
+        demoPages.Add(challengeOne);
+        demoPages.Add(challengeTwo);
+        demoPages.Add(challengeThr);
+        demoPages.Add(challengeFou);
+        demoPages.Add(challengeFiv);
+        demoPages.Add(challengeSix);
 
-        demoPages.Add(new DemoPageControl(null, new IntroControl(), null, null));
+        // Results
+        var resultPoints = new List<BulletPoint>
+        {
+            new BulletPoint("Over 2.1 million lines of VB Script translated."),
+            new BulletPoint("Included logic to fix non-standard HTML to get to HTML5."),
+            new BulletPoint("An attempt was made to see if A.I. might help with translation challenges, but that did not bear fruit."),
+            new BulletPoint("The remaining work was distilled to a list of known issues to fix in-house and with contractors."),
+            new BulletPoint("Tech stack now more attractive to quality talent.", true),
+            new BulletPoint("Enterprise Justice Suite catastrophe averted.", true)
+        };
 
+        var resultsBulletsZer = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 0));
+        var resultsBulletsOne = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 1));
+        var resultsBulletsTwo = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 2));
+        var resultsBulletsThr = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 3));
+        var resultsBulletsFou = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 4));
+        var resultsBulletsFiv = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 5));
+        var resultsBulletsSix = @this.BulletPointPage(BulletPointDocument("Results...", resultPoints, 6));
+
+        demoPages.Add(resultsBulletsZer);
+        demoPages.Add(resultsBulletsOne);
+        demoPages.Add(resultsBulletsTwo);
+        demoPages.Add(resultsBulletsThr);
+        demoPages.Add(resultsBulletsFou);
+        demoPages.Add(resultsBulletsFiv);
+        demoPages.Add(resultsBulletsSix);
+
+        // My Background
+        var introPoints = new List<BulletPoint>
+        {
+            new BulletPoint("Youngest of five boys."),
+            new BulletPoint("First grade remedial reading/spelling."),
+            new BulletPoint("Below average high school GPA."),
+            new BulletPoint("Bachelors degree in: nothing."),
+            new BulletPoint("Initially failed USAF exam for programming aptitude.")
+        };
+
+        var introBulletsZer = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 0));
+        var introBulletsOne = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 1));
+        var introBulletsTwo = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 2));
+        var introBulletsThr = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 3));
+        var introBulletsFou = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 4));
+        var introBulletsFiv = @this.BulletPointPage(BulletPointDocument("My Background...", introPoints, 5));
+
+        demoPages.Add(introBulletsZer);
+        demoPages.Add(introBulletsOne);
+        demoPages.Add(introBulletsTwo);
+        demoPages.Add(introBulletsThr);
+        demoPages.Add(introBulletsFou);
+        demoPages.Add(introBulletsFiv);
+
+        // Questions
+        var questionPoints = new List<BulletPoint>
+        {
+        };
+
+        var questionBulletsZer = @this.BulletPointPage(BulletPointDocument("Questions...", questionPoints, 0));
+
+        demoPages.Add(questionBulletsZer);
+        
         // demoPages.Add(new DemoPageControl(null, new ConclusionsControl(), null, null));
 
         return new DemoContent(demoPages, sampleCode);
