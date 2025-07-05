@@ -1,0 +1,82 @@
+ 1. Before we begin.
+    This entire demo is open source.  It can be found here (show GitHub and NuGet locations).
+    I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
+    I'm going to show here. I will talk about portions of the project that were officially Tyler, but there is no code in this
+    that is Tyler owned.
+ 2. Our story starts with the Enterprise Justice Suite, formerly called Odyssey.
+    Back around the turn of the century (ha, ha), the Odyssey development team made the fateful decision to adopt
+    Microsoft technology for all parts of the project and that meant coding UI logic with the now defunct VB Script language.
+    Even though the dev community at large recognized JavaScript as the winner much earlier, the demise of VB Script was sealed
+    in late 2018 when Microsoft announced it's intent to base it's new Edge browser on the same technology as the Chrome browser.
+    Of course, we should have started turning the Titanic before that happened, but we didn't even start in 2019.
+    By the time we started the turn, we had a full two decades of "investment" to fix.
+    There are many ways of calculating the worth of a product like Enterprise Justice.  You can use future profit, past
+    profit, or both, or you can calculate the total amount of money poured into its existence. For this demo, and my click-bait
+    title, I chose calculating based on cost (i.e., how much have we sunk into this beast).
+    I like to think this is more of a conservative minimum for just the cost of building the user interface alone.
+    This screen is simply a little calculator, so it you wanted to, you could adjust the numbers to be more in line with the
+    true average of the number of employees per year, for example.
+<Next>
+ 3. The real title of this talk is really, "Translating VB Script to JavaScript".
+    If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
+    The entire thing is a program that contains slides and interactive content that is actually using the open source
+    code that the official Tyler VB Script translator was built upon.
+    The basic idea of code translation is: turning code into data, and then that data back into code.
+<Next>
+ 4. We've actually been doing this since the very first high-level programming language.
+<Next>
+ 5. Compilers read code and turn that into a string of machine code.
+ 6. This entire project was inspired by the Microsoft Roslyn project which I believe was created to enable all kinds of
+    IDE features we take for granted today, primarily those features that allow us to jump back and forth in code
+    between the definitions of symbols and the places where those symbols are used.
+<Next>
+ 7. So, when it comes to compilers, there are some core terms that form the back bone of what this presentation covers.
+    Some of these may be familiar and some may not, but by the end, you'll have a pretty good idea about how the
+    translator works.
+<Next>
+ 8. We start with source code.  I wrote this little sample script as a starting point and it will feed into different
+    parts of the presentation as we go along.
+<Next>
+ 9. Back in late 2017, I got this idea that we might be able to translate the Enterprise Justice VB Script to JavaScript
+    if we first had a way to translate code into a semantic tree.  I will cover what a semantic tree is in way more
+    detail later, but the basic idea is that its a direct representation of source code in computer memory in a tree
+    structure (much like parsed XML in memory has a tree structure).
+10. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
+    find an attempt some developers had made at writing down the rules. There were some errors in the rules, but it
+    served as a good starting point.
+<Next>
+11. Here are those rules in a language called Backus-Naur Form (BNF). Its an extremely simple language to follow.
+    Each line contains a single rule.  Each rule starts with an abstract symbol (that's the thing between greater and
+    less-than characters), followed by the colon-colon-equals symbol, which stands for "is defined as", and followed
+    by a set of alternate definitions separated by the vertical bar (or pipe character). Each alternate definition
+    is simply a sequence of literals (the quoted strings), abstract symbols (< >), or literal categories (a name
+    surrounded by curly braces).
+12. Of course, the difficulty with this grammar rule language is that you don't really get to see how it works when
+    you look at it raw like this. So, I've taken a little logic and turned it into an interactive page.
+<Next>
+13. In a BNF document for a programming language, there's always a start rule and, of course, that's the rule that
+    no other rule references. So, its fitting that the start rule uses the work "program" because that's what you
+    end up with at the top level.
+    This little page shows how the rules expand downward as they are used in a real piece of code.
+    {Work the page expanding terms...}
+<Next>
+14. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
+    grammar rules and turn that into a complete grammar object that feed into the rest of the process. Very rarely
+    is a BNF document ready to be consumed by a compiler. There are instructions beyond just the BNF that a compiler
+    needs.
+<Next>
+15. With the grammar and some additional definitions for the literal categories, we can then make a lexical analyzer
+    which takes source code and turns it into a stream of tokens (each token is a single word in the language of the
+    grammar).
+
+
+
+
+
+
+
+
+
+
+
+
