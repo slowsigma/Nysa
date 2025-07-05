@@ -1,12 +1,3 @@
-Primary Content
+# Nysa.CodeAnalysis.VbScript.Demo
 
-How are programs created/executed?
--- Compiled
--- Interpreted
-
-What is syntax?
-
-What does an abstract syntax tree look like in detail?
-
-What does a symantic tree look like in detail?
-
+This WPF application provides a high-level demonstration of the parsing and lexing logic found in Nysa.CodeAnalysis and Nysa.CodeAnalysis.VbScript. I created these open source projects to try and convince my company that the only way to save our 20 year HTML/VB Script application was to create a translator for it. Eventually, I was given the green light to take these fundamental libraries and create the final translation application which we used to successfully translate over 2 million lines of VB Script.
