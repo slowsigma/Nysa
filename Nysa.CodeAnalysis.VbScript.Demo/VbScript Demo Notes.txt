@@ -7,21 +7,21 @@
     Back around the turn of the century (ha, ha), the Odyssey development team made the fateful decision to adopt
     Microsoft technology for all parts of the project and that meant coding UI logic with the now defunct VB Script language.
     Even though the dev community at large recognized JavaScript as the winner much earlier, the demise of VB Script was sealed
-    in late 2018 when Microsoft announced it's intent to base it's new Edge browser on the same technology as the Chrome browser.
-    Of course, we should have started turning the Titanic before that happened, but we didn't even start in 2019.
+    in late 2018 when Microsoft announced it would base it's new Edge browser on the same technology as the Chrome browser.
+    So, we should have started turning the Titanic before that happened, but we didn't.
     By the time we started the turn, we had a full two decades of "investment" to fix.
     There are many ways of calculating the worth of a product like Enterprise Justice.  You can use future profit, past
-    profit, or both, or you can calculate the total amount of money poured into its existence. For this demo, and my click-bait
+    profit, both, or you can calculate the total amount of money poured into its existence. For this demo, and my click-bait
     title, I chose calculating based on cost (i.e., how much have we sunk into this beast).
     I like to think this is more of a conservative minimum for just the cost of building the user interface alone.
-    This screen is simply a little calculator, so it you wanted to, you could adjust the numbers to be more in line with the
+    This screen is simply a little calculator, so if you wanted to, you could adjust the numbers to be more in line with the
     true average of the number of employees per year, for example.
 <Next>
  3. The real title of this talk is really, "Translating VB Script to JavaScript".
     If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
     The entire thing is a program that contains slides and interactive content that is actually using the open source
     code that the official Tyler VB Script translator was built upon.
-    The basic idea of code translation is: turning code into data, and then that data back into code.
+    The basic idea of code translation is: turning code into data, and then turning that data back into code.
 <Next>
  4. We've actually been doing this since the very first high-level programming language.
 <Next>
@@ -61,17 +61,19 @@
     {Work the page expanding terms...}
 <Next>
 14. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
-    grammar rules and turn that into a complete grammar object that feed into the rest of the process. Very rarely
-    is a BNF document ready to be consumed by a compiler. There are instructions beyond just the BNF that a compiler
-    needs.
+    grammar rules and turn that into a complete grammar object which feed into the rest of the process. Very rarely
+    is a BNF document consumed by program that would then compile the code it describes. Instead, it's typically
+    used by a program that generates the parsing code of a compiler.
 <Next>
-15. With the grammar and some additional definitions for the literal categories, we can then make a lexical analyzer
+15. With the grammar and some additional definitions for the literal categories, I then built a lexical analyzer
     which takes source code and turns it into a stream of tokens (each token is a single word in the language of the
     grammar).
-
-
-
-
+<Next>
+16. So, here we have the sample code on your left and the token stream produced by the Nysa.CodeAnalysis library on
+    the right.
+    One thing to notice is that this lexical output does not keep comments, which, in the Microsoft Roslyn API is
+    refered to as trivia.
+    (add comments to the sample source)
 
 
 
