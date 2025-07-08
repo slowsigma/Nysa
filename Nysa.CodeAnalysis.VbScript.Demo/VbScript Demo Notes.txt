@@ -1,3 +1,4 @@
+ <Page 01>
  1. Before we begin.
     This entire demo is open source.  It can be found here (show GitHub and NuGet locations).
     I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
@@ -16,66 +17,84 @@
     I like to think this is more of a conservative minimum for just the cost of building the user interface alone.
     This screen is simply a little calculator, so if you wanted to, you could adjust the numbers to be more in line with the
     true average of the number of employees per year, for example.
-<Next>
+<Page 02>
  3. The real title of this talk is really, "Translating VB Script to JavaScript".
     If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
     The entire thing is a program that contains slides and interactive content that is actually using the open source
     code that the official Tyler VB Script translator was built upon.
     The basic idea of code translation is: turning code into data, and then turning that data back into code.
-<Next>
+<Page 03>
  4. We've actually been doing this since the very first high-level programming language.
-<Next>
+<Page 04>
  5. Compilers read code and turn that into a string of machine code.
- 6. This entire project was inspired by the Microsoft Roslyn project which I believe was created to enable all kinds of
+ 6. This project was inspired by the Microsoft Roslyn project which I believe was created to enable all kinds of
     IDE features we take for granted today, primarily those features that allow us to jump back and forth in code
     between the definitions of symbols and the places where those symbols are used.
-<Next>
+<Page 05>
  7. So, when it comes to compilers, there are some core terms that form the back bone of what this presentation covers.
     Some of these may be familiar and some may not, but by the end, you'll have a pretty good idea about how the
     translator works.
-<Next>
+<Page 06>
  8. We start with source code.  I wrote this little sample script as a starting point and it will feed into different
-    parts of the presentation as we go along.
-<Next>
+    parts of the presentation as we go along.  The program simply prints out a random German greeting.
+<Page 07>
  9. Back in late 2017, I got this idea that we might be able to translate the Enterprise Justice VB Script to JavaScript
-    if we first had a way to translate code into a semantic tree.  I will cover what a semantic tree is in way more
-    detail later, but the basic idea is that its a direct representation of source code in computer memory in a tree
-    structure (much like parsed XML in memory has a tree structure).
+    if we could parse the source into a semantic tree.  A semantic tree is simply a direct representation of source code
+    in computer memory in a tree structure (much like parsed XML in memory has a tree structure).
 10. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
     find an attempt some developers had made at writing down the rules. There were some errors in the rules, but it
     served as a good starting point.
-<Next>
+<Page 08>
 11. Here are those rules in a language called Backus-Naur Form (BNF). Its an extremely simple language to follow.
     Each line contains a single rule.  Each rule starts with an abstract symbol (that's the thing between greater and
     less-than characters), followed by the colon-colon-equals symbol, which stands for "is defined as", and followed
     by a set of alternate definitions separated by the vertical bar (or pipe character). Each alternate definition
-    is simply a sequence of literals (the quoted strings), abstract symbols (< >), or literal categories (a name
+    is simply a sequence of literals (the quoted strings), abstract symbols (< >), and literal categories (a name
     surrounded by curly braces).
 12. Of course, the difficulty with this grammar rule language is that you don't really get to see how it works when
-    you look at it raw like this. So, I've taken a little logic and turned it into an interactive page.
-<Next>
+    you look at it raw like this. So, I've applied a little logic to it and turned it into an interactive page.
+<Page 09>
 13. In a BNF document for a programming language, there's always a start rule and, of course, that's the rule that
     no other rule references. So, its fitting that the start rule uses the work "program" because that's what you
     end up with at the top level.
     This little page shows how the rules expand downward as they are used in a real piece of code.
     {Work the page expanding terms...}
-<Next>
+<Page 10>
 14. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
-    grammar rules and turn that into a complete grammar object which feed into the rest of the process. Very rarely
-    is a BNF document consumed by program that would then compile the code it describes. Instead, it's typically
-    used by a program that generates the parsing code of a compiler.
-<Next>
-15. With the grammar and some additional definitions for the literal categories, I then built a lexical analyzer
-    which takes source code and turns it into a stream of tokens (each token is a single word in the language of the
-    grammar).
-<Next>
+    grammar rules and turn them into a complete grammar object which feeds into the rest of the process. Very rarely
+    is a BNF document consumed by a program that would then directly compile the code it describes. Instead, it's
+    typically used by a program that generates the parsing code of a compiler.
+<Page 11>
+15. From the grammar, and some additional definitions for the literal categories, the API I created builds a lexical
+    analyzer (or lexer) which takes source code and turns it into a stream of tokens (each token is a single word in
+    the language of the grammar).
+<Page 12>
 16. So, here we have the sample code on your left and the token stream produced by the Nysa.CodeAnalysis library on
     the right.
     One thing to notice is that this lexical output does not keep comments, which, in the Microsoft Roslyn API is
     refered to as trivia.
     (add comments to the sample source)
-
-
+    (separate out the combined dim statement)
+    You'll notice that the lexing logic does not care if I break the program.  That happens in the parsing logic.
+<Page 13>
+17. And here I'm flipping the content around to show the detail given by data produced from lexical analysis and
+    to demonstrate how lexing provides code colorization.  Each token provides the category, or categories, the
+    token matches and the token position and length in the source.
+    Notice how the word 'explicit' gets the same identifier as our variable names and a unique identifier, but
+    that 'option' just has a unique value.  This is all due to the grammar rules.
+    (arrow down to a liteal string)
+    Notice that a literal string is a sinle token.
+<Page 14>
+18. With a token stream from the lexical analyzer and the grammar rules, we can actually perform the parsing.
+    The logic I used for this part of the API came from Wikipedia. I decided to use what's called the Earley
+    parsing algorithm primarily because its very permissive when it comes to how the grammar rules are written.
+    Some parsing algorithms have strict limitations on how the grammar rules are laid out. This mainly comes
+    down to whether or not they are left-recursive or right-recursive, but I'm not going to dive into that any
+    further here.  You can read about that on your own if you're interested.  The end result of any parsing
+    algorithm is to get what's called an abstract syntax tree (or AST).  The Earley algorithm, however, does
+    not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
+    get the AST.
+<Page 15>
 
 
 

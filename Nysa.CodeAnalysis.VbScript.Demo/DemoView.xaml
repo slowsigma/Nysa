@@ -29,10 +29,12 @@
                <ColumnDefinition Width="*"/>
                <ColumnDefinition Width="Auto"/>
                <ColumnDefinition Width="Auto"/>
+               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Content="&lt;&lt;" Command="{Binding PrevCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=PreviousEnabled}" />
-            <Button Grid.Column="2" Content="&gt;&gt;" Command="{Binding NextCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=NextEnabled}" />
+            <Label Grid.Column="1" Content="{Binding PageIdentifier}" VerticalContentAlignment="Center" />
+            <Button Grid.Column="2" Content="&lt;&lt;" Command="{Binding PrevCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=PreviousEnabled}" />
+            <Button Grid.Column="3" Content="&gt;&gt;" Command="{Binding NextCommand}" Margin="8,5" Padding="5,3" Width="80" Style="{StaticResource DialogButton}" IsEnabled="{Binding Path=NextEnabled}" />
          </Grid>
 
          <Grid>

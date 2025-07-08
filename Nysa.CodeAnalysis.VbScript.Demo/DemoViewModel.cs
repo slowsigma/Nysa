@@ -34,6 +34,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
         private Visibility              _ControlVisibility;
         private StackPanel              _RawContent;
         private Visibility              _TextVisibility;
+        private String                  _PageIdentifier;
         private Boolean                 _PreviousEnabled;
         private Boolean                 _NextEnabled;
 
@@ -89,6 +90,12 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
         {
             get { return this._TextVisibility; }
             set { this.UpdateValueProperty(ref this._TextVisibility, value, nameof(TextVisibility)); }
+        }
+
+        public String PageIdentifier
+        {
+            get { return this._PageIdentifier; }
+            set { this.UpdateObjectProperty(ref this._PageIdentifier, value, nameof(PageIdentifier)); }
         }
 
         public Boolean PreviousEnabled
@@ -174,6 +181,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
 
             this._RawContent    = (StackPanel)window.FindName("_StackPanel");
 
+            this.PageIdentifier = $"{(this._DemoPageIndex + 1)} / {this._DemoPages.Count}";
             this.NextCommand    = new Command(this.NextPage, null);
             this.PrevCommand    = new Command(this.PrevPage, null);
 
@@ -185,6 +193,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
             this.LeavePage();
             
             this._DemoPageIndex = this._DemoPageIndex > 0 ? this._DemoPageIndex - 1 : this._DemoPageIndex;
+            this.PageIdentifier = $"{(this._DemoPageIndex + 1)} / {this._DemoPages.Count}";
 
             this.RefreshPage();
         }
@@ -194,6 +203,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
             this.LeavePage();
 
             this._DemoPageIndex = this._DemoPageIndex < (this._DemoPages.Count - 1) ? this._DemoPageIndex + 1 : this._DemoPageIndex;
+            this.PageIdentifier = $"{(this._DemoPageIndex + 1)} / {this._DemoPages.Count}";
 
             this.RefreshPage();
         }
