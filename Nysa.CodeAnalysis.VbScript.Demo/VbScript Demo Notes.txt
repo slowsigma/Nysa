@@ -95,6 +95,25 @@
     not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
     get the AST.
 <Page 15>
+19. This page shows how the Earley algorithm produces a parse chart. You can step through token-by-token as
+    the algorithm searches the grammar for rules that may apply at each token.
+    (step down through to the first 'dim' statement)
+    I won't dive too deep into this, but the algorithm starts the chart by entering in the start rule and
+    marking it with no progress.
+    (highlight the zero chart entry of the zero token)
+    The algorithm has a primary counter that always advances to point at the current token and the current
+    position in the chart.  Within that, the algorithm has a secondary counter that points to the current
+    rule in the chart.  As the algorithm is running, the rules are being appended to the end of the list
+    of rules at the current token position and, potentially, to the list of rules in the next token
+    position.
+    Each entry in the chart is a rule and its parsing progress at that point. The progress is shown here
+    by this little symbol right after the colon-colon-equals (its actually the generic currency symbol).
+    In the algorithm, there are two logic paths for a rule to progress down in the chart. First, if the
+    next available symbol of the rule is a token and it matches the current token in the input stream,
+    then the rule moved to the next chart position and the progress marker is advanced. Second, when the
+    algorithm sees that a rule has been advanced and it's actually completed (the progress marker is past
+    the last symbol of the rule), the algorithm search back in the chart for prior incomplete rules where
+    the next available symbol in the rule matches the symbol of this completed rule.
 
 
 
