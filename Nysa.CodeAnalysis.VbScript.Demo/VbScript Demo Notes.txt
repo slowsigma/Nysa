@@ -95,19 +95,40 @@
     not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
     get the AST.
 <Page 15>
-19. This page shows how the Earley algorithm produces a parse chart. You can step through token-by-token as
+19. This page shows the Earley algorithm creating a parse chart. You can step through token-by-token as
     the algorithm searches the grammar for rules that may apply at each token.
-    (step down through to the first 'dim' statement)
-    I won't dive too deep into this, but the algorithm starts the chart by entering in the start rule and
-    marking it with no progress.
+    (hit step once)
+    I won't go into the details of the algorithm as you can read that in the source code if you like,
+    but I will cover what you're seeing on this page.  In order to do that, I'll step through some cycles
+    of algorithm and describe a little bit about what's happening.
     (highlight the zero chart entry of the zero token)
-    The algorithm has a primary counter that always advances to point at the current token and the current
-    position in the chart.  Within that, the algorithm has a secondary counter that points to the current
-    rule in the chart.  As the algorithm is running, the rules are being appended to the end of the list
+    So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also
+    adding to the chart at each token position, and it's analyzing each of these chart entries as it goes.
+    Each chart entry is a copy of a single alternative of a syntax rule and a progress marker indicating
+    how much of that variation has been matched up to that point. Remember that the alternatives in our
+    syntax rules were the individual sequences separated by the vertical bars.  We see the the start rule
+    here, which has only one alternative, and the progress indicator is this little symbol right after the
+    colon-colon-equals.  I'm using the character for generic currency here.
+    (hit step once and the go back to chart entry zero of token zero)
+    So, here, you're seeing that the algorithm added a bunch of entries under the very first token with
+    the progress indicator at various locations within these entries.
+    (highlight the "<OptionExplicit>" entry at position 20)
+    The algorithm makes entries in the next token position when it matches a current entry to the current
+    token, or it finds a completed rule in the chart at the current position and it finds a symbol match
+    for that completed rule in a prior chart entry. Here we're seeing the chart entry that matches this
+    this "option" token.
+    (hit step once and go back to token position 1)
+    This shows that the only rule that can match at token position 1 is the <OptionExplicit> rule.
+    (go to token position 1)
+    The entries here represent both the token match and an entry that the algorithm placed here just
+    after that token match which essentially represents the next symbol after the token match that
+    the algorithm can accept at position 2.
+
+    
+    As the algorithm is running, the rules are being appended to the end of the list
     of rules at the current token position and, potentially, to the list of rules in the next token
     position.
-    Each entry in the chart is a rule and its parsing progress at that point. The progress is shown here
-    by this little symbol right after the colon-colon-equals (its actually the generic currency symbol).
+    Each entry in the chart is a rule and its parsing progress at that point.
     In the algorithm, there are two logic paths for a rule to progress down in the chart. First, if the
     next available symbol of the rule is a token and it matches the current token in the input stream,
     then the rule moved to the next chart position and the progress marker is advanced. Second, when the
