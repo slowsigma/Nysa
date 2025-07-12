@@ -33,11 +33,11 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
     {
         public ChartControlListener Listener { get; private set; }
 
-        private VbParseListener? _ParseListener;
-        private Int32            _ParseState;
-        private Thread?          _ParsingThread;
-        private DispatcherTimer  _PlayTimer;
-        private Int32            _LastVersion;
+        private IVbParseListener?   _ParseListener;
+        private Int32               _ParseState;
+        private Thread?             _ParsingThread;
+        private DispatcherTimer     _PlayTimer;
+        private Int32               _LastVersion;
 
 
         public ChartViewModel Chart { get; private set; }
@@ -112,6 +112,8 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
             this._LastVersion = -1;
         }
 
+        private IVbParseListener CreateParseListener() => new VbParseListenerVerbose();
+
         public void OnEnter()
         {
             if (this.Listener.IsBackgroundComplete() && this.Listener.Version != this._LastVersion)
@@ -174,7 +176,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
         {
             if (this._ParsingThread == null)
             {
-                this._ParseListener = new VbParseListener();
+                this._ParseListener = this.CreateParseListener();
                 this._ParsingThread = new Thread(ParseOperation);
                 this._ParsingThread.Start();
 
@@ -216,7 +218,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
         {
             if (this._ParsingThread == null)
             {
-                this._ParseListener = new VbParseListener();
+                this._ParseListener = this.CreateParseListener();
                 this._ParsingThread = new Thread(ParseOperation);
                 this._ParsingThread.Start();
 

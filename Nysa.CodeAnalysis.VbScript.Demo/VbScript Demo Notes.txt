@@ -95,32 +95,37 @@
     not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
     get the AST.
 <Page 15>
-19. This page shows the Earley algorithm creating a parse chart. You can step through token-by-token as
-    the algorithm charts out if and how the input tokens satisfy the rules of the grammar.
+19. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
+    algorithm charts out if, and how, the input tokens satisfy the rules of the grammar.
+
+    I'll step through several cycles and describe some of what's happening. We start with an empty chart
+    which, obviously, you can't see here yet. What we do have here is a list of the tokens on the left
+    along with the number of rules the algorithm has put into the chart in its attempt to match that
+    particular token in the grammar.
     (hit step once)
 
+    The first step in the algorithm is to add all the alternatives of the start rule into the chart.
+    For VB Script, that's the "program" rule and it only has one alternative. One thing to note here is
+    that we slightly changed the definition of what a rule is here. When we looked at the syntax rules
+    before, each rule consisted of all the alternatives. Here we treat each alternative in a syntax rule
+    as an independent rule entry in the chart. So, the right side of this page is showing you the list
+    within the list for the token we have selected on the left. Each rule here has a progress indicator
+    showing how much of the rule is matched at this point. The progress indicator is that little spikey
+    circle character right after the colon-colon-equals and its showing here that nothing has been
+    matched yet.
 
-    In order to give you a sense of how this works, I'll step through some cycles and describe
-    some of what's happening. On your left, you're seeing the list of tokens produced by the lexing
-    process along with the number of rules the algorithm has searched through to try and match
-    that token within the grammar. On your right is a display of all the rules charted out at this
-    token position. We haven't done anything yet, but as we step through this will be populate from
-    the algorithm.
+    (hit step once)
+
+    So after another step, this is showing the starting point of the chart for the next token. You can
+    see that we ended up with one hundred six entries created in the chart at token zero just to get to
+    the starting point of token one. We'll look back at what happened.
+
+    (highlight token zero scroll to entry zero)
+
+    If the code does not violate any of the syntax rules, the chart will end up being the number of
+    input tokens plus one and each position of the chart will have at least one entry.
     
-      Now in chart building, we change the definition of what a syntax rule is slightly.
-    Before, when we showed the syntax rules, each rule could have multiple alternatives, separated by
-    the vertical bar character, but here we say that each one of those alternatives represents a single
-    rule in the chart.
-    (highlight the zero chart entry of the zero token)
-    The chart is built one token at a time and its essentially a list of lists. If the code does not
-    violate any of the syntax rules, the chart will end up being the number of input tokens plus one
-    and each position of the chart will have at least one entry.
-    
-    The first step of the algorithm is to add all the alternatives of the start rule in the first position
-    of the chart. These entries are not just a copy of the syntax rule, but a copy of the rule along with
-    a progress indicator showing how much of that rule has been matched so far. You can see that our
-    "program" syntax rule has only one alternative. The algorithm
-    will continue as long there are still tokens to match and there are rules in chart it can use to match.
+    The algorithm will continue as long there are still tokens to match and there are rules in chart it can use to match.
 
 
     So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also

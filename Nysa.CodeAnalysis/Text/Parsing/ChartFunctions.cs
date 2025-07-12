@@ -128,12 +128,10 @@ public static class ChartFunctions
                 else // use rules to anticipate input and completion
                 {
                     foreach (var rule in grammar.Rules(symbolId))
-                    {
                         data.AddUnique(p, new ChartEntry(rule, p, 0));
 
-                        if (grammar.NullableIds.Contains(symbolId))
-                            data.AddUnique(p, entry.AsNextEntry());
-                    }
+                    if (grammar.NullableIds.Contains(symbolId))
+                        data.AddUnique(p, entry.AsNextEntry());
                 }
             } // foreach entry in position
         } // foreach position in input/chart
@@ -195,11 +193,12 @@ public static class ChartFunctions
                         if (data.AddUnique(p, new ChartEntry(rule, p, 0)))
                             listener.ChartChanged(p, e, chart, p);
 
-                        if (grammar.NullableIds.Contains(symbolId))
-                        {
-                            if (data.AddUnique(p, entry.AsNextEntry()))
-                                listener.ChartChanged(p, e, chart, p);
-                        }
+                    }
+
+                    if (grammar.NullableIds.Contains(symbolId))
+                    {
+                        if (data.AddUnique(p, entry.AsNextEntry()))
+                            listener.ChartChanged(p, e, chart, p);
                     }
                 }
             } // foreach entry in position

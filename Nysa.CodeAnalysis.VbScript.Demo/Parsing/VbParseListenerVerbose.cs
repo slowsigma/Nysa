@@ -24,7 +24,7 @@ Notes on how this will work:
 
 */
 
-public class VbParseListener : IVbParseListener
+public class VbParseListenerVerbose : IVbParseListener
 {
     private ManualResetEvent    _Continue;
     private Boolean             _Cancel;
@@ -37,7 +37,7 @@ public class VbParseListener : IVbParseListener
     private InverseChart?       _InverseChart;
     private Boolean             _NoWait;
 
-    public VbParseListener()
+    public VbParseListenerVerbose()
     {
         this._Continue = new ManualResetEvent(true);
         this._Cancel = false;
@@ -87,7 +87,7 @@ public class VbParseListener : IVbParseListener
         if (this._NoWait)
             return;
             
-        if (!this._Cancel && this._CurrentChartIndex != currentChartIndex)
+        if (!this._Cancel && (this._CurrentChartIndex != currentChartIndex || this._CurrentEntryIndex != currentChartIndex))
         {
             this._CurrentChartIndex = currentChartIndex;
             this._CurrentEntryIndex = currentEntryIndex;
