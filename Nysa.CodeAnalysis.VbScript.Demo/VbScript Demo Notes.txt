@@ -96,12 +96,33 @@
     get the AST.
 <Page 15>
 19. This page shows the Earley algorithm creating a parse chart. You can step through token-by-token as
-    the algorithm searches the grammar for rules that may apply at each token.
+    the algorithm charts out if and how the input tokens satisfy the rules of the grammar.
     (hit step once)
-    I won't go into the details of the algorithm as you can read that in the source code if you like,
-    but I will cover what you're seeing on this page.  In order to do that, I'll step through some cycles
-    of algorithm and describe a little bit about what's happening.
+
+
+    In order to give you a sense of how this works, I'll step through some cycles and describe
+    some of what's happening. On your left, you're seeing the list of tokens produced by the lexing
+    process along with the number of rules the algorithm has searched through to try and match
+    that token within the grammar. On your right is a display of all the rules charted out at this
+    token position. We haven't done anything yet, but as we step through this will be populate from
+    the algorithm.
+    
+      Now in chart building, we change the definition of what a syntax rule is slightly.
+    Before, when we showed the syntax rules, each rule could have multiple alternatives, separated by
+    the vertical bar character, but here we say that each one of those alternatives represents a single
+    rule in the chart.
     (highlight the zero chart entry of the zero token)
+    The chart is built one token at a time and its essentially a list of lists. If the code does not
+    violate any of the syntax rules, the chart will end up being the number of input tokens plus one
+    and each position of the chart will have at least one entry.
+    
+    The first step of the algorithm is to add all the alternatives of the start rule in the first position
+    of the chart. These entries are not just a copy of the syntax rule, but a copy of the rule along with
+    a progress indicator showing how much of that rule has been matched so far. You can see that our
+    "program" syntax rule has only one alternative. The algorithm
+    will continue as long there are still tokens to match and there are rules in chart it can use to match.
+
+
     So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also
     adding to the chart at each token position, and it's analyzing each of these chart entries as it goes.
     Each chart entry is a copy of a single alternative of a syntax rule and a progress marker indicating
