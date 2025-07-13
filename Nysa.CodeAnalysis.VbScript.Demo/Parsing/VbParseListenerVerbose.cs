@@ -87,7 +87,7 @@ public class VbParseListenerVerbose : IVbParseListener
         if (this._NoWait)
             return;
             
-        if (!this._Cancel && (this._CurrentChartIndex != currentChartIndex || this._CurrentEntryIndex != currentChartIndex))
+        if (!this._Cancel)
         {
             this._CurrentChartIndex = currentChartIndex;
             this._CurrentEntryIndex = currentEntryIndex;

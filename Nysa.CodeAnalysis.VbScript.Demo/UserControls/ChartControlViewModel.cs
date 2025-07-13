@@ -112,7 +112,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
             this._LastVersion = -1;
         }
 
-        private IVbParseListener CreateParseListener() => new VbParseListenerVerbose();
+        private IVbParseListener CreateParseListener() => new VbParseListener();
 
         public void OnEnter()
         {
