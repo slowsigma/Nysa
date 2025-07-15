@@ -97,30 +97,58 @@
 <Page 15>
 19. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
     algorithm charts out if, and how, the input tokens satisfy the rules of the grammar.
-
     I'll step through several cycles and describe some of what's happening. We start with an empty chart
-    which, obviously, you can't see here yet. What we do have here is a list of the tokens on the left
+    which, obviously, not much to see yet. What we do have here is a list of the tokens on the left
     along with the number of rules the algorithm has put into the chart in its attempt to match that
     particular token in the grammar.
     (hit step once)
-
     The first step in the algorithm is to add all the alternatives of the start rule into the chart.
     For VB Script, that's the "program" rule and it only has one alternative. One thing to note here is
     that we slightly changed the definition of what a rule is here. When we looked at the syntax rules
     before, each rule consisted of all the alternatives. Here we treat each alternative in a syntax rule
     as an independent rule entry in the chart. So, the right side of this page is showing you the list
-    within the list for the token we have selected on the left. Each rule here has a progress indicator
+    within the list for the token we have selected on the left. Each chart entry has a progress indicator
     showing how much of the rule is matched at this point. The progress indicator is that little spikey
     circle character right after the colon-colon-equals and its showing here that nothing has been
     matched yet.
-
     (hit step once)
-
     So after another step, this is showing the starting point of the chart for the next token. You can
     see that we ended up with one hundred six entries created in the chart at token zero just to get to
     the starting point of token one. We'll look back at what happened.
+    (select token zero and scroll to entry zero)
+    Before we dig into the details of these entries, its important to understand that the algorithm
+    does not use for each loops.  This is a dynamic list of lists and the algorithm is doing a kind of
+    loop like "while there are entries at the next position, increment to the next position and
+    perform logic that might add more to this list or the next list". With that in mind, let's look
+    at what was added after our very first entry. The algorithm is standing on entry zero and it
+    performs some action based on what the next thing is after the progress indicator. Here, the
+    next thing is the abstract symbol "NLOpt". So, the algorithm looks up the alternative rules
+    that make up "NLOpt" and adds each to the list. In addition, because the "NLOpt" rule is, by
+    its defintion, and optional rule, the algorithm determines that it can take the rule its on,
+    the "program" rule and add it to the end of the list with the progress marker advanced over
+    the "NLOpt" symbol. Done with that, the algorithm advances to entry one and evaluates the next
+    symbol in that rule. Here its the "NL" rule with its four alternatives. This process continues
+    the same until we get to entry four where the algorithm encounters an entry where the next
+    thing to match is an actual token. In this case, its the token category "new-line". This is a
+    category because the lexing algorithm will make a single token for a carriage return character,
+    or a line feed character, or combination of the two. Of course, the algorithm checks this token
+    against the current token and it doesn't match, so it moves on to the next chart entry. Things
+    progress in this same way until we get to entry twenty where you can see the next thing to
+    match is the "option" token which is a match for the current token and this is where the
+    algorithm does something entirely different. It add a copy of the current rule, with the
+    progress indicator advanced to the next symbol, in the list of entries corresponding to the
+    next token.
+    (select entry twenty, pause)
+    (select token one)
+    One other thing to note here is that since we only see this one entry at token one, it means
+    that after entry twenty, all the rest of the evaulation beyond twenty at token zero resulted
+    in no matches. This implies that in some languages a single keyword may apply to more than
+    one rule.
 
-    (highlight token zero scroll to entry zero)
+
+
+
+
 
     If the code does not violate any of the syntax rules, the chart will end up being the number of
     input tokens plus one and each position of the chart will have at least one entry.
