@@ -110,7 +110,8 @@
     within the list for the token we have selected on the left. Each chart entry has a progress indicator
     showing how much of the rule is matched at this point. The progress indicator is that little spikey
     circle character right after the colon-colon-equals and its showing here that nothing has been
-    matched yet.
+    matched yet. In addition, each entry contains the token index at which the entry was first created.
+    Here you can see the number in the brackets just prior to the colon-colon-equals.
     (hit step once)
     So after another step, this is showing the starting point of the chart for the next token. You can
     see that we ended up with one hundred six entries created in the chart at token zero just to get to
@@ -125,7 +126,7 @@
     next thing is the abstract symbol "NLOpt". So, the algorithm looks up the alternative rules
     that make up "NLOpt" and adds each to the list. In addition, because the "NLOpt" rule is, by
     its defintion, and optional rule, the algorithm determines that it can take the rule its on,
-    the "program" rule and add it to the end of the list with the progress marker advanced over
+    the "program" rule, and add it to the end of the list with the progress marker advanced over
     the "NLOpt" symbol. Done with that, the algorithm advances to entry one and evaluates the next
     symbol in that rule. Here its the "NL" rule with its four alternatives. This process continues
     the same until we get to entry four where the algorithm encounters an entry where the next
@@ -135,17 +136,34 @@
     against the current token and it doesn't match, so it moves on to the next chart entry. Things
     progress in this same way until we get to entry twenty where you can see the next thing to
     match is the "option" token which is a match for the current token and this is where the
-    algorithm does something entirely different. It add a copy of the current rule, with the
-    progress indicator advanced to the next symbol, in the list of entries corresponding to the
+    algorithm does something entirely different. It adds a copy of the current rule, with the
+    progress indicator advanced to the next symbol, into the list of entries corresponding to the
     next token.
     (select entry twenty, pause)
     (select token one)
     One other thing to note here is that since we only see this one entry at token one, it means
-    that after entry twenty, all the rest of the evaulation beyond twenty at token zero resulted
-    in no matches. This implies that in some languages a single keyword may apply to more than
-    one rule.
-
-
+    that after entry twenty, all the rest of the evaulation beyond that point resulted in no
+    additional match for the "option" token. This makes sense for VB Script, but it does imply that
+    for some languages a single keyword may apply to more than one rule. Notice that the next thing
+    to match here is the token "explicit". This means that there will be no abstract rule expansion
+    in this list and if the current token does not match, parsing will be done resulting in a
+    syntax error. There's still one more behavior of the algorithm to talk about and so, I'm going
+    to step forward a few more times in order to show it.
+    (hit step four times and then select token two)
+    Notice here that the "option explicit" rule was pushed forward once more from a match on the
+    "explicit" token and still has the "NL" rule as the next thing to match.
+    (select token three and scroll down to entry zero)
+    Here at index zero and one we have two rules that were pushed forward from the "new-line"
+    match at index 2, one of these needs another "NL" and the other is complete. The next entries,
+    two through five come from the expansion of "NL" at index zero. When the algorithm gets to
+    entry one, it does something different. Here the algorithm searches back through the chart
+    for entries where the next symbol needed is an "NL" and of course, it find that in the
+    "option explicit" chart entry at index two.
+    (highlight token two)
+    This "option explicit" rule here gets pulled into the chart list at token position three and
+    its position marker is advanced. In turn, when the algorithm encounters the "option explicit"
+    that completed here. It searches back in the chart for a rule whose next match is this rule.
+    You can see that's the reason for the "global stmt" entry at position nine. 
 
 
 
