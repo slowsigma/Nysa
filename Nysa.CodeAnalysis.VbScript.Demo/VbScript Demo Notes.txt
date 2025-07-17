@@ -161,9 +161,44 @@
     "option explicit" chart entry at index two.
     (highlight token two)
     This "option explicit" rule here gets pulled into the chart list at token position three and
-    its position marker is advanced. In turn, when the algorithm encounters the "option explicit"
-    that completed here. It searches back in the chart for a rule whose next match is this rule.
-    You can see that's the reason for the "global stmt" entry at position nine. 
+    its progress marker is advanced. In turn, when the algorithm encounters the "option explicit"
+    that completed here, it searches back in the chart for a rule whose next match is this rule.
+    You can see that's the reason for the "global stmt" entry at position nine. This rule pulling
+    behavior also accounts for the "global stmt list" entry at ten and the "program" entry at
+    twenty one.
+    That covers the major behaviors of the algorithm, but its worth pointing out one small thing
+    I skipped over before now. Notice this token category just after the progress marker on the
+    "program" entry here at position twenty one.  That is a special token which the lexer appends
+    at the end of the token stream.
+    (scroll down the token list to show the EOI)
+    This means that the "program" rule is never satisfied until the end of the token stream has
+    been processed. I'll press the fast forward button here to get the algorithm to finish up the
+    chart.
+    (press fast forward and highlight the last token)
+    Because we have a final satisfied start symbol at the end of the chart, we say that the
+    program code satisfies the syntax rules our VB Script grammar.
+    That's the Earley algorithm in a nutshell and it produces this chart to which we apply
+    another algorithm to produce the abstract syntax tree. I had a pretty hard time finding a
+    good explanation of exactly how to do that, but I was able to piece it together from some
+    internet sources and a lot of trial and error.
+    I'll leave that algorithm for those restless souls that just can't stand not knowing, but
+    I will show the one step that's taken to prepare this chart to get the AST and its called
+    inverting the chart.
+    (click the inverse checkbox) 
+    As you can see here we've created a kind of mirror chart where all the entries are in
+    reverse order and the rule start positions (the number in those brackets) are changed to
+    reflect where that rule came from before the flip.  One other thing that's happened here
+    is that we've removed all the unsatisfied entries in the chart.
+<Page 16>
+    That's what feeds the algorithm to get the abstract syntax tree (the AST).
+<Page 17>
+    Here's that AST on the left and our source on the right. This tree is simply composed of
+    objects of four main types. There's a Node type, which has a property pointing to the
+    rule the node represents, and a property that lists all its children. The type that the
+    list is made of is literally NodeOrToken. Each NodeOrToken object has a nullable token
+    property and a nullable node poperty, only one of which will be null when the other is
+    not.
+    (expand and select different parts of the tree)
 
 
 

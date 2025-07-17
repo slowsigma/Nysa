@@ -72,8 +72,17 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
 
             var focus = chart.Entries(this.Position);
 
-            for (Int32 i = focus.Count - 1; i >= 0; i--)
-                this.Entries.Add(new ChartEntryViewModel(focus[i], i));
+            if (chart is ParseChart)
+            {
+                for (Int32 i = focus.Count - 1; i >= 0; i--)
+                    this.Entries.Add(new ChartEntryViewModel(focus[i], i));
+            }
+            else
+            {
+                for (Int32 i = 0; i < focus.Count; i++)
+                    this.Entries.Add(new ChartEntryViewModel(focus[i], i));
+            }
+
 
             this.NotifyChanged(nameof(RuleCount));
         }
