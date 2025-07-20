@@ -37,7 +37,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Content="Tech Salary (K)" Grid.Row="0" Grid.Column="0" FontSize="16"/>
+            <Label Content="Average Tech Salary (K)" Grid.Row="0" Grid.Column="0" FontSize="16"/>
             <TextBox Text="{Binding Path=AverageSalaryInThousands}" Grid.Row="1" Grid.Column="0" FontSize="16"/>
 
             <Label Content="Cost Factor" Grid.Row="2" Grid.Column="0" FontSize="16"/>
@@ -46,7 +46,7 @@
             <Label Content="Employee Cost/Year" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
             <TextBlock Text="{Binding Path=SingleEmployeeCost}" Grid.Row="3" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
 
-            <Label Content="Total Staff" Grid.Row="4" Grid.Column="0" FontSize="16"/>
+            <Label Content="Average Total Staff" Grid.Row="4" Grid.Column="0" FontSize="16"/>
             <TextBox Text="{Binding Path=TotalEmployees}" Grid.Row="5" Grid.Column="0" FontSize="16"/>
 
             <Label Content="Staff Cost/Year" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>

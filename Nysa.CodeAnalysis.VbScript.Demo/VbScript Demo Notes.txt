@@ -4,19 +4,20 @@
     I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
     I'm going to show here. I will talk about portions of the project that were officially Tyler, but there is no code in this
     that is Tyler owned.
- 2. Our story starts with the Enterprise Justice Suite, formerly called Odyssey.
-    Back around the turn of the century (ha, ha), the Odyssey development team made the fateful decision to adopt
-    Microsoft technology for all parts of the project and that meant coding UI logic with the now defunct VB Script language.
-    Even though the dev community at large recognized JavaScript as the winner much earlier, the demise of VB Script was sealed
-    in late 2018 when Microsoft announced it would base it's new Edge browser on the same technology as the Chrome browser.
-    So, we should have started turning the Titanic before that happened, but we didn't.
-    By the time we started the turn, we had a full two decades of "investment" to fix.
-    There are many ways of calculating the worth of a product like Enterprise Justice.  You can use future profit, past
-    profit, both, or you can calculate the total amount of money poured into its existence. For this demo, and my click-bait
-    title, I chose calculating based on cost (i.e., how much have we sunk into this beast).
-    I like to think this is more of a conservative minimum for just the cost of building the user interface alone.
-    This screen is simply a little calculator, so if you wanted to, you could adjust the numbers to be more in line with the
-    true average of the number of employees per year, for example.
+
+ 2. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, originally titled Odyssey.
+    Back around the turn of the century (ha, ha), the Odyssey development team understood the potential of internet technology
+    but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
+    wrong one as we now know. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev
+    community at large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018
+    when Microsoft announced it would base it's new Edge browser on the same technology as the Google's Chrome browser. So, we
+    should have started turning the Titanic even before that happened, but we didn't. By the time we started the turn, we had
+    a full two decades of "investment" to fix. There are many ways of calculating the worth of a product like Enterprise
+    Justice. You can use future profit, past profit, both, or you can calculate the total amount of money poured into its
+    existence. For this demo, and my click-bait title here, I chose calculating value based on cost (i.e., how much have we
+    sunk into the beast).
+    I believe this is a pretty conservative estimate and I've even added a factor here to attempt to make the number reflect
+    the cost of the user interface alone.
 <Page 02>
  3. The real title of this talk is really, "Translating VB Script to JavaScript".
     If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
@@ -24,6 +25,8 @@
     code that the official Tyler VB Script translator was built upon.
     The basic idea of code translation is: turning code into data, and then turning that data back into code.
 <Page 03>
+
+
  4. We've actually been doing this since the very first high-level programming language.
 <Page 04>
  5. Compilers read code and turn that into a string of machine code.

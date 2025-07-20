@@ -5,9 +5,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo;
 
 public class DemoImages
 {
-    public DemoPageImage OregonTrailFull { get; init; }
-    public DemoPageImage OregonTrailZoomOne { get; init; }
-    public DemoPageImage OregonTrailZoomTwo { get; init; }
+    public DemoPageImage Repos { get; init; }
     public DemoPageImage RescriptExample { get; init; }
     public DemoPageImage SlideTitle { get; init; }
     public DemoPageImage SlideCodeToData { get; init; }
@@ -28,9 +26,7 @@ public class DemoImages
 
     public DemoImages(DemoSession session)
     {
-        this.OregonTrailFull = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "OregonTrail_Full.png"));
-        this.OregonTrailZoomOne = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "OregonTrail_Zoom.01.png"));
-        this.OregonTrailZoomTwo = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "OregonTrail_Zoom.02.png"));
+        this.Repos = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "Repos.png"));
         this.RescriptExample = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "Rescript_Example.png"));
         this.SlideTitle = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "VbsToJs_01.png"));
         this.SlideCodeToData = new DemoPageImage(null, Path.Combine(session.BackgroundsPath, "VbsToJs_02.png"));

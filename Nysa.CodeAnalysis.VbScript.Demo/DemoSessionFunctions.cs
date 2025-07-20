@@ -173,11 +173,6 @@ public static class DemoSessionFunctions
         var images = new DemoImages(@this);
 
 
-        // demoPages.Add(images.OregonTrailFull);
-        // demoPages.Add(images.OregonTrailZoomOne);
-        // demoPages.Add(images.OregonTrailZoomTwo);
-
-
         // tokens with matching colorized code
         var tokenTracking = @this.TokenSourceTrackingDemoPage();
         var parseTree = @this.ParseTreeDemoPage();
@@ -185,7 +180,7 @@ public static class DemoSessionFunctions
         var semanticTree = @this.SemanticTreeDemoPage();
         var rescriptTree = @this.RescriptDemoPage();
 
-
+        // primary sample code for the demo
         var sampleCode = File.ReadAllText(Path.Combine(@this.VbScriptsPath, "Sample.vbs"))
                              .ToObservable(tokenTracking.Listener,
                                            parseTree.Listener,
@@ -197,6 +192,7 @@ public static class DemoSessionFunctions
         demoPages.Add(new DemoPageControl(null, (new MistakeControl()).ContextSetControl(new MistakeControlViewModel()), null, null));
 
         demoPages.Add(images.SlideTitle);
+        demoPages.Add(images.Repos);
         demoPages.Add(images.SlideCodeToData);
         demoPages.Add(images.SlideCompilers);
         demoPages.Add(images.SlideCompilerTerms);
