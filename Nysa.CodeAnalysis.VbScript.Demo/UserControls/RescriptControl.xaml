@@ -22,17 +22,19 @@
         </Grid.ColumnDefinitions>
     
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Visible">
-            <RichTextBox Name="_RichTextBox" />
+            <RichTextBox Name="_RichTextBox" IsReadOnly="True"/>
         </ScrollViewer>
    
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-             <Button Grid.Row="1" Command="{Binding Path=RescriptCommand}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaPlayButton}" />
+            <Button Grid.Row="1" Command="{Binding Path=RewindCommand}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaRewindButton}" />
+            <Button Grid.Row="2" Command="{Binding Path=RescriptCommand}" Margin="8,5" Padding="5,3" Height="32" Width="80" Style="{StaticResource MediaPlayButton}" />
         </Grid>
 
         <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible">

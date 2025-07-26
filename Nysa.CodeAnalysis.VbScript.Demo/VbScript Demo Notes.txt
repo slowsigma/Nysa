@@ -1,30 +1,42 @@
  <Page 01>
- 1. Before we begin.
-    This entire demo is open source.  It can be found here (show GitHub and NuGet locations).
-    I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
-    I'm going to show here. I will talk about portions of the project that were officially Tyler, but there is no code in this
-    that is Tyler owned.
-
- 2. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, originally titled Odyssey.
+ 1. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, originally titled Odyssey.
     Back around the turn of the century (ha, ha), the Odyssey development team understood the potential of internet technology
     but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
     wrong one as we now know. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev
     community at large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018
     when Microsoft announced it would base it's new Edge browser on the same technology as the Google's Chrome browser. So, we
     should have started turning the Titanic even before that happened, but we didn't. By the time we started the turn, we had
-    a full two decades of "investment" to fix. There are many ways of calculating the worth of a product like Enterprise
-    Justice. You can use future profit, past profit, both, or you can calculate the total amount of money poured into its
-    existence. For this demo, and my click-bait title here, I chose calculating value based on cost (i.e., how much have we
-    sunk into the beast).
-    I believe this is a pretty conservative estimate and I've even added a factor here to attempt to make the number reflect
-    the cost of the user interface alone.
+    a full two decades of "investment" to fix (over 2.1 million lines of VB Script).  There are many ways of calculating the
+    worth of a product like Enterprise Justice. You can use future profit, past profit, both, or you can calculate the total
+    amount of money poured into its existence. For this demo, and my click-bait title here, I chose calculating value based on
+    cost.
+ 2. So, as you may know, we did successfully turn the ship around and there are many dimensions to that story, but this talk
+    is about the translation tool that made it possible and the technology under the hood.
+ 3. As an aside:
+    Does anyone know the industry average for how line of code a day a professional developer creates?  Between 10 and 40.
+    At 40 lines of code a day, we could have recoded the two million lines of VB Script in just over two years with 100 full
+    time developers.
+    Does anyone know the industry average for the number of bugs per 1000 lines of code written? Between 1 and 25.
+    If we averaged on the low side, say 5 per 1000 lines of code, we would have introduced more 10 thousand bugs into the
+    system.
 <Page 02>
- 3. The real title of this talk is really, "Translating VB Script to JavaScript".
+3.  ( How do I show the open source stuff and talk to the divide between what is Tyler IP and what's not before we even
+      get into the details of the technology? )
+<Page 03>
+ 3. So, my less glamorous title of this talk is actually: "Translating VB Script to JavaScript"
+ 4. Its easy to see code as unstructured like natural language and, therefore, not data, but we can't translate code in any
+    predictable way unless we can turn it into data.
+
     If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
     The entire thing is a program that contains slides and interactive content that is actually using the open source
     code that the official Tyler VB Script translator was built upon.
     The basic idea of code translation is: turning code into data, and then turning that data back into code.
 <Page 03>
+ 1. Before we begin.
+    This entire demo is open source.  It can be found here (show GitHub and NuGet locations).
+    I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
+    I'm going to show here. I will talk about portions of the project that were officially Tyler, but there is no code in this
+    that is Tyler owned.
 
 
  4. We've actually been doing this since the very first high-level programming language.

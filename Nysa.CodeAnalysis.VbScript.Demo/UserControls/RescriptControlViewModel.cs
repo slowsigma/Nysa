@@ -31,6 +31,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
         private CodeDocument?       _CodeDocumentRescript;
         private Int32               _LastVersion;
 
+        public ICommand RewindCommand { get; private set; }
         public ICommand RescriptCommand { get; private set; }
 
         public RescriptControlViewModel(RichTextBox sourceBox, RichTextBox sourceBoxRescript, VbScriptColorKey colorKey)
@@ -43,6 +44,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
             this._CodeDocumentRescript = null;
             this._LastVersion = -1;
 
+            this.RewindCommand = new Command(this.Rewind, null);
             this.RescriptCommand = new Command(this.Rescript, null);
         }
 
@@ -55,6 +57,12 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
                 this._SourceBox.Document = this._CodeDocument.Document;
                 this._LastVersion = this.Listener.Version;
             }
+        }
+
+        public void Rewind()
+        {
+            this._CodeDocumentRescript = null;
+            this._SourceBoxRescript.Document = new FlowDocument();
         }
 
         public void Rescript()
