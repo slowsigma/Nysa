@@ -1,106 +1,97 @@
  <Page 01>
- 1. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, originally titled Odyssey.
-    Back around the turn of the century (ha, ha), the Odyssey development team understood the potential of internet technology
+ 1. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, or the product formerly known as Odyssey.
+    Back around the turn of the century (ha, ha), the Odyssey development team recognized the potential of internet technology
     but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
-    wrong one as we now know. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev
-    community at large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018
-    when Microsoft announced it would base it's new Edge browser on the same technology as the Google's Chrome browser. So, we
+    wrong one. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev community at
+    large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018 when
+    Microsoft announced it would base it's new Edge browser on the same technology as the Google's Chrome browser. So, we
     should have started turning the Titanic even before that happened, but we didn't. By the time we started the turn, we had
     a full two decades of "investment" to fix (over 2.1 million lines of VB Script).  There are many ways of calculating the
     worth of a product like Enterprise Justice. You can use future profit, past profit, both, or you can calculate the total
     amount of money poured into its existence. For this demo, and my click-bait title here, I chose calculating value based on
-    cost.
- 2. So, as you may know, we did successfully turn the ship around and there are many dimensions to that story, but this talk
-    is about the translation tool that made it possible and the technology under the hood.
- 3. As an aside:
-    Does anyone know the industry average for how line of code a day a professional developer creates?  Between 10 and 40.
-    At 40 lines of code a day, we could have recoded the two million lines of VB Script in just over two years with 100 full
-    time developers.
-    Does anyone know the industry average for the number of bugs per 1000 lines of code written? Between 1 and 25.
-    If we averaged on the low side, say 5 per 1000 lines of code, we would have introduced more 10 thousand bugs into the
-    system.
+    cost. Does anyone know the historical average lines of code per day a developer produces? What about the number of bugs
+    created per thousand lines of code?
 <Page 02>
-3.  ( How do I show the open source stuff and talk to the divide between what is Tyler IP and what's not before we even
-      get into the details of the technology? )
+ 2. For the sake of perspective, this page shows a best case scenario of how to potentially solve the problem by throwing
+    man power at it. There are trade offs to be made here. If you slow down to reduce the number of bugs, you reduce the
+    number of lines of code per day. The bottom line is that a manual effort introduces huge risks. Of course, we did
+    successfully turn the Titanic around and there are many dimensions to that story, but this talk is about the translation
+    tool we created and the technology under the hood. But first, I have to take a moment to point out that this project
+    originated as a hobby project and that means the final translator we created is based on open source code I created on
+    my own. For this demo, I decided it was going to be open source as well and that mean it does not use, or show, any
+    Tyler owned code.
 <Page 03>
- 3. So, my less glamorous title of this talk is actually: "Translating VB Script to JavaScript"
- 4. Its easy to see code as unstructured like natural language and, therefore, not data, but we can't translate code in any
-    predictable way unless we can turn it into data.
-
-    If you didn't catch it from the click bait title screen we just saw, this is not a static slide presentation.
-    The entire thing is a program that contains slides and interactive content that is actually using the open source
-    code that the official Tyler VB Script translator was built upon.
-    The basic idea of code translation is: turning code into data, and then turning that data back into code.
-<Page 03>
- 1. Before we begin.
-    This entire demo is open source.  It can be found here (show GitHub and NuGet locations).
-    I'm only going to include material here that is open source. Yes, I am the author and owner of all the code and examples
-    I'm going to show here. I will talk about portions of the project that were officially Tyler, but there is no code in this
-    that is Tyler owned.
-
-
- 4. We've actually been doing this since the very first high-level programming language.
+ 3. This page shows the repo containing this demo (its a window app) and the two primary class libraries the translator and
+    this demo use. This talk will mainly be about concepts and not code and I will point out when we jump from the concepts
+    contained in the open source portion to that of the Tyler translator.
 <Page 04>
- 5. Compilers read code and turn that into a string of machine code.
- 6. This project was inspired by the Microsoft Roslyn project which I believe was created to enable all kinds of
-    IDE features we take for granted today, primarily those features that allow us to jump back and forth in code
-    between the definitions of symbols and the places where those symbols are used.
+ 4. So, here's my less glamorous title for this talk.
+ 5. Its easy to see code as unstructured like natural language and, therefore, not data, but we can't translate code in any
+    predictable way unless we can turn it into data.
 <Page 05>
- 7. So, when it comes to compilers, there are some core terms that form the back bone of what this presentation covers.
+    The basic idea of code translation is: turning code into data, and then turning that data back into code.
+<Page 06>
+ 6. We've actually been doing this since the very first high-level programming language.
+ 7. Compilers read code and turn that into a string of machine code.
+ 8. The whole idea for the translator was inspired by my exposure to Microsoft class libraries that came from their Roslyn
+    project for .NET.
+<Page 07>
+ 9. So, when it comes to compilers, there are some core terms that form the back bone of what this presentation covers.
     Some of these may be familiar and some may not, but by the end, you'll have a pretty good idea about how the
     translator works.
-<Page 06>
- 8. We start with source code.  I wrote this little sample script as a starting point and it will feed into different
-    parts of the presentation as we go along.  The program simply prints out a random German greeting.
-<Page 07>
- 9. Back in late 2017, I got this idea that we might be able to translate the Enterprise Justice VB Script to JavaScript
-    if we could parse the source into a semantic tree.  A semantic tree is simply a direct representation of source code
-    in computer memory in a tree structure (much like parsed XML in memory has a tree structure).
-10. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
+10. Let's start with source code.
+<Page 08>
+11. I wrote this little sample script as a starting point and it will feed into different parts of the presentation as we
+    go along. The program simply prints out a random German greeting.
+<Page 09>
+12. Back in late 2017, while looking at the Roslyn libraries, I got this idea that we might be able to translate the
+    Enterprise Justice VB Script to JavaScript if we could parse the source into a semantic tree.  A semantic tree is
+    simply a direct representation of source code, in computer memory, in a tree structure (much like parsed XML in memory
+    has a tree structure).
+13. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
     find an attempt some developers had made at writing down the rules. There were some errors in the rules, but it
     served as a good starting point.
-<Page 08>
-11. Here are those rules in a language called Backus-Naur Form (BNF). Its an extremely simple language to follow.
+<Page 10>
+14. Here are those rules in a language called Backus-Naur Form (BNF). Its an extremely simple language to follow.
     Each line contains a single rule.  Each rule starts with an abstract symbol (that's the thing between greater and
     less-than characters), followed by the colon-colon-equals symbol, which stands for "is defined as", and followed
     by a set of alternate definitions separated by the vertical bar (or pipe character). Each alternate definition
     is simply a sequence of literals (the quoted strings), abstract symbols (< >), and literal categories (a name
     surrounded by curly braces).
-12. Of course, the difficulty with this grammar rule language is that you don't really get to see how it works when
+15. Of course, the difficulty with this grammar rule language is that you don't really get to see how it works when
     you look at it raw like this. So, I've applied a little logic to it and turned it into an interactive page.
-<Page 09>
-13. In a BNF document for a programming language, there's always a start rule and, of course, that's the rule that
-    no other rule references. So, its fitting that the start rule uses the work "program" because that's what you
-    end up with at the top level.
+<Page 11>
+16. In a BNF document for a programming language, there's always a start rule and, of course, that's the rule that
+    no other rule references. So, its fitting that the start rule uses the word "program" because that's what we
+    get when we write code (we get a program).
     This little page shows how the rules expand downward as they are used in a real piece of code.
     {Work the page expanding terms...}
-<Page 10>
-14. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
+<Page 12>
+17. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
     grammar rules and turn them into a complete grammar object which feeds into the rest of the process. Very rarely
     is a BNF document consumed by a program that would then directly compile the code it describes. Instead, it's
     typically used by a program that generates the parsing code of a compiler.
-<Page 11>
-15. From the grammar, and some additional definitions for the literal categories, the API I created builds a lexical
+<Page 13>
+18. From the grammar, and some additional definitions for the literal categories, the API I created builds a lexical
     analyzer (or lexer) which takes source code and turns it into a stream of tokens (each token is a single word in
     the language of the grammar).
-<Page 12>
-16. So, here we have the sample code on your left and the token stream produced by the Nysa.CodeAnalysis library on
-    the right.
-    One thing to notice is that this lexical output does not keep comments, which, in the Microsoft Roslyn API is
-    refered to as trivia.
+<Page 14>
+19. Here we have the sample code on your left and the token stream produced by the Nysa.CodeAnalysis library on the
+    right. One thing to notice is that this lexical output does not keep comments, which, in the Microsoft Roslyn
+    API is refered to as trivia.
     (add comments to the sample source)
     (separate out the combined dim statement)
     You'll notice that the lexing logic does not care if I break the program.  That happens in the parsing logic.
-<Page 13>
-17. And here I'm flipping the content around to show the detail given by data produced from lexical analysis and
+<Page 15>
+20. And here I'm flipping the content around to show the detail given by data produced from lexical analysis and
     to demonstrate how lexing provides code colorization.  Each token provides the category, or categories, the
     token matches and the token position and length in the source.
     Notice how the word 'explicit' gets the same identifier as our variable names and a unique identifier, but
     that 'option' just has a unique value.  This is all due to the grammar rules.
     (arrow down to a liteal string)
-    Notice that a literal string is a sinle token.
-<Page 14>
-18. With a token stream from the lexical analyzer and the grammar rules, we can actually perform the parsing.
+    Notice that a literal string is a single token.
+<Page 16>
+21. With a token stream from the lexical analyzer and the grammar rules, we can actually perform the parsing.
     The logic I used for this part of the API came from Wikipedia. I decided to use what's called the Earley
     parsing algorithm primarily because its very permissive when it comes to how the grammar rules are written.
     Some parsing algorithms have strict limitations on how the grammar rules are laid out. This mainly comes
@@ -109,8 +100,8 @@
     algorithm is to get what's called an abstract syntax tree (or AST).  The Earley algorithm, however, does
     not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
     get the AST.
-<Page 15>
-19. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
+<Page 17>
+22. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
     algorithm charts out if, and how, the input tokens satisfy the rules of the grammar.
     I'll step through several cycles and describe some of what's happening. We start with an empty chart
     which, obviously, not much to see yet. What we do have here is a list of the tokens on the left

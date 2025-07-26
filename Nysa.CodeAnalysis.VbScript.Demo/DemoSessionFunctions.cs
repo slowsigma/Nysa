@@ -192,8 +192,8 @@ public static class DemoSessionFunctions
         demoPages.Add(new DemoPageControl(null, (new MistakeControl()).ContextSetControl(new MistakeControlViewModel()), null, null));
         demoPages.Add(new DemoPageControl(null, (new FixControl()).ContextSetControl(new FixControlViewModel()), null, null));
 
-        demoPages.Add(images.SlideTitle);
         demoPages.Add(images.Repos);
+        demoPages.Add(images.SlideTitle);
         demoPages.Add(images.SlideCodeToData);
         demoPages.Add(images.SlideCompilers);
         demoPages.Add(images.SlideCompilerTerms);
