@@ -15,18 +15,18 @@ public class FixControlViewModel : ModelObject
 
 
     private Int32 _TotalLinesOfCode;
-    private Int32 _LinesOfCodePerDay;       // per developer
-    private Int32 _NumberOfFullTimeDevs;
-    private Int32 _WorkDaysPerYear;
-    private Int32 _BugsPerThousandLines;
+    private Int32 _LinesOfCodePerDay;       // per developer: standard average is between 10 and 40
+    private Int32 _TotalDevelopers;
+    private Int32 _WorkDaysPerYear;         // standard full time is 260 (52 weeks * 5 days)
+    private Int32 _BugsPerThousandLines;    // standard average is between 1 and 25
 
-    public Int32 DaysToRecodeNumber => this._TotalLinesOfCode / (this._LinesOfCodePerDay * this._NumberOfFullTimeDevs);
-    public Double YearsToRecodeNumber => Convert.ToDouble(this.DaysToRecodeNumber) / Convert.ToDouble(this._WorkDaysPerYear);
-    public Int32 TotalBugsIntroducedNumber => this._TotalLinesOfCode / this._BugsPerThousandLines;
+    private Int32 DaysToRecodeNumber => this._TotalLinesOfCode / (this._LinesOfCodePerDay * this._TotalDevelopers);
+    private Double YearsToRecodeNumber => Convert.ToDouble(this.DaysToRecodeNumber) / Convert.ToDouble(this._WorkDaysPerYear);
+    private Int32 BugsIntroducedNumber => (this._TotalLinesOfCode / 1000) * this._BugsPerThousandLines;
 
     public String DaysToRecode => this.DaysToRecodeNumber.ToString("#,##0");
     public String YearsToRecode => this.YearsToRecodeNumber.ToString("#,##0.00");
-    public String BugsIntroduced => this.TotalBugsIntroducedNumber.ToString("#,##0");
+    public String BugsIntroduced => this.BugsIntroducedNumber.ToString("#,##0");
 
     public String TotalLinesOfCode
     {
@@ -35,83 +35,81 @@ public class FixControlViewModel : ModelObject
         {
             this.UpdateValueProperty(ref this._TotalLinesOfCode,
                                      value.Replace(",", "").ParseInt32().GetValueOrDefault(this._TotalLinesOfCode),
-                                     nameof(TotalLinesOfCode));
+                                     nameof(TotalLinesOfCode),
+                                     nameof(DaysToRecode),
+                                     nameof(YearsToRecode),
+                                     nameof(BugsIntroduced));
         }
     }
 
-
-    public String EmployeeCostFactor
+    public String LinesOfCodePerDay
     {
-        get { return this._EmployeeCostFactor.ToString(); }
+        get { return this._LinesOfCodePerDay.ToString(); }
         set
         {
-            this.UpdateValueProperty(ref this._EmployeeCostFactor,
-                                     value.ParseDouble().GetValueOrDefault(this._EmployeeCostFactor),
-                                     nameof(EmployeeCostFactor),
-                                     nameof(SingleEmployeeCost),
-                                     nameof(TotalEmployeeCostPerYear),
-                                     nameof(TotalProductCost),
-                                     nameof(TotalProductFontEndCost));
+            this.UpdateValueProperty(ref this._LinesOfCodePerDay,
+                                     value.ParseInt32().GetValueOrDefault(this._LinesOfCodePerDay),
+                                     nameof(LinesOfCodePerDay),
+                                     nameof(DaysToRecode),
+                                     nameof(YearsToRecode));
         }
     }
 
-    public String TotalEmployees
+    public String TotalDevelopers
     {
-        get { return this._TotalEmloyees.ToString(); }
+        get { return this._TotalDevelopers.ToString(); }
         set
         {
-            this.UpdateValueProperty(ref this._TotalEmloyees,
-                                     value.ParseInt32().GetValueOrDefault(this._TotalEmloyees),
-                                     nameof(TotalEmployees),
-                                     nameof(TotalEmployeeCostPerYear),
-                                     nameof(TotalProductCost),
-                                     nameof(TotalProductFontEndCost));
+            this.UpdateValueProperty(ref this._TotalDevelopers,
+                                     value.ParseInt32().GetValueOrDefault(this._TotalDevelopers),
+                                     nameof(TotalDevelopers),
+                                     nameof(DaysToRecode),
+                                     nameof(YearsToRecode));
         }
     }
 
-    public String TotalYears
+    public String WorkDaysPerYear
     {
-        get { return this._TotalYears.ToString(); }
+        get { return this._WorkDaysPerYear.ToString(); }
         set
         {
-            this.UpdateValueProperty(ref this._TotalYears,
-                                     value.ParseInt32().GetValueOrDefault(this._TotalYears),
-                                     nameof(TotalYears),
-                                     nameof(TotalProductCost),
-                                     nameof(TotalProductFontEndCost));
+            if (value.ParseInt32().GetValueOrDefault(this._WorkDaysPerYear).Make(v => v < 1 || v > MaxDaysPerYear))
+            {
+                value = this._WorkDaysPerYear.ToString();
+            }
+
+            this.UpdateValueProperty(ref this._WorkDaysPerYear,
+                                     value.ParseInt32().GetValueOrDefault(this._WorkDaysPerYear),
+                                     nameof(WorkDaysPerYear),
+                                     nameof(YearsToRecode));
         }
     }
 
-    public String FrontEndFactor
+    public String BugsPerThousandLines
     {
-        get { return this._FrontEndFactor.ToString(); }
+        get { return this._BugsPerThousandLines.ToString(); }
         set
         {
-            this.UpdateValueProperty(ref this._FrontEndFactor,
-                                     value.ParseDouble().GetValueOrDefault(this._FrontEndFactor),
-                                     nameof(FrontEndFactor),
-                                     nameof(TotalProductFontEndCost));
+            if (value.ParseInt32().GetValueOrDefault(this._BugsPerThousandLines).Make(v => v < 1 || v > 25))
+            {
+                value = this._BugsPerThousandLines.ToString();
+            }
+
+            this.UpdateValueProperty(ref this._BugsPerThousandLines,
+                                     value.ParseInt32().GetValueOrDefault(this._BugsPerThousandLines),
+                                     nameof(BugsPerThousandLines),
+                                     nameof(BugsIntroduced));
         }
     }
-
-    private Int32 SingleEmployeeCostNumber       => Convert.ToInt32((this._AverageSalaryInThousands * 1000.0 * this._EmployeeCostFactor));
-    private Int32 TotalEmployeeCostPerYearNumber => (this.SingleEmployeeCostNumber * this._TotalEmloyees);
-    private Int32 TotalProductCostNumber         => (this.TotalEmployeeCostPerYearNumber * this._TotalYears);
-    private Int32 TotalProductFrontEndCostNumber => Convert.ToInt32((this.TotalProductCostNumber * this._FrontEndFactor));
-
-    public String SingleEmployeeCost             => this.SingleEmployeeCostNumber.ToString("c");
-    public String TotalEmployeeCostPerYear       => this.TotalEmployeeCostPerYearNumber.ToString("c");
-    public String TotalProductCost               => this.TotalProductCostNumber.ToString("c");
-    public String TotalProductFontEndCost        => this.TotalProductFrontEndCostNumber.ToString("c");
 
     
     public FixControlViewModel()
     {
         this._TotalLinesOfCode          = 2100000;
         this._LinesOfCodePerDay         = 40;           // standard: 10 .. 40
-        this._NumberOfFullTimeDevs      = 100;
+        this._TotalDevelopers           = 100;
         this._WorkDaysPerYear           = WeeksPerYear * BusinessDaysPerWeek; // 260
-        this._BugsPerThousandLines      = 10;           // standard:  1 .. 25
+        this._BugsPerThousandLines      = 5;            // standard:  1 .. 25
     }
 
 }

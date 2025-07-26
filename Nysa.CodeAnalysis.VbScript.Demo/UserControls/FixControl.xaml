@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="1" Text="How to correct a $100 million dollar mistake without AI." TextAlignment="Center" FontSize="28" Margin="0,0,0,20" TextWrapping="Wrap" />
-        <Label Grid.Row="2" Content="A rough calculation of cost..." HorizontalContentAlignment="Center" FontSize="20" Margin="0,0,0,20"/>
+        <Label Grid.Row="2" Content="A rough calculation of risk..." HorizontalContentAlignment="Center" FontSize="20" Margin="0,0,0,20"/>
 
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
@@ -37,32 +37,29 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Content="Average Tech Salary (K)" Grid.Row="0" Grid.Column="0" FontSize="16"/>
-            <TextBox Text="{Binding Path=AverageSalaryInThousands}" Grid.Row="1" Grid.Column="0" FontSize="16"/>
+            <Label Content="Total Lines of Code" Grid.Row="0" Grid.Column="0" FontSize="16"/>
+            <TextBox Text="{Binding Path=TotalLinesOfCode}" Grid.Row="1" Grid.Column="0" FontSize="16"/>
 
-            <Label Content="Cost Factor" Grid.Row="2" Grid.Column="0" FontSize="16"/>
-            <TextBox Text="{Binding Path=EmployeeCostFactor}" Grid.Row="3" Grid.Column="0" FontSize="16"/>
+            <Label Content="Developer Lines Of Code per Day (10..40)" Grid.Row="2" Grid.Column="0" FontSize="16"/>
+            <TextBox Text="{Binding Path=LinesOfCodePerDay}" Grid.Row="3" Grid.Column="0" FontSize="16"/>
 
-            <Label Content="Employee Cost/Year" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
-            <TextBlock Text="{Binding Path=SingleEmployeeCost}" Grid.Row="3" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
+            <Label Content="Total Days to Recode" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
+            <TextBlock Text="{Binding Path=DaysToRecode}" Grid.Row="3" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
 
-            <Label Content="Average Total Staff" Grid.Row="4" Grid.Column="0" FontSize="16"/>
-            <TextBox Text="{Binding Path=TotalEmployees}" Grid.Row="5" Grid.Column="0" FontSize="16"/>
+            <Label Content="Total Developers" Grid.Row="4" Grid.Column="0" FontSize="16"/>
+            <TextBox Text="{Binding Path=TotalDevelopers}" Grid.Row="5" Grid.Column="0" FontSize="16"/>
 
-            <Label Content="Staff Cost/Year" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
-            <TextBlock Text="{Binding Path=TotalEmployeeCostPerYear}" Grid.Row="5" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
+            <Label Content="Work Days per Year" Grid.Row="6" Grid.Column="0" FontSize="16"/>
+            <TextBox Text="{Binding Path=WorkDaysPerYear}" Grid.Row="7" Grid.Column="0" FontSize="16"/>
 
-            <Label Content="Total Years" Grid.Row="6" Grid.Column="0" FontSize="16"/>
-            <TextBox Text="{Binding Path=TotalYears}" Grid.Row="7" Grid.Column="0" FontSize="16"/>
+            <Label Content="Total Years to Recode" Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
+            <TextBlock Text="{Binding Path=YearsToRecode}" Grid.Row="7" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
 
-            <Label Content="Total Product Cost" Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
-            <TextBlock Text="{Binding Path=TotalProductCost}" Grid.Row="7" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
+            <Label Content="Bugs per Thousand Lines of Code (1..25)" Grid.Row="8" Grid.Column="0" FontSize="16"/>
+            <TextBox Text="{Binding Path=BugsPerThousandLines}" Grid.Row="9" Grid.Column="0" FontSize="16"/>
 
-            <Label Content="Front End Factor" Grid.Row="8" Grid.Column="0" FontSize="16"/>
-            <TextBox Text="{Binding Path=FrontEndFactor}" Grid.Row="9" Grid.Column="0" FontSize="16"/>
-
-            <Label Content="Total Font End Cost" Grid.Row="8" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
-            <TextBlock Text="{Binding Path=TotalProductFontEndCost}" Grid.Row="9" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
+            <Label Content="Total Bugs" Grid.Row="8" Grid.Column="1" HorizontalContentAlignment="Right" FontSize="16"/>
+            <TextBlock Text="{Binding Path=BugsIntroduced}" Grid.Row="9" Grid.Column="1" TextAlignment="Right" FontSize="16"/>
         </Grid>
     </Grid>
 </UserControl>

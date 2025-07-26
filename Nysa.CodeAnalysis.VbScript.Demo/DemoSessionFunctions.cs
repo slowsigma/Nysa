@@ -190,6 +190,7 @@ public static class DemoSessionFunctions
 
         // click bait title
         demoPages.Add(new DemoPageControl(null, (new MistakeControl()).ContextSetControl(new MistakeControlViewModel()), null, null));
+        demoPages.Add(new DemoPageControl(null, (new FixControl()).ContextSetControl(new FixControlViewModel()), null, null));
 
         demoPages.Add(images.SlideTitle);
         demoPages.Add(images.Repos);
