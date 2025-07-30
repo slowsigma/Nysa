@@ -63,7 +63,7 @@
 <Page 11>
 16. In a BNF document for a programming language, there's always a start rule and, of course, that's the rule that
     no other rule references. So, its fitting that the start rule uses the word "program" because that's what we
-    get when we write code (we get a program).
+    get when we write code in this language (we get a program).
     This little page shows how the rules expand downward as they are used in a real piece of code.
     {Work the page expanding terms...}
 <Page 12>
