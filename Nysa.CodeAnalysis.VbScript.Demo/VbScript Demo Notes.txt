@@ -36,9 +36,9 @@
  8. The whole idea for the translator was inspired by my exposure to Microsoft class libraries that came from their Roslyn
     project for .NET.
 <Page 07>
- 9. So, when it comes to compilers, there are some core terms that form the back bone of what this presentation covers.
-    Some of these may be familiar and some may not, but by the end, you'll have a pretty good idea about how the
-    translator works.
+ 9. So, when it comes to compilers, we have some core terms that serve as "stepping stones" to understanding what compilers
+    do. These will also serve as chronological markers in the timeline of making the translator.  Some of these terms may be
+    familiar and some may not, but by the end, you should have a pretty good understanding of each.
 10. Let's start with source code.
 <Page 08>
 11. I wrote this little sample script as a starting point and it will feed into different parts of the presentation as we
@@ -46,8 +46,8 @@
 <Page 09>
 12. Back in late 2017, while looking at the Roslyn libraries, I got this idea that we might be able to translate the
     Enterprise Justice VB Script to JavaScript if we could parse the source into a semantic tree.  A semantic tree is
-    simply a direct representation of source code, in computer memory, in a tree structure (much like parsed XML in memory
-    has a tree structure).
+    simply a direct representation of source code in a tree data structure in memory (much like parsed XML has a tree
+    data structure).
 13. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
     find an attempt some developers had made at writing down the rules. There were some errors in the rules, but it
     served as a good starting point.
@@ -83,9 +83,8 @@
     (separate out the combined dim statement)
     You'll notice that the lexing logic does not care if I break the program.  That happens in the parsing logic.
 <Page 15>
-20. And here I'm flipping the content around to show the detail given by data produced from lexical analysis and
-    to demonstrate how lexing provides code colorization.  Each token provides the category, or categories, the
-    token matches and the token position and length in the source.
+20. And here I'm flipping the content around to show the detail provided by lexical analysis and to demonstrate
+    how lexing provides code colorization.
     Notice how the word 'explicit' gets the same identifier as our variable names and a unique identifier, but
     that 'option' just has a unique value.  This is all due to the grammar rules.
     (arrow down to a liteal string)
@@ -94,12 +93,11 @@
 21. With a token stream from the lexical analyzer and the grammar rules, we can actually perform the parsing.
     The logic I used for this part of the API came from Wikipedia. I decided to use what's called the Earley
     parsing algorithm primarily because its very permissive when it comes to how the grammar rules are written.
-    Some parsing algorithms have strict limitations on how the grammar rules are laid out. This mainly comes
-    down to whether or not they are left-recursive or right-recursive, but I'm not going to dive into that any
-    further here.  You can read about that on your own if you're interested.  The end result of any parsing
-    algorithm is to get what's called an abstract syntax tree (or AST).  The Earley algorithm, however, does
-    not produce an AST by itself, it produces a parse chart that needs some additional processing in order to
-    get the AST.
+    Some parsing algorithms have strict limitations on how the grammar rules are structured.  I'm not going to
+    dive into that any further here.  You can read about that on your own if you're interested.  The end result
+    of most parsing algorithms is to get what's called an abstract syntax tree (or AST).  The Earley algorithm,
+    however, does not produce an AST by itself, it produces a parse chart that needs some additional processing
+    in order to get the AST.
 <Page 17>
 22. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
     algorithm charts out if, and how, the input tokens satisfy the rules of the grammar.
@@ -112,7 +110,119 @@
     For VB Script, that's the "program" rule and it only has one alternative. One thing to note here is
     that we slightly changed the definition of what a rule is here. When we looked at the syntax rules
     before, each rule consisted of all the alternatives. Here we treat each alternative in a syntax rule
-    as an independent rule entry in the chart. So, the right side of this page is showing you the list
+    as an independent rule entry in the chart.
+    Each entry has a progress marker which is shown here as this little spikey circle character right
+    after the colon-colon-equals. This shows no progress yet for this entry.
+    (hit fast forward)
+    (scroll down and highlight the last chart position)
+    I've skipped to the end to get the fully populated chart. At this point we know this program satisfies
+    the grammar because we have the "program" rule carried forward to the end and its progress indicator is
+    set past the last symbol of the rule.
+    We apply another algorithm to this chart to produce the abstract syntax tree. I had a pretty hard time
+    finding a good explanation of exactly how to do that, but I was able to piece it together from some
+    internet sources and a lot of trial and error.
+    I'll let you restless souls that just can't stand not knowing dig into the git repo yourselves, but
+    I will show the one step that's taken to prepare this chart to get the AST and its called inverting the
+    chart.
+    (click the inverse checkbox) 
+    As you can see here we've created a kind of mirror chart where all the entries are in
+    reverse order and the rule start positions (the number in those brackets) are changed to
+    reflect where that rule came from before the flip.  One other thing that's happened here
+    is that we've removed all the unsatisfied entries in the chart.
+
+
+
+<Page 18>
+    That's what feeds the algorithm to get the abstract syntax tree (the AST).
+<Page 19>
+    Here's that AST on the left and our source on the right. This tree is simply composed of
+    objects of four main types. There's a Node type, which has a property pointing to the
+    rule the node represents, and a property that lists all its children. The type that the
+    list is made of is literally NodeOrToken. Each NodeOrToken object has a nullable token
+    property and a nullable node poperty, only one of which will be null when the other is
+    not.
+    (expand and select different parts of the tree)
+
+
+
+
+    If the code does not violate any of the syntax rules, the chart will end up being the number of
+    input tokens plus one and each position of the chart will have at least one entry.
+    
+    The algorithm will continue as long there are still tokens to match and there are rules in chart it can use to match.
+
+
+    So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also
+    adding to the chart at each token position, and it's analyzing each of these chart entries as it goes.
+    Each chart entry is a copy of a single alternative of a syntax rule and a progress marker indicating
+    how much of that variation has been matched up to that point. Remember that the alternatives in our
+    syntax rules were the individual sequences separated by the vertical bars.  We see the the start rule
+    here, which has only one alternative, and the progress indicator is this little symbol right after the
+    colon-colon-equals.  I'm using the character for generic currency here.
+    (hit step once and the go back to chart entry zero of token zero)
+    So, here, you're seeing that the algorithm added a bunch of entries under the very first token with
+    the progress indicator at various locations within these entries.
+    (highlight the "<OptionExplicit>" entry at position 20)
+    The algorithm makes entries in the next token position when it matches a current entry to the current
+    token, or it finds a completed rule in the chart at the current position and it finds a symbol match
+    for that completed rule in a prior chart entry. Here we're seeing the chart entry that matches this
+    this "option" token.
+    (hit step once and go back to token position 1)
+    This shows that the only rule that can match at token position 1 is the <OptionExplicit> rule.
+    (go to token position 1)
+    The entries here represent both the token match and an entry that the algorithm placed here just
+    after that token match which essentially represents the next symbol after the token match that
+    the algorithm can accept at position 2.
+
+    
+    As the algorithm is running, the rules are being appended to the end of the list
+    of rules at the current token position and, potentially, to the list of rules in the next token
+    position.
+    Each entry in the chart is a rule and its parsing progress at that point.
+    In the algorithm, there are two logic paths for a rule to progress down in the chart. First, if the
+    next available symbol of the rule is a token and it matches the current token in the input stream,
+    then the rule moved to the next chart position and the progress marker is advanced. Second, when the
+    algorithm sees that a rule has been advanced and it's actually completed (the progress marker is past
+    the last symbol of the rule), the algorithm search back in the chart for prior incomplete rules where
+    the next available symbol in the rule matches the symbol of this completed rule.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<<< TAKEN OUT OF THE PARSE CHART NOTES >>>
+    So, the right side of this page is showing you the list
     within the list for the token we have selected on the left. Each chart entry has a progress indicator
     showing how much of the rule is matched at this point. The progress indicator is that little spikey
     circle character right after the colon-colon-equals and its showing here that nothing has been
@@ -195,62 +305,3 @@
     reverse order and the rule start positions (the number in those brackets) are changed to
     reflect where that rule came from before the flip.  One other thing that's happened here
     is that we've removed all the unsatisfied entries in the chart.
-<Page 16>
-    That's what feeds the algorithm to get the abstract syntax tree (the AST).
-<Page 17>
-    Here's that AST on the left and our source on the right. This tree is simply composed of
-    objects of four main types. There's a Node type, which has a property pointing to the
-    rule the node represents, and a property that lists all its children. The type that the
-    list is made of is literally NodeOrToken. Each NodeOrToken object has a nullable token
-    property and a nullable node poperty, only one of which will be null when the other is
-    not.
-    (expand and select different parts of the tree)
-
-
-
-
-    If the code does not violate any of the syntax rules, the chart will end up being the number of
-    input tokens plus one and each position of the chart will have at least one entry.
-    
-    The algorithm will continue as long there are still tokens to match and there are rules in chart it can use to match.
-
-
-    So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also
-    adding to the chart at each token position, and it's analyzing each of these chart entries as it goes.
-    Each chart entry is a copy of a single alternative of a syntax rule and a progress marker indicating
-    how much of that variation has been matched up to that point. Remember that the alternatives in our
-    syntax rules were the individual sequences separated by the vertical bars.  We see the the start rule
-    here, which has only one alternative, and the progress indicator is this little symbol right after the
-    colon-colon-equals.  I'm using the character for generic currency here.
-    (hit step once and the go back to chart entry zero of token zero)
-    So, here, you're seeing that the algorithm added a bunch of entries under the very first token with
-    the progress indicator at various locations within these entries.
-    (highlight the "<OptionExplicit>" entry at position 20)
-    The algorithm makes entries in the next token position when it matches a current entry to the current
-    token, or it finds a completed rule in the chart at the current position and it finds a symbol match
-    for that completed rule in a prior chart entry. Here we're seeing the chart entry that matches this
-    this "option" token.
-    (hit step once and go back to token position 1)
-    This shows that the only rule that can match at token position 1 is the <OptionExplicit> rule.
-    (go to token position 1)
-    The entries here represent both the token match and an entry that the algorithm placed here just
-    after that token match which essentially represents the next symbol after the token match that
-    the algorithm can accept at position 2.
-
-    
-    As the algorithm is running, the rules are being appended to the end of the list
-    of rules at the current token position and, potentially, to the list of rules in the next token
-    position.
-    Each entry in the chart is a rule and its parsing progress at that point.
-    In the algorithm, there are two logic paths for a rule to progress down in the chart. First, if the
-    next available symbol of the rule is a token and it matches the current token in the input stream,
-    then the rule moved to the next chart position and the progress marker is advanced. Second, when the
-    algorithm sees that a rule has been advanced and it's actually completed (the progress marker is past
-    the last symbol of the rule), the algorithm search back in the chart for prior incomplete rules where
-    the next available symbol in the rule matches the symbol of this completed rule.
-
-
-
-
-
-
