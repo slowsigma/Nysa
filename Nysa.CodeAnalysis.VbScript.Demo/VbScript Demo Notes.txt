@@ -129,27 +129,128 @@
     reverse order and the rule start positions (the number in those brackets) are changed to
     reflect where that rule came from before the flip.  One other thing that's happened here
     is that we've removed all the unsatisfied entries in the chart.
-
-
-
 <Page 18>
-    That's what feeds the algorithm to get the abstract syntax tree (the AST).
+23. That's what feeds the algorithm to get the abstract syntax tree (the AST).
 <Page 19>
-    Here's that AST on the left and our source on the right. This tree is simply composed of
+24. Here's that AST on the left and our source on the right. This tree is simply composed of
     objects of four main types. There's a Node type, which has a property pointing to the
     rule the node represents, and a property that lists all its children. The type that the
     list is made of is literally NodeOrToken. Each NodeOrToken object has a nullable token
     property and a nullable node poperty, only one of which will be null when the other is
     not.
     (expand and select different parts of the tree)
+<Page 20>
+25. The next step in the process is to transform this abstract syntax tree into a semantic
+    tree. This is a matter of traversing the tree and transforming nodes into concrete
+    objects of concrete types that align with the concepts of an actual working program.
+<Page 21>
+26. This page calls the logic in the CodeAnalysis dot VbScript component to perform that
+    transformation.
+    (expand some nodes)
+27. This tree view here is showing the actual type names of the objects of each node. So, of course,
+    this root node here is literally in instance of the Program class. The children of each node are,
+    in this tree, the properties of that object. So, program has a boolean OptionExplicit property
+    and a Statements proeprty of type StatementList.
+28. The point is that a semantic tree is a one to one representation of the original code.
+<Page 22>
+29. Once I got to this point it my little hobby project, I thought it might be good to demonstrate
+    how translation is possible with a semantic tree by re-generating the original VbScript from the
+    tree.
+<Page 23>
+30. To do that, I wrote this single class containing all the functions necessary to re-script from
+    the tree.
+    (skip to last function)
+31. See here this very last function. It takes an object of Program type and for each statement in
+    the Program's Statements property it calls a ToVbScript function passing along the appendLine
+    action. The next function above this takes an object of the abstract type Statement and finds
+    that object's concrete type in order to call a ToVbScript function for that concrete type.
+    That goes on and on until the entire tree is traversed and that's how we re-generate the original.
+<Page 24>
+32. Of course, the first thing I did after creating this logic was run it on tons of examples and
+    perform a beyond compare from the original to the re-scripted version.  This was very helpful
+    in debugging and validating the process up to that point.
+<Page 25>
+33. This page performs that same operation using our little sample program.
+    (press the play button)
+34. Notice how the rescripted version has no comments and no additional blank lines. This is simply
+    due to the fact that the lexing and parsing logic does not care about keeping any of that data.
+    The Microsoft Roslyn parser has special logic for keeping this data in the semantic tree and
+    it calls it trivia. You can also see here that the rescripted version has all title casing on
+    keywords and that's because, of course, keywords don't exist in the abstract, or semantic, tree.
+<Page 26>
+35. That covers the open source part of this technology and now we come to the official start of the
+    translator project that kicked off in January of 2022 when I was given the green light to start
+    coding the logic necessary to turn those semantic trees into JavaScript.
+36. This also brings us to the concept of symbol data. One of the most important differences between
+    VbScript and JavaScript is that JavaScript is case sensitive where VbScript is not. This means
+    we cannot rely on a VbScript author to faithfully use the same casing for a variable throughout
+    a particular variable scope.
+<Page 27>    
+37. So, we think of any declared name in the program as a symbol and we create another set of logic
+    to traverse down the semantic tree and accumulate all the symbol scopes and declared symbols
+    within those scopes. We can think of this accumulated symbol data structure as a searchable index
+    for everything that's declared and, of course, we search it in a case insensitive manner when we
+    encounter an expression that uses names in order to find the exact casing of those names from
+    their declarations.
+    (expand the tree to show the definition of the "l" variable and the assignment below that)
+    Of course, these symbols have types as well like class, variable, function, subroutine, etc.
+<Page 28>
+38. In addition to those symbols defined in the program, we also have those symbols that are defined
+    by the VbScript, like global functions, those defined by the script host, this is the global
+    names introduced by the Odyssey shell itself, and finally, there are the symbols that come with
+    the page context in which the script was defined, these are the id attributes of the HTML page.
+    The static host, and engine, symbols were simply injected into the translator using a set json
+    files that contained the various symbols along with types and JavaScript names.
+<Page 29>
+39. So that all becomes input into another set of tree traversal logic to transform the semantic
+    tree into JavaScript.
+<Page 30>
+40. Pretty early on in the official translator project, we realized that we needed to have the
+    original commentary copied over to the JavaScript and so I created logic to read through the
+    original VbScript source and construct a line-based model of its trivia. I then fed that
+    object into the translation functions to correctly copy the comments and white space.
+<Page 31>
+41. Finally, we ecountered some trouble with overlapping symbols. Because VbScript is a dynamic
+    language, any variable can hold any type, and sometimes, within a single scope, a variable
+    may actually switch between multiple types. Because of this, we have to be open to the
+    idea of searching multiple class symbols for property or function symbols when we encounter
+    a dotted expression. So, imagine the variable assignment statement "x = myObj.Length". The
+    Length symbol that follows myObj and the dot could be defined on multiple classes.  It
+    could be a function in one class and a property in another.  Or, the myObj variable could
+    have been from a COM object and not a VbScript class.
+42. To help resolve some of these difficulties, I created some additional tree traversal logic
+    to classify the scope symbols based on analyzing the assignment statements of those symbols.
+    For example, if I see a symbol getting assigned a COM object provided by a global symbol
+    that I know is COM, then I can classify that symbol as COM or if its being assigned a page
+    object, I classify that symbol as page. This provides additional information to help with
+    resolving the symbol expressions where that symbol is part of a dot expression. This is not
+    full type checking. It's more like creating type categories.
+43. In the end, we could have continued adding more logic to the translator, but the goal was
+    not perfect translation with 100% error free code. It could be argued that an error free
+    translation is not possible.
+<Page 32>
+44. I've listed here some of the primary challenges with translation and from the beginning of
+    the official project, everyone was aware that the final translations were going to need
+    some level of human review and processing.
+    (click through to page 38)
+<Page 39>
+45. Overall, the project was very successful. We did recently go live in production with our
+    first early adopter. Having worked here for over 20 years, I had heard many times that it
+    was just not possible to refactor Enterprise Justice to a new stack by hand. I think that
+    really meant it was way too costly.
+    (click through to page 45)
+<Page 46>
+46. As I was preparing this demo, I got the idea that by the end of this presentation some of
+    you may be wondering, "who is this crazy hacker?" and "what's his background?" So, here
+    you go?
+    (slowly click through slowly to page 51)
+47. As you absorb these "credentials", I'm going to make a pretty significant point. If you
+    ever find yourself wondering "that seems pretty hard, I'm not sure I can do that?", my
+    answer to you is simple: "bullshit."
+<Page 52>
+48. We have time for a few questions.
 
 
-
-
-    If the code does not violate any of the syntax rules, the chart will end up being the number of
-    input tokens plus one and each position of the chart will have at least one entry.
-    
-    The algorithm will continue as long there are still tokens to match and there are rules in chart it can use to match.
 
 
     So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also

@@ -3,7 +3,7 @@ option explicit
 Dim x, l, t
 
 x = datepart("s", time)
-l = 5
+L = 5
 
 randomize x
 
