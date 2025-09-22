@@ -1,5 +1,5 @@
  <Page 01>
- 1. Our story starts at the birth of Tyler Technologies' Enterprise Justice Suite, or the product formerly known as Odyssey.
+ 1. This story starts at the birth of Tyler Technologies' Enterprise Justice Suite, or the product formerly known as Odyssey.
     Back around the turn of the century (ha, ha), the Odyssey development team recognized the potential of internet technology
     but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
     wrong one. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev community at
@@ -13,12 +13,12 @@
     created per thousand lines of code?
 <Page 02>
  2. For the sake of perspective, this page shows a best case scenario of how to potentially solve the problem by throwing
-    man power at it. There are trade offs to be made here. If you slow down to reduce the number of bugs, you reduce the
+    man-power at it. There are trade offs to be made here. If you slow down to reduce the number of bugs, you reduce the
     number of lines of code per day. The bottom line is that a manual effort introduces huge risks. Of course, we did
     successfully turn the Titanic around and there are many dimensions to that story, but this talk is about the translation
     tool we created and the technology under the hood. But first, I have to take a moment to point out that this project
     originated as a hobby project and that means the final translator we created is based on open source code I created on
-    my own. For this demo, I decided it was going to be open source as well and that mean it does not use, or show, any
+    my own. For this demo, I decided it was going to be open source as well and that means it does not use, or show, any
     Tyler owned code.
 <Page 03>
  3. This page shows the repo containing this demo (its a window app) and the two primary class libraries the translator and
