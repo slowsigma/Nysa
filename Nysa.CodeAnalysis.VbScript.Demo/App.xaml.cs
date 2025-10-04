@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -25,7 +26,15 @@ public partial class App : Application
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        var session = DemoSessionFunctions.CreateSession(IOPath.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+#if DEBUG
+        var exeDir = AppContext.BaseDirectory;
+#elif AOT_PUBLISH
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath);
+#else
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName);
+#endif
+     
+        var session = DemoSessionFunctions.CreateSession(exeDir);
 
         var demoContent = session.CreateContent();
 
