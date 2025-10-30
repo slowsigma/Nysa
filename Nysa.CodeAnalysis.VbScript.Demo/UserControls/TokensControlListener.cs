@@ -26,6 +26,7 @@ public sealed class TokensControlListener : Listener<String>
     protected override void OnValueChanged(string value, Int32 version)
     {
         this.Version = version;
+
         this.Tokens = Nysa.CodeAnalysis.VbScript.Language.Lex(value);
         this.Code = value;
     }

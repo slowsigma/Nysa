@@ -45,7 +45,7 @@ namespace Nysa.CodeAnalysis.VbScript.Demo
                     this._Source = value;
 
                     var tokens = this._Source.Length > 0
-                                 ? VbScript.Language.Lex(this._Source)
+                                 ? VbScript.Language.LexWithTrivia(this._Source)
                                  : new Token[] { };
 
                     this.Items.Clear();

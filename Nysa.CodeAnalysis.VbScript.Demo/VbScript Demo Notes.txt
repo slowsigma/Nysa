@@ -1,6 +1,6 @@
  <Page 01>
  1. This story starts at the birth of Tyler Technologies' Enterprise Justice Suite, or the product formerly known as Odyssey.
-    Back around the turn of the century (ha, ha), the Odyssey development team recognized the potential of internet technology
+    Back around the turn of the century, the Odyssey development team recognized the potential of internet technology
     but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
     wrong one. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev community at
     large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018 when
@@ -9,8 +9,10 @@
     a full two decades of "investment" to fix (over 2.1 million lines of VB Script).  There are many ways of calculating the
     worth of a product like Enterprise Justice. You can use future profit, past profit, both, or you can calculate the total
     amount of money poured into its existence. For this demo, and my click-bait title here, I chose calculating value based on
-    cost. Does anyone know the historical average lines of code per day a developer produces? What about the number of bugs
-    created per thousand lines of code?
+    cost.
+    So, one way to deal with this problem is to just rewrite the code.
+    Does anyone know the historical average lines of code per day a developer produces?
+    What about the number of bugs created per thousand lines of code?
 <Page 02>
  2. For the sake of perspective, this page shows a best case scenario of how to potentially solve the problem by throwing
     man-power at it. There are trade offs to be made here. If you slow down to reduce the number of bugs, you reduce the

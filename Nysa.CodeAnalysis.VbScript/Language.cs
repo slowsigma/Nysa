@@ -536,11 +536,11 @@ public static class Language
                                    .Or("With")
                                    .Or("Xor");
 
-        Language.Grammar    = builder.ToGrammar();
+        Language.Grammar = builder.ToGrammar();
 
-        Take.IgnoreCase     = true;
+        Take.IgnoreCase = true;
 
-        var reserved        = Take.Longest("and".Sequence(),
+        var reserved = Take.Longest("and".Sequence(),
                                            "byref".Sequence(),
                                            "byval".Sequence(),
                                            "call".Sequence(),
@@ -594,50 +594,50 @@ public static class Language
                                            "with".Sequence(),
                                            "xor".Sequence());
 
-        var realNewLine     = Take.Longest('\r'.One(), '\n'.One(), Take.Sequence("\r\n"));
-        var printable       = String.Concat(@"!", "\"", @"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~");
-        var space           = String.Concat("\t", " ");
+        var realNewLine = Take.Longest('\r'.One(), '\n'.One(), Take.Sequence("\r\n"));
+        var printable = String.Concat(@"!", "\"", @"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~");
+        var space = String.Concat("\t", " ");
         //var spacePlus       = space.Set().Value.Then('_'.One()).Then(Find.While(space.Set().Value)).Then(Find.Maybe(realNewLine));
-        var spacePlus       = '_'.One().Then(Take.While(space.Set())).Then(realNewLine);
+        var spacePlus = '_'.One().Then(Take.While(space.Set())).Then(realNewLine);
 
-        var stringChar      = Take.Set(printable.Replace("\"", String.Empty));
-        var dateChar        = Take.Set(printable.Replace("#", String.Empty));
-        var idNameChar      = Take.Set(printable.Replace("[", String.Empty).Replace("]", String.Empty));
-        var idTail          = Take.Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_");
+        var stringChar = Take.Set(printable.Replace("\"", String.Empty));
+        var dateChar = Take.Set(printable.Replace("#", String.Empty));
+        var idNameChar = Take.Set(printable.Replace("[", String.Empty).Replace("]", String.Empty));
+        var idTail = Take.Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_");
 
-        var letter          = Take.Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        var digit           = Take.Set("0123456789");
-        var octDigit        = Take.Set("01234567");
-        var hexDigit        = Take.Set("0123456789ABCDEF");
+        var letter = Take.Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        var digit = Take.Set("0123456789");
+        var octDigit = Take.Set("01234567");
+        var hexDigit = Take.Set("0123456789ABCDEF");
         //var newLine         = Find.Longest(realNewLine, Find.One(':')).Value.Then(VBScriptX.Grammar.Id("{new-line}"));
-        var newLine         = realNewLine.Then(Language.Grammar.Id("{new-line}"));
-        var intLiteral      = digit.Then(Take.While(digit)).Then(Language.Grammar.Id("{IntLiteral}"));
-        var dateLiteral     = '#'.One().Then(dateChar.Then(Take.While(dateChar))).Then('#'.One()).Then(Language.Grammar.Id("{DateLiteral}"));
-        var hexLiteral      = "&H".Sequence().Then(hexDigit.Then(Take.While(hexDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{HexLiteral}"));
-        var octLiteral      = '&'.One().Then(octDigit.Then(Take.While(octDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{OctLiteral}"));
+        var newLine = realNewLine.Then(Language.Grammar.Id("{new-line}"));
+        var intLiteral = digit.Then(Take.While(digit)).Then(Language.Grammar.Id("{IntLiteral}"));
+        var dateLiteral = '#'.One().Then(dateChar.Then(Take.While(dateChar))).Then('#'.One()).Then(Language.Grammar.Id("{DateLiteral}"));
+        var hexLiteral = "&H".Sequence().Then(hexDigit.Then(Take.While(hexDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{HexLiteral}"));
+        var octLiteral = '&'.One().Then(octDigit.Then(Take.While(octDigit))).Then(Take.Maybe('&'.One())).Then(Language.Grammar.Id("{OctLiteral}"));
         //var stringLiteral   = '"'.One().Then(Find.Until("\"\"".Sequence().Maybe().Then('"'.One()))).Then("\"\"\"".Sequence().Or('"'.One())).Then(Language.Grammar.Id("{StringLiteral}"));
-        var stringLiteral   = '"'.One().Then(Take.While("\"\"".Sequence().Or(Take.Not('"'.One())))).Then('"'.One()).Then(Language.Grammar.Id("{StringLiteral}"));
+        var stringLiteral = '"'.One().Then(Take.While("\"\"".Sequence().Or(Take.Not('"'.One())))).Then('"'.One()).Then(Language.Grammar.Id("{StringLiteral}"));
 
-        var digitOneToN     = digit.Then(Take.While(digit));
-        var exponent        = 'E'.One().Then(Take.Maybe("+-".Set())).Then(digitOneToN);
-        var floatPeriod     = '.'.One().Then(digitOneToN).Then(Take.Maybe(exponent));
-        var floatFull       = digitOneToN.Then(floatPeriod);
-        var floatExp        = digitOneToN.Then(exponent);
+        var digitOneToN = digit.Then(Take.While(digit));
+        var exponent = 'E'.One().Then(Take.Maybe("+-".Set())).Then(digitOneToN);
+        var floatPeriod = '.'.One().Then(digitOneToN).Then(Take.Maybe(exponent));
+        var floatFull = digitOneToN.Then(floatPeriod);
+        var floatExp = digitOneToN.Then(exponent);
 
-        var floatLiteral    = Take.Longest(floatPeriod, floatFull, floatExp).Then(Language.Grammar.Id("{FloatLiteral}"));
+        var floatLiteral = Take.Longest(floatPeriod, floatFull, floatExp).Then(Language.Grammar.Id("{FloatLiteral}"));
 
-        var idBaseOne       = letter.Then(Take.While(idTail));
-        var idBaseTwo       = '['.One().Then(Take.While(idNameChar)).Then(']'.One());
+        var idBaseOne = letter.Then(Take.While(idTail));
+        var idBaseTwo = '['.One().Then(Take.While(idNameChar)).Then(']'.One());
 
-        var id              = Take.Longest(idBaseOne, idBaseTwo).NotEqual(reserved).Then(Language.Grammar.Id("{ID}"));
-        var idDot           = Take.Longest(idBaseOne, idBaseTwo).Then('.'.One()).Then(Language.Grammar.Id("{IDDot}"));
-        var dotId           = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then(Language.Grammar.Id("{DotID}"));
-        var dotIdDot        = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then('.'.One()).Then(Language.Grammar.Id("{DotIDDot}"));
+        var id = Take.Longest(idBaseOne, idBaseTwo).NotEqual(reserved).Then(Language.Grammar.Id("{ID}"));
+        var idDot = Take.Longest(idBaseOne, idBaseTwo).Then('.'.One()).Then(Language.Grammar.Id("{IDDot}"));
+        var dotId = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then(Language.Grammar.Id("{DotID}"));
+        var dotIdDot = '.'.One().Then(Take.Longest(idBaseOne, idBaseTwo)).Then('.'.One()).Then(Language.Grammar.Id("{DotIDDot}"));
 
-        var commentOne      = '\''.One().Then(Take.Until(realNewLine)).Then(Identifier.Trivia);
-        var commentTwo      = "REM".Sequence().Then(Take.Longest(realNewLine, space.Set().Then(Take.While(String.Concat(space, printable).Set())))).Then(Identifier.Trivia);
+        var commentOne = '\''.One().Then(Take.Until(realNewLine)).Then(Identifier.Trivia);
+        var commentTwo = "REM".Sequence().Then(Take.Longest(realNewLine, space.Set().Then(Take.While(String.Concat(space, printable).Set())))).Then(Identifier.Trivia);
 
-        var literals        = Take.Literals(Language.Grammar.LiteralSymbols().Select(s => (s, Language.Grammar.Id(s))));
+        var literals = Take.Literals(Language.Grammar.LiteralSymbols().Select(s => (s, Language.Grammar.Id(s))));
 
         var all = Take.Longest(literals,
                                commentOne,
@@ -666,25 +666,40 @@ public static class Language
         if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
             source = String.Concat(source, "\r\n");
 
-        var hits     = Language.Seek.Repeat(source).ToArray();
-        var tokens   = hits.Select(h => new Token(h.Span, h.Id))
-                           .Where(t => !t.Id.IsEqual(Identifier.Trivia))
-                           .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
-                           .ToArray();
+        var hits = Language.Seek.Repeat(source).ToArray();
+        var tokens = hits.Select(h => new Token(h.Span, h.Id))
+                         .Where(t => !t.Id.IsEqual(Identifier.Trivia))
+                         .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
+                         .ToArray();
+
+        return tokens;
+    }
+
+    public static Token[] LexWithTrivia(String source)
+    {
+        var lastChar = source[source.Length - 1];
+
+        if (!(lastChar == '\r' || (lastChar == '\n' || lastChar == ':')))
+            source = String.Concat(source, "\r\n");
+
+        var hits = Language.Seek.Repeat(source).ToArray();
+        var tokens = hits.Select(h => new Token(h.Span, h.Id))
+                         .Concat(new Token[] { new Token(End.Span(source), Language.Grammar.Id(Language.END_OF_INPUT).ToTokenIdentifier()) })
+                         .ToArray();
 
         return tokens;
     }
 
     public static Suspect<Node> Parse(String source)
     {
-        var tokens  = Language.Lex(source);
-        var chart   = Language.Grammar.CreateChart(Language.Lex(source));
+        var tokens = Language.Lex(source);
+        var chart = Language.Grammar.CreateChart(Language.Lex(source));
 
         if (!chart.IsIncomplete())
         {
             var inverse = chart.InverseChart();
 
-            if (   !inverse.IsIncomplete()
+            if (!inverse.IsIncomplete()
                 && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
                 return someTree.Value.Confirmed();
@@ -696,9 +711,9 @@ public static class Language
 
     public static Suspect<Node> Parse(String source, IParseListener listener)
     {
-        var tokens  = Language.Lex(source);
-        var chart   = Language.Grammar.CreateChart(Language.Lex(source), listener);
-        
+        var tokens = Language.Lex(source);
+        var chart = Language.Grammar.CreateChart(Language.Lex(source), listener);
+
         listener.CreateChartEnded(Language.Grammar, chart);
 
         if (!chart.IsIncomplete())
@@ -706,7 +721,7 @@ public static class Language
             var inverse = chart.InverseChart();
 
             listener.ChartInverted(Language.Grammar, inverse);
-            
+
             if (!inverse.IsIncomplete()
                 && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
@@ -715,6 +730,31 @@ public static class Language
         }
 
         return chart.CreateError(source, tokens).Failed<Node>();
+    }
+
+    public static Suspect<ParseTree> ParseWithTrivia(String source)
+    {
+        var newLineId = Language.Grammar.Id("{new-line}");
+        var tokensAll = Language.LexWithTrivia(source);
+        var trivia    = tokensAll.Where(t =>    t.Id.Equals(Identifier.Trivia)
+                                             || t.Id.Equals(newLineId))
+                                 .ToArray();
+        var tokens    = tokensAll.Where(t => !t.Id.IsEqual(Identifier.Trivia))
+                                 .ToArray();
+        var chart     = Language.Grammar.CreateChart(Language.Lex(source));
+
+        if (!chart.IsIncomplete())
+        {
+            var inverse = chart.InverseChart();
+
+            if (!inverse.IsIncomplete()
+                && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
+            {
+                return (new ParseTree(someTree.Value, trivia)).Confirmed();
+            }
+        }
+
+        return chart.CreateError(source, tokens).Failed<ParseTree>();
     }
 
 }
