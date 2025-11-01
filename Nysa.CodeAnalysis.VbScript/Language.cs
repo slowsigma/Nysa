@@ -750,7 +750,7 @@ public static class Language
             if (!inverse.IsIncomplete()
                 && inverse.ToSyntaxTree(tokens) is Some<Node> someTree)
             {
-                return (new ParseTree(someTree.Value, trivia)).Confirmed();
+                return (new ParseTree(someTree.Value, trivia, new VbScriptLine[] {})).Confirmed();
             }
         }
 
