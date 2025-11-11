@@ -5,11 +5,10 @@
     to create a new Web-based tech stack to replace our aging main-frame product.  They created a Windows shell program
     for hosting Web content, much like the Electron framework from the OpenJS Foundation.  At that time, the team decided
     to go all-in on Microsoft.  This meant that the shell would be based on the Microsoft Trident Engine and our new
-    product would be re-written in HTML with VBScript for all user interface logic.  Because I still work for this
-    company, I can't disclose the company or the product, but all our products support "back office" operations and this
-    technology decision was soon rewarded in the market.  The new version of the product took off like a rocket and by
-    2010, we had invested millions in building out functionality and our stock price had quadrupled.  Of course, all
-    the while Microsoft was slowly losing the battle of the browsers.  The demise of VBScript was sealed in late 2018 when
+    product would be re-written in HTML with VBScript for all user interface logic.  This technology decision was soon
+    rewarded in the market.  The new version of the product took off like a rocket and by 2010, we had invested millions
+    in building out functionality and our stock price had quadrupled.  Of course, all the while Microsoft was slowly losing
+    the battle of the browsers.  The demise of VBScript was sealed in late 2018 when
     Microsoft announced it would base it's new Edge browser on as same technology as Google Chrome.  Of course, my company
     should have started turning the Titanic even before that happened, but we didn't. By the time we started the turn, we had
     a full two decades of "investment" to fix (over 2.1 million lines of VBScript).  There are many ways of calculating the
