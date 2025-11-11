@@ -1,43 +1,54 @@
  <Page 01>
- 1. This story starts at the birth of Tyler Technologies' Enterprise Justice Suite, or the product formerly known as Odyssey.
-    Back around the turn of the century (ha, ha), the Odyssey development team recognized the potential of internet technology
-    but they made the fateful decision to adopt an all Microsoft tech stack. It was not a bad decision at the time, just the
-    wrong one. That decision meant coding UI logic with the now defunct VB Script language. Even though the dev community at
-    large would recognized JavaScript as the winner much earlier, the demise of VB Script was sealed in late 2018 when
-    Microsoft announced it would base it's new Edge browser on the same technology as the Google's Chrome browser. So, we
+ 1. Hello fellow techies, my name is Philip Fucich and I put this video together to tell the story of how Microsoft's 
+    surrender in the internet browser wars threatened to destroy my company's multi-million dollar product.  It's also
+    my selfish effort to preserve for posterity my part in the drama.  In the early 2000's, a group at my company worked
+    to create a new Web-based tech stack to replace our aging main-frame product.  They created a Windows shell program
+    for hosting Web content, much like the Electron framework from the OpenJS Foundation.  At that time, the team decided
+    to go all-in on Microsoft.  This meant that the shell would be based on the Microsoft Trident Engine and our new
+    product would be re-written in HTML with VBScript for all user interface logic.  Because I still work for this
+    company, I can't disclose the company or the product, but all our products support "back office" operations and this
+    technology decision was soon rewarded in the market.  The new version of the product took off like a rocket and by
+    2010, we had invested millions in building out functionality and our stock price had quadrupled.  Of course, all
+    the while Microsoft was slowly losing the battle of the browsers.  The demise of VBScript was sealed in late 2018 when
+    Microsoft announced it would base it's new Edge browser on as same technology as Google Chrome.  Of course, my company
     should have started turning the Titanic even before that happened, but we didn't. By the time we started the turn, we had
-    a full two decades of "investment" to fix (over 2.1 million lines of VB Script).  There are many ways of calculating the
-    worth of a product like Enterprise Justice. You can use future profit, past profit, both, or you can calculate the total
-    amount of money poured into its existence. For this demo, and my click-bait title here, I chose calculating value based on
-    cost. Does anyone know the historical average lines of code per day a developer produces? What about the number of bugs
-    created per thousand lines of code?
+    a full two decades of "investment" to fix (over 2.1 million lines of VBScript).  There are many ways of calculating the
+    worth of a software product. You can use future profit, past profit, both, or you can calculate the total
+    amount of money poured into its existence. For my click-bait title here, I chose calculating value based on
+    cost.
+    So, one way to deal with this problem is to just rewrite the code.
+    We can imagine throwing out all the complexities of code dependencies and just think of the problem as a super long
+    trench that needs digging.  So, grab a bunch of coders, hand out the shovels, and start digging.
+    But how fast can we code? What's the historical average lines of code per day a developer produces?
+    What about the number of bugs created per thousand lines of code?
 <Page 02>
  2. For the sake of perspective, this page shows a best case scenario of how to potentially solve the problem by throwing
     man-power at it. There are trade offs to be made here. If you slow down to reduce the number of bugs, you reduce the
-    number of lines of code per day. The bottom line is that a manual effort introduces huge risks. Of course, we did
-    successfully turn the Titanic around and there are many dimensions to that story, but this talk is about the translation
-    tool we created and the technology under the hood. But first, I have to take a moment to point out that this project
-    originated as a hobby project and that means the final translator we created is based on open source code I created on
-    my own. For this demo, I decided it was going to be open source as well and that means it does not use, or show, any
-    Tyler owned code.
+    number of lines of code per day. The bottom line is that a manual effort introduces huge risk. Of course, we did
+    successfully turn the Titanic around and there are many dimensions to that story, but this talk is about creating a
+    translation tool to solve the problem.  You might think, "hold up... how can you talk about this and not violate
+    intellectual property rules at your company?"  The answer is, I won't, because this project was based on a set of code
+    libraries I created as a hobby project.  I'll cover these libraries and show some code, but when I get to the private
+    part of the translation tool I created for my company, I'll just cover the obvious concepts used to complete that tool.
 <Page 03>
- 3. This page shows the repo containing this demo (its a window app) and the two primary class libraries the translator and
-    this demo use. This talk will mainly be about concepts and not code and I will point out when we jump from the concepts
-    contained in the open source portion to that of the Tyler translator.
+ 3. The program you're seeing here is a Windows app, and this page shows the code repositories for this app and the two
+    primary class libraries this app uses.  The tool I created for my company uses these same class libraries to help
+    translate VBScript to JavaScript.
 <Page 04>
- 4. So, here's my less glamorous title for this talk.
- 5. Its easy to see code as unstructured like natural language and, therefore, not data, but we can't translate code in any
-    predictable way unless we can turn it into data.
+ 4. So, here's my less glamorous title for this video.
+ 5. Its easy to think of code as unstructured like natural language and, therefore, not data, but we cannot translate code
+    in a predictable way unless we can turn it into data.  At the time I started all this, there was no A.I. that could
+    handle translation at this scale.
 <Page 05>
-    The basic idea of code translation is: turning code into data, and then turning that data back into code.
+    The basic idea of code translation is: turning code into data, and then turn that data back into code.
 <Page 06>
  6. We've actually been doing this since the very first high-level programming language.
  7. Compilers read code and turn that into a string of machine code.
- 8. The whole idea for the translator was inspired by my exposure to Microsoft class libraries that came from their Roslyn
+ 8. The whole idea for a translator was inspired by my exposure to Microsoft class libraries that came from their Roslyn
     project for .NET.
 <Page 07>
  9. So, when it comes to compilers, we have some core terms that serve as "stepping stones" to understanding what compilers
-    do. These will also serve as chronological markers in the timeline of making the translator.  Some of these terms may be
+    do. These will also serve as chronological markers in the timeline of making a translator.  Some of these terms may be
     familiar and some may not, but by the end, you should have a pretty good understanding of each.
 10. Let's start with source code.
 <Page 08>
@@ -45,11 +56,11 @@
     go along. The program simply prints out a random German greeting.
 <Page 09>
 12. Back in late 2017, while looking at the Roslyn libraries, I got this idea that we might be able to translate the
-    Enterprise Justice VB Script to JavaScript if we could parse the source into a semantic tree.  A semantic tree is
+    VBScript in our company's product to JavaScript if we could parse the source into a semantic tree.  A semantic tree is
     simply a direct representation of source code in a tree data structure in memory (much like parsed XML has a tree
     data structure).
-13. The first thing I needed was the exact grammar rules for VB Script. So, I did some online searching and was able to
-    find an attempt some developers had made at writing down the rules. There were some errors in the rules, but it
+13. The first thing I needed was the exact grammar rules for VBScript. So, I did some online searching and was able to
+    find an attempt some developers had made at writing down the rules. There were some errors in what I found, but it
     served as a good starting point.
 <Page 10>
 14. Here are those rules in a language called Backus-Naur Form (BNF). Its an extremely simple language to follow.
@@ -67,12 +78,13 @@
     This little page shows how the rules expand downward as they are used in a real piece of code.
     {Work the page expanding terms...}
 <Page 12>
-17. Here's an example of that same grammar in C# code. This shows an API that I built to allow a developer to take
-    grammar rules and turn them into a complete grammar object which feeds into the rest of the process. Very rarely
-    is a BNF document consumed by a program that would then directly compile the code it describes. Instead, it's
-    typically used by a program that generates the parsing code of a compiler.
+17. Typically, the grammar rules for a programming language are fed into a program called a parser generator and,
+    as the name implies, this program generates code (typically C++) that parses code into an abstract syntax tree.
+    Being the stubborn SOB that I am, I was going to build everything myself.  So, I built an API to all me to
+    write the grammar rules directly in C#.  This page shows how I used that API to define the VBScript grammar
+    in .NET.  All this code ends with the creation of a grammar object which feeds into the rest of the process.
 <Page 13>
-18. From the grammar, and some additional definitions for the literal categories, the API I created builds a lexical
+18. From the grammar, and some additional definitions for literal categories, the API I created builds a lexical
     analyzer (or lexer) which takes source code and turns it into a stream of tokens (each token is a single word in
     the language of the grammar).
 <Page 14>
@@ -97,7 +109,7 @@
     dive into that any further here.  You can read about that on your own if you're interested.  The end result
     of most parsing algorithms is to get what's called an abstract syntax tree (or AST).  The Earley algorithm,
     however, does not produce an AST by itself, it produces a parse chart that needs some additional processing
-    in order to get the AST.
+    in order to get the syntax tree.
 <Page 17>
 22. I've designed this page to show the Earley algorithm at work. You can step through token-by-token as the
     algorithm charts out if, and how, the input tokens satisfy the rules of the grammar.
@@ -144,7 +156,7 @@
     tree. This is a matter of traversing the tree and transforming nodes into concrete
     objects of concrete types that align with the concepts of an actual working program.
 <Page 21>
-26. This page calls the logic in the CodeAnalysis dot VbScript component to perform that
+26. This page calls the logic in the CodeAnalysis dot VBScript component to perform that
     transformation.
     (expand some nodes)
 27. This tree view here is showing the actual type names of the objects of each node. So, of course,
@@ -154,7 +166,7 @@
 28. The point is that a semantic tree is a one to one representation of the original code.
 <Page 22>
 29. Once I got to this point it my little hobby project, I thought it might be good to demonstrate
-    how translation is possible with a semantic tree by re-generating the original VbScript from the
+    how translation is possible with a semantic tree by re-generating the original VBScript from the
     tree.
 <Page 23>
 30. To do that, I wrote this single class containing all the functions necessary to re-script from
@@ -182,8 +194,8 @@
     translator project that kicked off in January of 2022 when I was given the green light to start
     coding the logic necessary to turn those semantic trees into JavaScript.
 36. This also brings us to the concept of symbol data. One of the most important differences between
-    VbScript and JavaScript is that JavaScript is case sensitive where VbScript is not. This means
-    we cannot rely on a VbScript author to faithfully use the same casing for a variable throughout
+    VBScript and JavaScript is that JavaScript is case sensitive where VBScript is not. This means
+    we cannot rely on a VBScript author to faithfully use the same casing for a variable throughout
     a particular variable scope.
 <Page 27>    
 37. So, we think of any declared name in the program as a symbol and we create another set of logic
@@ -196,10 +208,10 @@
     Of course, these symbols have types as well like class, variable, function, subroutine, etc.
 <Page 28>
 38. In addition to those symbols defined in the program, we also have those symbols that are defined
-    by the VbScript, like global functions, those defined by the script host, this is the global
-    names introduced by the Odyssey shell itself, and finally, there are the symbols that come with
-    the page context in which the script was defined, these are the id attributes of the HTML page.
-    The static host, and engine, symbols were simply injected into the translator using a set json
+    by the VBScript, like global functions, those defined by the script host, this is the global
+    names introduced by the shell application itself, and finally, there are the symbols that come
+    with the page context in which the script was defined, these are the id attributes of an HTML page.
+    The static host, and engine, symbols were simply injected into the translator using a set of json
     files that contained the various symbols along with types and JavaScript names.
 <Page 29>
 39. So that all becomes input into another set of tree traversal logic to transform the semantic
@@ -207,17 +219,17 @@
 <Page 30>
 40. Pretty early on in the official translator project, we realized that we needed to have the
     original commentary copied over to the JavaScript and so I created logic to read through the
-    original VbScript source and construct a line-based model of its trivia. I then fed that
+    original VBScript source and construct a line-based model of its trivia. I then fed that
     object into the translation functions to correctly copy the comments and white space.
 <Page 31>
-41. Finally, we ecountered some trouble with overlapping symbols. Because VbScript is a dynamic
+41. Finally, we ecountered some trouble with overlapping symbols. Because VBScript is a dynamic
     language, any variable can hold any type, and sometimes, within a single scope, a variable
     may actually switch between multiple types. Because of this, we have to be open to the
     idea of searching multiple class symbols for property or function symbols when we encounter
     a dotted expression. So, imagine the variable assignment statement "x = myObj.Length". The
     Length symbol that follows myObj and the dot could be defined on multiple classes.  It
     could be a function in one class and a property in another.  Or, the myObj variable could
-    have been from a COM object and not a VbScript class.
+    have been from a COM object and not a VBScript class.
 42. To help resolve some of these difficulties, I created some additional tree traversal logic
     to classify the scope symbols based on analyzing the assignment statements of those symbols.
     For example, if I see a symbol getting assigned a COM object provided by a global symbol
@@ -235,9 +247,9 @@
     (click through to page 38)
 <Page 39>
 45. Overall, the project was very successful. We did recently go live in production with our
-    first early adopter. Having worked here for over 20 years, I had heard many times that it
-    was just not possible to refactor Enterprise Justice to a new stack by hand. I think that
-    really meant it was way too costly.
+    first early adopter. Having worked at my company for over 20 years, I had heard many times
+    that it was just not possible to refactor the product to a new stack by hand. That
+    really means it was way too costly.
     (click through to page 45)
 <Page 46>
 46. As I was preparing this demo, I got the idea that by the end of this presentation some of
@@ -249,160 +261,3 @@
     answer to you is simple: "bullshit."
 <Page 52>
 48. We have time for a few questions.
-
-
-
-
-    So, obviously, the algorithm is incrementing through the input tokens one at a time, but it's also
-    adding to the chart at each token position, and it's analyzing each of these chart entries as it goes.
-    Each chart entry is a copy of a single alternative of a syntax rule and a progress marker indicating
-    how much of that variation has been matched up to that point. Remember that the alternatives in our
-    syntax rules were the individual sequences separated by the vertical bars.  We see the the start rule
-    here, which has only one alternative, and the progress indicator is this little symbol right after the
-    colon-colon-equals.  I'm using the character for generic currency here.
-    (hit step once and the go back to chart entry zero of token zero)
-    So, here, you're seeing that the algorithm added a bunch of entries under the very first token with
-    the progress indicator at various locations within these entries.
-    (highlight the "<OptionExplicit>" entry at position 20)
-    The algorithm makes entries in the next token position when it matches a current entry to the current
-    token, or it finds a completed rule in the chart at the current position and it finds a symbol match
-    for that completed rule in a prior chart entry. Here we're seeing the chart entry that matches this
-    this "option" token.
-    (hit step once and go back to token position 1)
-    This shows that the only rule that can match at token position 1 is the <OptionExplicit> rule.
-    (go to token position 1)
-    The entries here represent both the token match and an entry that the algorithm placed here just
-    after that token match which essentially represents the next symbol after the token match that
-    the algorithm can accept at position 2.
-
-    
-    As the algorithm is running, the rules are being appended to the end of the list
-    of rules at the current token position and, potentially, to the list of rules in the next token
-    position.
-    Each entry in the chart is a rule and its parsing progress at that point.
-    In the algorithm, there are two logic paths for a rule to progress down in the chart. First, if the
-    next available symbol of the rule is a token and it matches the current token in the input stream,
-    then the rule moved to the next chart position and the progress marker is advanced. Second, when the
-    algorithm sees that a rule has been advanced and it's actually completed (the progress marker is past
-    the last symbol of the rule), the algorithm search back in the chart for prior incomplete rules where
-    the next available symbol in the rule matches the symbol of this completed rule.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<<< TAKEN OUT OF THE PARSE CHART NOTES >>>
-    So, the right side of this page is showing you the list
-    within the list for the token we have selected on the left. Each chart entry has a progress indicator
-    showing how much of the rule is matched at this point. The progress indicator is that little spikey
-    circle character right after the colon-colon-equals and its showing here that nothing has been
-    matched yet. In addition, each entry contains the token index at which the entry was first created.
-    Here you can see the number in the brackets just prior to the colon-colon-equals.
-    (hit step once)
-    So after another step, this is showing the starting point of the chart for the next token. You can
-    see that we ended up with one hundred six entries created in the chart at token zero just to get to
-    the starting point of token one. We'll look back at what happened.
-    (select token zero and scroll to entry zero)
-    Before we dig into the details of these entries, its important to understand that the algorithm
-    does not use for each loops.  This is a dynamic list of lists and the algorithm is doing a kind of
-    loop like "while there are entries at the next position, increment to the next position and
-    perform logic that might add more to this list or the next list". With that in mind, let's look
-    at what was added after our very first entry. The algorithm is standing on entry zero and it
-    performs some action based on what the next thing is after the progress indicator. Here, the
-    next thing is the abstract symbol "NLOpt". So, the algorithm looks up the alternative rules
-    that make up "NLOpt" and adds each to the list. In addition, because the "NLOpt" rule is, by
-    its defintion, and optional rule, the algorithm determines that it can take the rule its on,
-    the "program" rule, and add it to the end of the list with the progress marker advanced over
-    the "NLOpt" symbol. Done with that, the algorithm advances to entry one and evaluates the next
-    symbol in that rule. Here its the "NL" rule with its four alternatives. This process continues
-    the same until we get to entry four where the algorithm encounters an entry where the next
-    thing to match is an actual token. In this case, its the token category "new-line". This is a
-    category because the lexing algorithm will make a single token for a carriage return character,
-    or a line feed character, or combination of the two. Of course, the algorithm checks this token
-    against the current token and it doesn't match, so it moves on to the next chart entry. Things
-    progress in this same way until we get to entry twenty where you can see the next thing to
-    match is the "option" token which is a match for the current token and this is where the
-    algorithm does something entirely different. It adds a copy of the current rule, with the
-    progress indicator advanced to the next symbol, into the list of entries corresponding to the
-    next token.
-    (select entry twenty, pause)
-    (select token one)
-    One other thing to note here is that since we only see this one entry at token one, it means
-    that after entry twenty, all the rest of the evaulation beyond that point resulted in no
-    additional match for the "option" token. This makes sense for VB Script, but it does imply that
-    for some languages a single keyword may apply to more than one rule. Notice that the next thing
-    to match here is the token "explicit". This means that there will be no abstract rule expansion
-    in this list and if the current token does not match, parsing will be done resulting in a
-    syntax error. There's still one more behavior of the algorithm to talk about and so, I'm going
-    to step forward a few more times in order to show it.
-    (hit step four times and then select token two)
-    Notice here that the "option explicit" rule was pushed forward once more from a match on the
-    "explicit" token and still has the "NL" rule as the next thing to match.
-    (select token three and scroll down to entry zero)
-    Here at index zero and one we have two rules that were pushed forward from the "new-line"
-    match at index 2, one of these needs another "NL" and the other is complete. The next entries,
-    two through five come from the expansion of "NL" at index zero. When the algorithm gets to
-    entry one, it does something different. Here the algorithm searches back through the chart
-    for entries where the next symbol needed is an "NL" and of course, it find that in the
-    "option explicit" chart entry at index two.
-    (highlight token two)
-    This "option explicit" rule here gets pulled into the chart list at token position three and
-    its progress marker is advanced. In turn, when the algorithm encounters the "option explicit"
-    that completed here, it searches back in the chart for a rule whose next match is this rule.
-    You can see that's the reason for the "global stmt" entry at position nine. This rule pulling
-    behavior also accounts for the "global stmt list" entry at ten and the "program" entry at
-    twenty one.
-    That covers the major behaviors of the algorithm, but its worth pointing out one small thing
-    I skipped over before now. Notice this token category just after the progress marker on the
-    "program" entry here at position twenty one.  That is a special token which the lexer appends
-    at the end of the token stream.
-    (scroll down the token list to show the EOI)
-    This means that the "program" rule is never satisfied until the end of the token stream has
-    been processed. I'll press the fast forward button here to get the algorithm to finish up the
-    chart.
-    (press fast forward and highlight the last token)
-    Because we have a final satisfied start symbol at the end of the chart, we say that the
-    program code satisfies the syntax rules our VB Script grammar.
-    That's the Earley algorithm in a nutshell and it produces this chart to which we apply
-    another algorithm to produce the abstract syntax tree. I had a pretty hard time finding a
-    good explanation of exactly how to do that, but I was able to piece it together from some
-    internet sources and a lot of trial and error.
-    I'll leave that algorithm for those restless souls that just can't stand not knowing, but
-    I will show the one step that's taken to prepare this chart to get the AST and its called
-    inverting the chart.
-    (click the inverse checkbox) 
-    As you can see here we've created a kind of mirror chart where all the entries are in
-    reverse order and the rule start positions (the number in those brackets) are changed to
-    reflect where that rule came from before the flip.  One other thing that's happened here
-    is that we've removed all the unsatisfied entries in the chart.
