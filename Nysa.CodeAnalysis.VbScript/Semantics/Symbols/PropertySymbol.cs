@@ -8,6 +8,10 @@ using Nysa.Text;
 namespace Nysa.CodeAnalysis.VbScript.Semantics
 {
 
+    /// <summary>
+    /// PropertySymbol is a synthetic symbol used to group the concrete getter and
+    /// setter functions with the same name together in a class symbol.
+    /// </summary>
     public sealed record PropertySymbol : Symbol
     {
         public Option<FunctionSymbol> Getter    { get; private set; }

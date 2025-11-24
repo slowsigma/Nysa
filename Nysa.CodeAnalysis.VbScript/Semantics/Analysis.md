@@ -23,7 +23,6 @@ What about PathExpression is complicated?
 
 -- THIS TREE SEEMS WACKY (SLIGHTLY)
 Symbol
-  BaseSymbol
   BlockSymbol
   HardSymbol
     ClassSymbol
