@@ -736,8 +736,8 @@ public static class Language
     {
         var newLineId = Language.Grammar.Id("{new-line}");
         var tokensAll = Language.LexWithTrivia(source);
-        var trivia    = tokensAll.Where(t =>    t.Id.Equals(Identifier.Trivia)
-                                             || t.Id.Equals(newLineId))
+        var trivia    = tokensAll.Where(t =>    t.Id.IsEqual(Identifier.Trivia)
+                                             || t.Id.IsEqual(newLineId))
                                  .ToArray();
         var tokens    = tokensAll.Where(t => !t.Id.IsEqual(Identifier.Trivia))
                                  .ToArray();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,4 +24,14 @@ public sealed class TokenIdentifier
         => this.Next == null
            ? this.This.ToString()
            : String.Concat(this.This.ToString(), ", ", this.Next.ToString());
+
+    public override bool Equals(object? obj)
+    {
+        return obj switch
+        {
+            TokenIdentifier tokenId => this.IsEqual(tokenId),
+            Identifier id => this.IsEqual(id),
+            _ => false
+        };
+    }
 }

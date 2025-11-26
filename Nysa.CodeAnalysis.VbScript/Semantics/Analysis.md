@@ -4,7 +4,7 @@ Given that we have scoped symbols (i.e., scope layer objects representing code f
 along with their declarations (i.e., function, argument, variable, type, constant symbols),
 can we work to tie all accessing expressions ()
 
-The question is can we assign a likely declaration to each part of a PathExpression?
+The question is, can we assign a likely declaration to each part of a PathExpression?
 
 Example played out:
 1. We see variable getting assigned a value from a function argument.
@@ -36,5 +36,3 @@ Symbol
         RedimSymbol
         VariableSymbol
   PropertySymbol
-
-- PropertySymbol seems like it should be inside member
